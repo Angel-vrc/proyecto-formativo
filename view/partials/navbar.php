@@ -80,7 +80,7 @@
                                 Ayuda
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="<?php echo getUrl('Login', 'Login', 'cerrarSesion'); ?>">
                                 <i class="fas fa-power-off"></i>
                                 Cerrar Sesión
                             </a>

@@ -1,6 +1,16 @@
 <?php
 
     include_once '../lib/helpers.php';
+    
+    if(isset($_GET['modulo']) && $_GET['modulo'] == 'Login' && 
+       isset($_GET['controlador']) && $_GET['controlador'] == 'Login' && 
+       isset($_GET['funcion']) && $_GET['funcion'] == 'cerrarSesion'){
+        include_once '../controller/Login/LoginController.php';
+        $loginController = new LoginController();
+        $loginController->cerrarSesion();
+        exit();
+    }
+    
     include_once '../lib/helpersLogin.php';
     include_once '../view/partials/header.php';
 

@@ -3,8 +3,9 @@
         <!-- Logo Header -->
         <div class="logo-header" data-background-color="dark">
 
-            <a href="index.html" class="logo">
-                <img src="assets/img/kaiadmin/logo_light.svg" alt="navbar brand" class="navbar-brand" height="20">
+            <a href="index.php" class="logo">
+                <img src="assets/img/logo.png" alt="GeoControl" class="navbar-brand" height="40">
+                <span style="margin-left: 10px; color: #fff; font-weight: 600; font-size: 18px;">GeoControl</span>
             </a>
             <div class="nav-toggle">
                 <button class="btn btn-toggle toggle-sidebar">
@@ -90,7 +91,7 @@
                 </li>
                 <li class="nav-item">
                     <a data-bs-toggle="collapse" href="#gestionTanques">
-                        <i class="fas fa-water"></i>
+                        <i class="fas fa-fish"></i>
                         <p>Gestión de Tanques</p>
                         <span class="caret"></span>
                     </a>
