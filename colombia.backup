@@ -4,7 +4,7 @@
 
 -- Dumped from database version 9.2.9
 -- Dumped by pg_dump version 9.2.9
--- Started on 2025-11-30 10:45:45
+-- Started on 2025-12-03 20:55:03
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -59,8 +59,9 @@ SET default_with_oids = false;
 
 CREATE TABLE usuarios (
     id integer NOT NULL,
-    usuario character varying(50) NOT NULL,
-    contrasena character varying(255) NOT NULL
+    usuario bigint NOT NULL,
+    contrasena character varying(255) NOT NULL,
+    nombre character varying(100)
 );
 
 
@@ -104,8 +105,8 @@ ALTER TABLE ONLY usuarios ALTER COLUMN id SET DEFAULT nextval('usuarios_id_seq':
 -- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY usuarios (id, usuario, contrasena) FROM stdin;
-1	melany	123456
+COPY usuarios (id, usuario, contrasena, nombre) FROM stdin;
+2	123456789	123456	Melany
 \.
 
 
@@ -115,7 +116,7 @@ COPY usuarios (id, usuario, contrasena) FROM stdin;
 -- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('usuarios_id_seq', 1, true);
+SELECT pg_catalog.setval('usuarios_id_seq', 2, true);
 
 
 --
@@ -128,7 +129,7 @@ ALTER TABLE ONLY usuarios
 
 
 --
--- TOC entry 1815 (class 2606 OID 18613)
+-- TOC entry 1815 (class 2606 OID 18620)
 -- Name: usuarios_usuario_key; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -148,7 +149,7 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2025-11-30 10:45:45
+-- Completed on 2025-12-03 20:55:03
 
 --
 -- PostgreSQL database dump complete

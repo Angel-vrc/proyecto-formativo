@@ -1,93 +1,114 @@
-<nav class="navbar navbar-header navbar-expand-lg" data-background-color="blue2">
-    <div class="container-fluid">
-        <div class="collapse navbar-collapse justify-content-end">
-            <ul class="navbar-nav topbar-nav ml-md-auto align-items-center">
-                <!-- Quick Actions -->
-                <li class="nav-item dropdown hidden-caret">
-                    <a class="nav-link dropdown-toggle" href="#" id="quickActionsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-bolt"></i>
-                        <span class="notification">Quick Actions</span>
+<div class="main-header">
+    <div class="main-header-logo">
+        <!-- Logo Header -->
+        <div class="logo-header" data-background-color="dark">
+
+            <a href="index.html" class="logo">
+                <img src="assets/img/kaiadmin/logo_light.svg" alt="navbar brand" class="navbar-brand" height="20">
+            </a>
+            <div class="nav-toggle">
+                <button class="btn btn-toggle toggle-sidebar">
+                    <i class="gg-menu-right"></i>
+                </button>
+                <button class="btn btn-toggle sidenav-toggler">
+                    <i class="gg-menu-left"></i>
+                </button>
+            </div>
+            <button class="topbar-toggler more">
+                <i class="gg-more-vertical-alt"></i>
+            </button>
+
+        </div>
+        <!-- End Logo Header -->
+    </div>
+    <!-- Navbar Header -->
+    <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
+
+        <div class="container-fluid">
+
+            <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+
+                <li class="nav-item topbar-icon dropdown hidden-caret">
+                    <a class="nav-link" data-bs-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fas fa-layer-group"></i>
                     </a>
-                    <ul class="dropdown-menu quick-actions animated fadeIn" aria-labelledby="quickActionsDropdown">
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-plus"></i>
-                                <span>Nueva Actividad</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-chart-line"></i>
-                                <span>Reporte Rápido</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>Ver Mapa</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-tasks"></i>
-                                <span>Tareas Pendientes</span>
-                            </a>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-cog"></i>
-                                <span>Configuración Rápida</span>
-                            </a>
-                        </li>
-                    </ul>
+                    <div class="dropdown-menu quick-actions animated fadeIn">
+                        <div class="quick-actions-header">
+                            <span class="title mb-1">Acciones Rapidas</span>
+                            <span class="subtitle op-7">Atajos</span>
+                        </div>
+                        <div class="quick-actions-scroll scrollbar-outer">
+                            <div class="quick-actions-items">
+                                <div class="row m-0">
+                                    <a class="col-6 col-md-4 p-0" href="#">
+                                        <div class="quick-actions-item">
+                                            <div class="avatar-item bg-danger rounded-circle">
+                                                <i class="fa fa-plus"></i>
+                                            </div>
+                                            <span class="text">Nueva Actividad</span>
+                                        </div>
+                                    </a>
+                                    <a class="col-6 col-md-4 p-0" href="#">
+                                        <div class="quick-actions-item">
+                                            <div class="avatar-item bg-warning rounded-circle">
+                                                <i class="fas fa-map"></i>
+                                            </div>
+                                            <span class="text">Mapa</span>
+                                        </div>
+                                    </a>
+                                    <a class="col-6 col-md-4 p-0" href="#">
+                                        <div class="quick-actions-item">
+                                            <div class="avatar-item bg-info rounded-circle">
+                                                <i class="fas fa-file-excel"></i>
+                                            </div>
+                                            <span class="text">Reportes</span>
+                                        </div>
+                                    </a>
+                                    <a class="col-6 col-md-4 p-0" href="#">
+                                        <div class="quick-actions-item">
+                                            <div class="avatar-item bg-success rounded-circle">
+                                                <i class="fas fa-cog"></i>
+                                            </div>
+                                            <span class="text">Configuracion</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </li>
                 
-                <!-- User Profile -->
-                <li class="nav-item dropdown hidden-caret">
+                <li class="nav-item topbar-user dropdown hidden-caret">
                     <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
                         <div class="avatar-sm">
                             <img src="assets/img/profile.jpg" alt="..." class="avatar-img rounded-circle">
                         </div>
+                        <span class="profile-username">
+                            <span class="op-7">Hola,</span> <span class="fw-bold"><?php 
+                            echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre']) : htmlspecialchars($_SESSION['usuario']); ?></span>
+                        </span>
                     </a>
                     <ul class="dropdown-menu dropdown-user animated fadeIn">
-                        <li>
-                            <div class="user-box">
-                                <div class="avatar-lg">
-                                    <img src="assets/img/profile.jpg" alt="image profile" class="avatar-img rounded">
+                        <div class="dropdown-user-scroll scrollbar-outer">
+                            <li>
+                                <div class="user-box">
+                                    <div class="avatar-lg"><img src="assets/img/profile.jpg" alt="image profile" class="avatar-img rounded"></div>
+                                    <div class="u-text">
+                                        <h4><?php
+                                        echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre']) : htmlspecialchars($_SESSION['usuario']); ?></h4>
+                                        <p class="text-muted">hello@example.com</p><a href="profile.html" class="btn btn-xs btn-secondary btn-sm">Ver Perfil</a>
+                                    </div>
                                 </div>
-                                <div class="u-text">
-                                    <h4>Nombre Usuario</h4>
-                                    <p class="text-muted">usuario@zoocriadero.com</p>
-                                    <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">Ver Perfil</a>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-user-cog"></i>
-                                Mi Cuenta
-                            </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-cog"></i>
-                                Configuración
-                            </a>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-question-circle"></i>
-                                Ayuda
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="<?php echo getUrl('Login', 'Login', 'cerrarSesion'); ?>">
-                                <i class="fas fa-power-off"></i>
-                                Cerrar Sesión
-                            </a>
-                        </li>
+                            </li>
+                            <li>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="<?php echo getUrl('Login', 'Login', 'cerrarSesion'); ?>">Cerrar Sesion</a>
+                            </li>
+                        </div>
                     </ul>
                 </li>
-            </ul>
+            </ul>   
         </div>
-    </div>
-</nav>
+    </nav>
+    <!-- End Navbar -->
+</div>

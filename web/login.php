@@ -39,9 +39,9 @@ if(isset($_SESSION['error_login'])){
         <form method="POST" action="login.php" id="loginForm">
             <div class="form-group">
                 <label for="usuario">
-                    <i class="fas fa-user"></i> Usuario
+                    <i class="fas fa-id-card"></i> Número de Documento
                 </label>
-                <input  type="text"  class="form-control"  id="usuario"  name="usuario"  placeholder="Ingrese su usuario" required  autocomplete="username" autofocus>
+                <input  type="text"  class="form-control"  id="usuario"  name="usuario"  placeholder="Ingrese su número de documento" required  autocomplete="username" autofocus pattern="[0-9]*" inputmode="numeric">
             </div>
             
             <div class="form-group">
@@ -74,11 +74,6 @@ if(isset($_SESSION['error_login'])){
                 <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
             </button>
         </form>
-        
-        <div class="institution-info">
-            <p><strong>Secretaría de Salud de Cali</strong></p>
-            <p>Sistema de información geografico</p>
-        </div>
     </div>
     
     <script src="assets/js/core/jquery-3.7.1.min.js"></script>
@@ -95,56 +90,8 @@ if(isset($_SESSION['error_login'])){
         });
     </script>
     
-    <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleIcon = document.getElementById('toggleIcon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        }
-        
-        document.querySelector('.password-toggle').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                togglePassword();
-            }
-        });
-        
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            const usuario = document.getElementById('usuario').value.trim();
-            const password = document.getElementById('password').value;
-            const submitBtn = document.getElementById('submitBtn');
-            
-            if (!usuario || !password) {
-                e.preventDefault();
-                alert('Por favor complete todos los campos');
-                return false;
-            }
-            
-            submitBtn.classList.add('loading');
-            submitBtn.innerHTML = '';
-        });
-        
-        document.getElementById('usuario').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('password').focus();
-            }
-        });
-        
-        document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('loginForm').submit();
-            }
-        });
-    </script>
+    <!-- Validaciones del login -->
+    <script src="js/validaciones_login.js"></script>
 </body>
 </html>
 

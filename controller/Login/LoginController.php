@@ -23,7 +23,7 @@
                     $password = pg_escape_string($this->getConnect(), $password);
                     
                     $condition = "usuario = '$usuario' AND contrasena = '$password'";
-                    $result = $this->findOne("usuarios", "id, usuario, contrasena", $condition);
+                    $result = $this->findOne("usuarios", "id, usuario, contrasena, nombre", $condition);
                     
                     if($result != "No se encontro ningun registro"){
 
@@ -32,11 +32,12 @@
                         $_SESSION['auth'] = "ok";
                         $_SESSION['usuario'] = $userData['usuario'];
                         $_SESSION['usuario_id'] = $userData['id'];
+                        $_SESSION['nombre'] = isset($userData['nombre']) ? $userData['nombre'] : $userData['usuario'];
                         
                         header("Location: index.php");
                         exit();
                     } else {
-                        $_SESSION['error_login'] = "Usuario o contraseña incorrectos";
+                        $_SESSION['error_login'] = "Número de documento o contraseña incorrectos";
                         header("Location: login.php");
                         exit();
                     }

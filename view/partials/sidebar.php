@@ -23,7 +23,7 @@
         <!-- End Logo Header -->	
     </div>	
     <div class="sidebar-wrapper scrollbar scrollbar-inner">
-        <div class="sidebar-content">
+       <div class="sidebar-content">
             <ul class="nav nav-secondary">
                 <li class="nav-item active">
                     <a href="visualizacion-mapa.html">
