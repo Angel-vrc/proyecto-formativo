@@ -85,7 +85,7 @@
                         </div>
                         <span class="profile-username">
                             <span class="op-7">Hola,</span> <span class="fw-bold"><?php 
-                            echo $_SESSION['usuario']; ?></span>
+                            echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre']) : htmlspecialchars($_SESSION['usuario']); ?></span>
                         </span>
                     </a>
                     <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -95,7 +95,7 @@
                                     <div class="avatar-lg"><img src="assets/img/profile.jpg" alt="image profile" class="avatar-img rounded"></div>
                                     <div class="u-text">
                                         <h4><?php
-                                        echo $_SESSION['usuario']; ?></h4>
+                                        echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre']) : htmlspecialchars($_SESSION['usuario']); ?></h4>
                                         <p class="text-muted">hello@example.com</p><a href="profile.html" class="btn btn-xs btn-secondary btn-sm">Ver Perfil</a>
                                     </div>
                                 </div>
