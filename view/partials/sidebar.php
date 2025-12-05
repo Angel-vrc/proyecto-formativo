@@ -25,8 +25,8 @@
     <div class="sidebar-wrapper scrollbar scrollbar-inner">
        <div class="sidebar-content">
             <ul class="nav nav-secondary">
-                <li class="nav-item active">
-                    <a href="visualizacion-mapa.html">
+                <li class="nav-item <?php echo (!isset($_GET['modulo'])) ? 'active' : ''; ?>">    
+                    <a href="index.php">
                         <i class="fas fa-map"></i>
                         <p>Visualización de Mapa</p>
                     </a>
@@ -37,142 +37,78 @@
                     </span>
                     <h4 class="text-section">Gestión del Sistema</h4>
                 </li>
-                <li class="nav-item">
-                    <a data-bs-toggle="collapse" href="#gestionUsuarios">
+                <li class="nav-item <?php echo isActiveModule('Zoocriaderos'); ?>">
+                    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","list"); ?>">
+                        <i class="fas fa-fish"></i>
+                        <p>Gestión de Zoocriadero</p>                        
+                    </a>
+                </li>
+                <li class="nav-item <?php echo isActiveModule('Tanques'); ?>">
+                    <a href="<?php echo getUrl("Tanques","Tanque","list"); ?>">
+                        <i class="fas fa-tint"></i>
+                        <p>Gestión de Tanques</p>                        
+                    </a>
+                </li>
+                <li class="nav-item <?php echo isActiveModule('Actividades'); ?>">
+                    <a href="<?php echo getUrl("Actividades","Actividad","list"); ?>">
+                        <i class="fas fa-tasks"></i>
+                        <p>Gestión de Actividades</p>                        
+                    </a>                    
+                </li>
+                <li class="nav-item <?php echo isActiveModule('Usuarios'); ?>">
+                    <a href="<?php echo getUrl("Usuarios","Usuario","list"); ?>">
                         <i class="fas fa-users"></i>
-                        <p>Gestión de Usuarios</p>
+                        <p>Gestión de Usuarios</p>                        
+                    </a>
+                </li>
+                <li class="nav-item <?php echo isActiveModule('Seguridad'); ?>">
+                    <a data-bs-toggle="collapse" href="#gestionSeguridad">
+                        <i class="fas fa-lock"></i>
+                        <p>Seguridad del Sistema</p>
                         <span class="caret"></span>
                     </a>
-                    <div class="collapse" id="gestionUsuarios">
+                    <div class="collapse" id="gestionSeguridad">
                         <ul class="nav nav-collapse">
                             <li>
-                                <a href="gestion-usuarios/lista-usuarios.html">
-                                    <span class="sub-item">Lista de Usuarios</span>
+                                <a href="<?php echo getUrl("Seguridad","Seguridad","listRoles"); ?>">
+                                    <span class="sub-item">Roles</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="gestion-usuarios/crear-usuario.html">
-                                    <span class="sub-item">Crear Usuario</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="gestion-usuarios/permisos.html">
+                                <a href="<?php echo getUrl("Seguridad","Seguridad","listPermisos"); ?>">
                                     <span class="sub-item">Permisos</span>
                                 </a>
-                            </li>
+                            </li>                            
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item">
-                    <a data-bs-toggle="collapse" href="#gestionZoocriadero">
-                        <i class="fas fa-paw"></i>
-                        <p>Gestión de Zoocriadero</p>
-                        <span class="caret"></span>
-                    </a>
-                    <div class="collapse" id="gestionZoocriadero">
-                        <ul class="nav nav-collapse">
-                            <li>
-                                <a href="gestion-zoocriadero/informacion.html">
-                                    <span class="sub-item">Información General</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="gestion-zoocriadero/especies.html">
-                                    <span class="sub-item">Gestión de Especies</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="gestion-zoocriadero/instalaciones.html">
-                                    <span class="sub-item">Instalaciones</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a data-bs-toggle="collapse" href="#gestionTanques">
-                        <i class="fas fa-fish"></i>
-                        <p>Gestión de Tanques</p>
-                        <span class="caret"></span>
-                    </a>
-                    <div class="collapse" id="gestionTanques">
-                        <ul class="nav nav-collapse">
-                            <li>
-                                <a href="gestion-tanques/lista-tanques.html">
-                                    <span class="sub-item">Lista de Tanques</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="gestion-tanques/crear-tanque.html">
-                                    <span class="sub-item">Crear Tanque</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="gestion-tanques/parametros.html">
-                                    <span class="sub-item">Parámetros</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a data-bs-toggle="collapse" href="#gestionActividades">
-                        <i class="fas fa-tasks"></i>
-                        <p>Gestión de Actividades</p>
-                        <span class="caret"></span>
-                    </a>
-                    <div class="collapse" id="gestionActividades">
-                        <ul class="nav nav-collapse">
-                            <li>
-                                <a href="gestion-actividades/calendario.html">
-                                    <span class="sub-item">Calendario</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="gestion-actividades/registro.html">
-                                    <span class="sub-item">Registro de Actividades</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="gestion-actividades/tipos.html">
-                                    <span class="sub-item">Tipos de Actividad</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="nav-item">
+                <li class="nav-item <?php echo isActiveModule('Reportes'); ?>">
                     <a data-bs-toggle="collapse" href="#reportes">
                         <i class="fas fa-chart-bar"></i>
-                        <p>Reportes</p>
+                        <p>Reportes y Estadisticas</p>
                         <span class="caret"></span>
                     </a>
                     <div class="collapse" id="reportes">
                         <ul class="nav nav-collapse">
                             <li>
-                                <a href="reportes/produccion.html">
-                                    <span class="sub-item">Reportes de Producción</span>
+                                <a href="<?php echo getUrl("Reportes","Reporte","listNacidos"); ?>">
+                                    <span class="sub-item">Peces nacidos y muertos</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="reportes/salud.html">
-                                    <span class="sub-item">Reportes de Salud</span>
+                                <a href="<?php echo getUrl("Reportes","Reporte","listSeguimientos"); ?>">
+                                    <span class="sub-item">Seguimiento de actividades</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="reportes/actividades.html">
-                                    <span class="sub-item">Reportes de Actividades</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="reportes/personalizados.html">
-                                    <span class="sub-item">Reportes Personalizados</span>
+                                <a href="<?php echo getUrl("Reportes","Reporte","listZoocriaderos"); ?>">
+                                    <span class="sub-item">Reportes por zoocriadero</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item <?php echo isActiveModule('Configuracion'); ?>">
                     <a data-bs-toggle="collapse" href="#configuracion">
                         <i class="fas fa-cogs"></i>
                         <p>Configuración</p>
@@ -181,20 +117,15 @@
                     <div class="collapse" id="configuracion">
                         <ul class="nav nav-collapse">
                             <li>
-                                <a href="configuracion/general.html">
-                                    <span class="sub-item">Configuración General</span>
+                                <a href="<?php echo getUrl("Configuracion","Configuracion","listManuales"); ?>">
+                                    <span class="sub-item">Manuales</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="configuracion/parametros-sistema.html">
-                                    <span class="sub-item">Parámetros del Sistema</span>
+                                <a href="<?php echo getUrl("Configuracion","Configuracion","acercaDe"); ?>">
+                                    <span class="sub-item">Acerca de nosotros</span>
                                 </a>
-                            </li>
-                            <li>
-                                <a href="configuracion/backup.html">
-                                    <span class="sub-item">Backup y Restauración</span>
-                                </a>
-                            </li>
+                            </li>                            
                         </ul>
                     </div>
                 </li>
