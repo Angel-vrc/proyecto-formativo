@@ -60,4 +60,34 @@
 
     }
 
+    function isActiveModule($moduleName) {
+        $currentModulo = isset($_GET['modulo']) ? $_GET['modulo'] : '';
+        $currentControlador = isset($_GET['controlador']) ? $_GET['controlador'] : '';
+        
+        // Para módulos que coinciden exactamente
+        if ($currentModulo == $moduleName) {
+            return 'active';
+        }
+        
+        // Casos especiales o alias si los tienes
+        $moduleAliases = [
+            'Dashboard' => ['', 'Dashboard', 'Inicio'],
+            'Mapa' => ['Mapa', 'Visualizacion'],
+            // Agrega más si es necesario
+        ];
+        
+        if (isset($moduleAliases[$moduleName])) {
+            if (in_array($currentModulo, $moduleAliases[$moduleName])) {
+                return 'active';
+            }
+        }
+        
+        return '';
+    }
+
+    function isActiveController($controllerName) {
+        $currentControlador = isset($_GET['controlador']) ? $_GET['controlador'] : '';
+        return ($currentControlador == $controllerName) ? 'active' : '';
+    }
+
 ?>
