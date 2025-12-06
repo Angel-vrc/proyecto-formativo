@@ -86,6 +86,7 @@
                                             echo "</td>";
                                         echo "</tr>";
                                     }
+                                    $c = pg_num_rows($zoocriaderos);
                                 ?>
                             </tbody>
                         </table>
@@ -95,7 +96,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="dataTables_info" id="info" role="status" aria-live="polite">
-                                Mostrando 0 registros
+                                Mostrando <?php echo $c?> registros
                             </div>
                         </div>
                         <div class="col-md-6">

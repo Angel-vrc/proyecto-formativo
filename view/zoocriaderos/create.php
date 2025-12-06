@@ -38,7 +38,7 @@
                                 <div class="form-group">
                                     <label for="comuna">Comuna *</label>
                                     <select class="form-control select2" id="comuna" name="comuna" required>
-                                        <option value="">Seleccione una comuna</option>
+                                        <option value="">Seleccione una comuna</option>                                        
                                         <option value="Comuna 1">Comuna 1</option>
                                         <option value="Comuna 2">Comuna 2</option>
                                         <option value="Comuna 3">Comuna 3</option>
@@ -49,7 +49,18 @@
                                         <option value="Comuna 8">Comuna 8</option>
                                         <option value="Comuna 9">Comuna 9</option>
                                         <option value="Comuna 10">Comuna 10</option>
-                                        <!-- Agregar más comunas según necesidad -->
+                                        <option value="Comuna 11">Comuna 11</option>
+                                        <option value="Comuna 12">Comuna 12</option>
+                                        <option value="Comuna 13">Comuna 13</option>
+                                        <option value="Comuna 14">Comuna 14</option>
+                                        <option value="Comuna 15">Comuna 15</option>
+                                        <option value="Comuna 16">Comuna 16</option>
+                                        <option value="Comuna 17">Comuna 17</option>
+                                        <option value="Comuna 18">Comuna 18</option>
+                                        <option value="Comuna 19">Comuna 19</option>
+                                        <option value="Comuna 20">Comuna 20</option>
+                                        <option value="Comuna 21">Comuna 21</option>
+                                        <option value="Comuna 22">Comuna 22</option>                                        
                                     </select>
                                 </div>
                                 
