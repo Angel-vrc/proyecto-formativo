@@ -49,10 +49,10 @@
                         <p>Gestión de Tanques</p>                        
                     </a>
                 </li>
-                <li class="nav-item <?php echo isActiveModule('Actividades'); ?>">
-                    <a href="<?php echo getUrl("Actividades","Actividad","list"); ?>">
+                <li class="nav-item <?php echo isActiveModule('Seguimiento'); ?>">
+                    <a href="<?php echo getUrl("Seguimiento","Seguimiento","list"); ?>">
                         <i class="fas fa-tasks"></i>
-                        <p>Gestión de Actividades</p>                        
+                        <p>Gestión de Seguimiento</p>                        
                     </a>                    
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Usuarios'); ?>">
@@ -97,7 +97,7 @@
                             </li>
                             <li>
                                 <a href="<?php echo getUrl("Reportes","Reporte","listSeguimientos"); ?>">
-                                    <span class="sub-item">Seguimiento de actividades</span>
+                                    <span class="sub-item">Seguimiento de seguimientos</span>
                                 </a>
                             </li>
                             <li>

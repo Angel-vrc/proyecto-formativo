@@ -26,4 +26,9 @@
 
 	<!-- CSS Just for demo purpose, don't include it in your project -->
 	<link rel="stylesheet" href="assets/css/demo.css">
+	
+	<?php if(isset($cargar_recaptcha) && $cargar_recaptcha): ?>
+	<!-- Google reCAPTCHA -->
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	<?php endif; ?>
 </head>

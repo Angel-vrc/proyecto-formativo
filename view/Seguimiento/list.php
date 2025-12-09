@@ -1,0 +1,202 @@
+<link rel="stylesheet" href="assets/css/Seguimiento.css">
+
+<div class="page-inner">
+    <div class="page-header">
+        <h4 class="page-title">Gestión de Seguimiento</h4>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="" style="display:flex; justify-content: space-between;">
+                        <h4 class="card-title">Listado de Seguimiento</h4>
+                        <a href="<?php echo getUrl("Seguimiento","Seguimiento","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
+                            <i class="fa fa-plus mx-2"></i> Nuevo Seguimiento
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <!-- FILTROS -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="searchNombre" placeholder="Buscar por nombre...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="searchNumeroTanque" placeholder="Buscar por número de tanque...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="searchFecha" placeholder="Buscar por fecha...">
+                            </div>
+                        </div>
+                        <div class="col-md-3 mt-2">
+                            <button class="btn btn-secondary" onclick="resetFilters()">
+                                <i class="fas fa-redo mx-1"></i> Limpiar filtros
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- TABLA -->
+                    <div class="table-responsive">
+                        <table id="tableSeguimientos" class="display table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Tanque</th>
+                                    <th>Tipo Tanque</th>
+                                    <th>Actividad</th>
+                                    <th>Observaciones</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tableBody">
+                            <?php
+                                while($seg = pg_fetch_assoc($seguimientos)){
+                                    $fecha_formato = isset($seg['fecha_seguimiento']) && $seg['fecha_seguimiento'] ? date('d/m/Y', strtotime($seg['fecha_seguimiento'])) : 'N/A';
+                                    $nombre_tanque = $seg['nombre_tanque'] ? $seg['nombre_tanque'] : 'N/A';
+                                    $nombre_tipo_tanque = $seg['nombre_tipo_tanque'] ? $seg['nombre_tipo_tanque'] : 'N/A';
+
+                                    echo "<tr>";
+                                        echo "<td>".$seg['id']."</td>";
+                                        echo "<td>".$fecha_formato."</td>";
+                                        echo "<td>".$nombre_tanque."</td>";
+                                        echo "<td>".$nombre_tipo_tanque."</td>";
+                                        echo "<td>".($seg['nombre_actividad'] ? $seg['nombre_actividad'] : 'N/A')."</td>";
+                                        echo "<td>".substr($seg['observaciones'], 0, 30).(strlen($seg['observaciones']) > 30 ? '...' : '')."</td>";
+                                        
+                                        echo "<td>";
+
+                                            echo "<a href='".getUrl("Seguimiento","Seguimiento","getUpdate",array("id"=>$seg['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+
+                                            if (isset($seg['estado_id']) && $seg['estado_id'] == 1) {
+                                                echo "<a href='".getUrl("Seguimiento","Seguimiento","getDelete",array("id"=>$seg['id']))."' class='btn btn-danger mx-2'>Eliminar</a>";
+
+                                            } elseif ($seg['estado_id'] == 2) {
+                                                echo "<a href='".getUrl("Seguimiento","Seguimiento","updateStatus",array("id"=>$seg['id']))."' class='btn btn-success mx-2'>Activar</a>";
+                                            }
+
+                                            // ---- Ver Detalles ----
+                                            echo "<button type='button' class='btn btn-info mx-2' data-toggle='modal' data-target='#modalDetalles'
+                                                data-ph='".$seg['ph']."'
+                                                data-temperatura='".$seg['temperatura']."'
+                                                data-cloro='".$seg['cloro']."'
+                                                data-alevines='".$seg['num_alevines']."'
+                                                data-muertes='".$seg['num_muertes']."'
+                                                data-machos='".$seg['num_machos']."'
+                                                data-hembras='".$seg['num_hembras']."'
+                                                data-total='".$seg['total']."'>
+                                                <i class='fas fa-eye'></i> Detalles
+                                            </button>";
+
+                                        echo "</td>";
+                                    echo "</tr>";
+                                }
+                                $c = pg_num_rows($seguimientos);
+                            ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="dataTables_info">
+                                Mostrando <?php echo $c?> registros
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="pagination" class="dataTables_paginate paging_simple_numbers"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== MODAL ====== -->
+<div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header" style="background-color:#1a5a5a; color:white;">
+                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalles del Seguimiento</h5>
+                <button type="button" class="close" data-dismiss="modal" style="color:white;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- DATOS -->
+                <div class="row">
+                    <div class="col-md-6"><strong>pH:</strong> <p id="detalle-ph"></p></div>
+                    <div class="col-md-6"><strong>Temperatura:</strong> <p id="detalle-temperatura"></p></div>
+                    <div class="col-md-6"><strong>Cloro:</strong> <p id="detalle-cloro"></p></div>
+                    <div class="col-md-6"><strong>Alevines:</strong> <p id="detalle-alevines"></p></div>
+                    <div class="col-md-6"><strong>Muertes:</strong> <p id="detalle-muertes"></p></div>
+                    <div class="col-md-6"><strong>Machos:</strong> <p id="detalle-machos"></p></div>
+                    <div class="col-md-6"><strong>Hembras:</strong> <p id="detalle-hembras"></p></div>
+                    <div class="col-md-6"><strong>Total:</strong> <p id="detalle-total"></p></div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function resetFilters() {
+    document.getElementById('searchNombre').value = '';
+    document.getElementById('searchNumeroTanque').value = '';
+    document.getElementById('searchFecha').value = '';
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    var modal = document.getElementById('modalDetalles');
+    if(modal) {
+        modal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            
+            // Obtener datos de los atributos data-*
+            var ph = button.getAttribute('data-ph') || '0';
+            var temperatura = button.getAttribute('data-temperatura') || '0';
+            var cloro = button.getAttribute('data-cloro') || '0';
+            var alevines = button.getAttribute('data-alevines') || '0';
+            var muertes = button.getAttribute('data-muertes') || '0';
+            var machos = button.getAttribute('data-machos') || '0';
+            var hembras = button.getAttribute('data-hembras') || '0';
+            var total = button.getAttribute('data-total') || '0';
+            
+            // Actualizar el contenido del modal
+            document.getElementById('detalle-ph').textContent = ph;
+            document.getElementById('detalle-temperatura').textContent = temperatura + ' °C';
+            document.getElementById('detalle-cloro').textContent = cloro + ' mg/L';
+            document.getElementById('detalle-alevines').textContent = alevines;
+            document.getElementById('detalle-muertes').textContent = muertes;
+            document.getElementById('detalle-machos').textContent = machos;
+            document.getElementById('detalle-hembras').textContent = hembras;
+            document.getElementById('detalle-total').textContent = total;
+        });
+    }
+});
+</script>

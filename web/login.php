@@ -10,7 +10,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usuario']) && isset($_P
     include_once __DIR__ . '/../controller/Login/LoginController.php';
     $loginController = new LoginController();
     $loginController->autenticar();
-    exit();
+            exit();
 }
 
 $error = "";
@@ -18,8 +18,14 @@ if(isset($_SESSION['error_login'])){
     $error = $_SESSION['error_login'];
     unset($_SESSION['error_login']);
 }
+
+// Cargar configuración de reCAPTCHA
+require_once __DIR__ . '/../lib/conf/recaptcha_config.php';
 ?>
-<?php include_once '../view/partials/header.php'; ?>
+<?php 
+$cargar_recaptcha = true; // Variable para indicar que se debe cargar reCAPTCHA
+include_once '../view/partials/header.php'; 
+?>
 <link rel="stylesheet" href="assets/css/login.css">
 <body>
     <div class="login-container">
@@ -29,8 +35,10 @@ if(isset($_SESSION['error_login'])){
             <p>Sistema de Información Geográfico</p>
         </div>
         
+        <div id="alertContainer"></div>
+        
         <?php if($error): ?>
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-danger custom-alert" role="alert">
                 <i class="fas fa-exclamation-circle"></i>
                 <span><?php echo htmlspecialchars($error); ?></span>
             </div>
@@ -68,6 +76,11 @@ if(isset($_SESSION['error_login'])){
                         <i class="fas fa-eye" id="toggleIcon"></i>
                     </button>
                 </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="g-recaptcha" data-sitekey="<?php echo RECAPTCHA_SITE_KEY; ?>"></div>
+                <p class="robot-message">Seleccione si usted no es un robot</p>
             </div>
             
             <button type="submit" class="btn btn-login" id="submitBtn">
