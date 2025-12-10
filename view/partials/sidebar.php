@@ -49,6 +49,12 @@
                         <p>Gestión de Tanques</p>                        
                     </a>
                 </li>
+                <li class="nav-item <?php echo isActiveModule('Tipo_actividad'); ?>">
+                    <a href="<?php echo getUrl("Tipo_actividad","Tipoactivida","list"); ?>">
+                        <i class="fas fa-tint"></i>
+                        <p> Tipo de Actividad</p>
+                    </a>
+                </li>
                 <li class="nav-item <?php echo isActiveModule('Actividades'); ?>">
                     <a href="<?php echo getUrl("Actividades","Actividad","list"); ?>">
                         <i class="fas fa-tasks"></i>

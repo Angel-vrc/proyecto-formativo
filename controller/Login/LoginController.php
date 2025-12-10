@@ -22,15 +22,15 @@
                     $usuario = pg_escape_string($this->getConnect(), $usuario);
                     $password = pg_escape_string($this->getConnect(), $password);
                     
-                    $condition = "usuario = '$usuario' AND contrasena = '$password'";
-                    $result = $this->findOne("usuarios", "id, usuario, contrasena, nombre", $condition);
+                    $condition= "documento = '$usuario' AND contrasena = '$password'";
+                    $result = $this->findOne("usuarios","id, documento, nombre, apellido, contrasena", $condition);
                     
                     if($result != "No se encontro ningun registro"){
 
                         $userData = pg_fetch_assoc($result);
                         
                         $_SESSION['auth'] = "ok";
-                        $_SESSION['usuario'] = $userData['usuario'];
+                        $_SESSION['usuario'] = $userData['documento'];
                         $_SESSION['usuario_id'] = $userData['id'];
                         $_SESSION['nombre'] = isset($userData['nombre']) ? $userData['nombre'] : $userData['usuario'];
                         

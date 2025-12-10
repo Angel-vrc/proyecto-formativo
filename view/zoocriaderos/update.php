@@ -1,5 +1,5 @@
 <div class="page-inner">
-
+    
     <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","list") ?>" class="btn btn-primary btn-round" >
         <i class="fa fa-chevron-left mx-2"></i>Regresar
     </a>
