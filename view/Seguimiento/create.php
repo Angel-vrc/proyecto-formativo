@@ -191,7 +191,7 @@
                 type: 'GET',
                 dataType: 'json',
                 cache: false,
-                success: function(response) {
+                success: function(response) {   
                     console.log('Respuesta AJAX recibida:', response);
                     
                     if(response && response.success !== false && response.tanques) {

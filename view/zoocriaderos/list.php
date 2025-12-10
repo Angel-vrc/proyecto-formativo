@@ -26,12 +26,13 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <select class="form-control" id="filterComuna">
-                                    <option value="">Todas las comunas</option>
-                                    <option value="Comuna 1">Comuna 1</option>
-                                    <option value="Comuna 2">Comuna 2</option>
-                                    <option value="Comuna 3">Comuna 3</option>
-                                    <!-- Agregar más opciones -->
+                                <select class="form-control select2" id="comuna" name="comuna" required>
+                                    <option value="">Todas las comunas</option> 
+                                    <?php foreach ($comunas as $comuna): ?>
+                                        <option value="<?php echo $comuna; ?>">
+                                            <?php echo $comuna; ?>
+                                        </option>
+                                    <?php endforeach; ?>                                     
                                 </select>
                             </div>
                         </div>
@@ -70,7 +71,16 @@
                                             echo "<td>".$zoo['barrio']."</td>";
                                             echo "<td>".$zoo['nombre_responsable']." ".$zoo['apellido_responsable']."</td>";
                                             echo "<td>";
-                                                echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getDetalles", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-info mx-2'>Detalles</a>";
+                                                echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
+                                                    data-nombre='".$zoo['nombre']."'
+                                                    data-barrio='".$zoo['barrio']."'
+                                                    data-direccion='".$zoo['direccion']."'
+                                                    data-responsable='".$zoo['nombre_responsable']."'
+                                                    data-telefono='".$zoo['telefono']."'
+                                                    data-correo='".$zoo['correo']."'
+                                                    data-estado='".$zoo['nombre_estado']."'>
+                                                    Ver Detalles
+                                                </button>";
 
                                                 echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getUpdate", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-primary mx-2'>Editar</a>";
 
@@ -108,24 +118,79 @@
     </div>
 </div>
 
-<!-- Modal para confirmar eliminación -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<!-- MODAL -->
+<div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+
+            <div class="modal-header" style="background-color:#1a5a5a; color:white;">
+                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalles del Seguimiento</h5>
+                <button type="button" class="close" onclick="cerrarModalDetalles()" style="color:white;">
+                   
                 </button>
             </div>
+
             <div class="modal-body">
-                ¿Está seguro que desea eliminar este zoocriadero? Esta acción no se puede deshacer.
-                <input type="hidden" id="deleteId">
+
+                <!-- DATOS -->
+                <div class="row">
+                    <div class="col-md-6"><strong>Nombre: </strong> <p id="detalle-nombre"></p></div>
+                    <div class="col-md-6"><strong>Barrio: </strong> <p id="detalle-barrio"></p></div>
+                    <div class="col-md-6"><strong>Direccion: </strong> <p id="detalle-direccion"></p></div>
+                    <div class="col-md-6"><strong>Responsable: </strong> <p id="detalle-responsable"></p></div>
+                    <div class="col-md-6"><strong>Telefono: </strong> <p id="detalle-telefono"></p></div>
+                    <div class="col-md-6"><strong>Correo: </strong> <p id="detalle-correo"></p></div>
+                    <div class="col-md-6"><strong>Estado: </strong> <p id="detalle-estado"></p></div>                
+                </div>
+
             </div>
+
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDelete()">Eliminar</button>
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalDetalles()">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
             </div>
+
         </div>
     </div>
 </div>
+
+<script>
+function resetFilters() {
+    document.getElementById('searchNombre').value = '';
+    document.getElementById('searchNumeroTanque').value = '';
+    document.getElementById('searchFecha').value = '';
+}
+
+// Función para abrir la modal
+function abrirModalDetalles(btn) {
+
+    //datos usando query
+    var nombre = $(btn).data('nombre') || '0';
+    var responsable = $(btn).data('responsable') || '0';
+    var direccion = $(btn).data('direccion') || '0';
+    var barrio = $(btn).data('barrio') || '0';
+    var responsable = $(btn).data('responsable') || '0';
+    var telefono = $(btn).data('telefono') || '0';
+    var correo = $(btn).data('correo') || '0';
+    var estado = $(btn).data('estado') || '0';
+    
+    // Actualizar contenido
+    $('#detalle-nombre').text(nombre);
+    $('#detalle-responsable').text(responsable);
+    $('#detalle-barrio').text(barrio);
+    $('#detalle-direccion').text(direccion);
+    $('#detalle-responsable').text(responsable);
+    $('#detalle-telefono').text(telefono);
+    $('#detalle-correo').text(correo);
+    $('#detalle-estado').text(estado);
+    
+    $('#modalDetalles').modal('show');
+}
+
+// cerrar la modal
+function cerrarModalDetalles() {
+    $('#modalDetalles').modal('hide');
+}
+
+</script>
