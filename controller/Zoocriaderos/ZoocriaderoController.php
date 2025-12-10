@@ -5,7 +5,7 @@
     class ZoocriaderoController{
 
 
-        public function list(){
+        public function lista(){
             $obj = new ZoocriaderoModel();
 
             $sql = "SELECT z.*, u.nombre AS nombre_responsable, u.apellido AS apellido_responsable FROM zoocriadero AS z
@@ -15,7 +15,6 @@
             $zoocriaderos = $obj->select($sql);
 
             include_once '../view/zoocriaderos/list.php';
-
         }
         
         public function getCreate(){
@@ -52,7 +51,7 @@
             if(!$resultado){
                 echo "Error en la insercion de datos";
             }else{                
-                redirect(getUrl("Zoocriaderos","Zoocriadero","list"));
+                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
             }
         }
 
@@ -62,7 +61,7 @@
             $id_zoocriadero = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
             if($id_zoocriadero <= 0){
-                redirect(getUrl("Zoocriaderos","Zoocriadero","list"));
+                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
                 return;
             }
 
@@ -91,7 +90,7 @@
             $ejecutar = $obj->update($sql);
             
             if($ejecutar){
-                redirect(getUrl("Zoocriaderos","Zoocriadero","list"));
+                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
             }else{
                 echo "No se pudo actualizar el zoocriadero";
             }
@@ -103,7 +102,7 @@
             $id_zoocriadero = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
             if($id_zoocriadero <= 0){
-                redirect(getUrl("Zoocriaderos","Zoocriadero","list"));
+                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
                 return;
             }
 
@@ -112,7 +111,7 @@
             $ejecutar = $obj->update($sql);
 
             if($ejecutar){
-                redirect(getUrl("Zoocriaderos","Zoocriadero","list"));
+                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
             }else{
                 echo "El zoocriadero solicitado no existe.";
                 return;
@@ -153,7 +152,7 @@
             $resultado = $obj->update($sql);
 
             if($resultado){
-                redirect(getUrl("Zoocriaderos","Zoocriadero","list"));
+                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
             }else{
                 echo "error de insercion";
             }

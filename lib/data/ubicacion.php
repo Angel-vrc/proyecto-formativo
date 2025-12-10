@@ -1,14 +1,14 @@
 <?php
 
-    $comunas = [
+    $comunas = array(
         'Comuna 1', 'Comuna 2', 'Comuna 3', 'Comuna 4', 'Comuna 5',
         'Comuna 6', 'Comuna 7', 'Comuna 8', 'Comuna 9', 'Comuna 10',
         'Comuna 11', 'Comuna 12', 'Comuna 13', 'Comuna 14', 'Comuna 15',
         'Comuna 16', 'Comuna 17', 'Comuna 18', 'Comuna 19', 'Comuna 20',
         'Comuna 21', 'Comuna 22'
-    ];
+    );
 
-    $barrios = [
+    $barrios = array(
         '20 de Julio',
         '3 de Julio',
         'Aguablanca',
@@ -343,6 +343,6 @@
         'Vipasa',
         'Vista Hermosa',
         'Yira Castro'
-    ];
+    );
 
 ?>

@@ -1,17 +1,14 @@
 <?php
 
-    include_once(__DIR__ . "/../../model/MasterModel.php");
-    require_once(__DIR__ . "/../../lib/conf/recaptcha_config.php");
+    include_once("../model/MasterModel.php");
+    require_once("../lib/conf/recaptcha_config.php");
 
     class LoginController extends MasterModel{
 
         public function autenticar(){
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
 
             if(isset($_SESSION['auth']) && $_SESSION['auth'] == "ok"){
-                header("Location: index.php");
+                redirect('index.php');
                 exit();
             }
 
@@ -24,18 +21,18 @@
                 
                 if(empty($recaptcha_response)){
                     $_SESSION['error_login'] = "Por favor complete la verificación de seguridad";
-                    header("Location: login.php");
+                    redirect('login.php');
                     exit();
                 }
                 
                 // Verificar reCAPTCHA con Google
-                $recaptcha_verified = $this->verificarRecaptcha($recaptcha_response);
+                //$recaptcha_verified = $this->verificarRecaptcha($recaptcha_response);
                 
-                if(!$recaptcha_verified){
-                    $_SESSION['error_login'] = "La verificación de seguridad falló. Por favor, inténtelo de nuevo.";
-                    header("Location: login.php");
-                    exit();
-                }
+                // if(!$recaptcha_verified){
+                //     $_SESSION['error_login'] = "La verificación de seguridad falló. Por favor, inténtelo de nuevo.";
+                //     redirect('login.php');
+                //     exit();
+                // }
                 
                 if(!empty($usuario) && !empty($password)){
                     $documento = pg_escape_string($this->getConnect(), $usuario);
@@ -52,20 +49,20 @@
                         $_SESSION['usuario_id'] = $userData['id'];
                         $_SESSION['nombre'] = isset($userData['nombre']) ? trim($userData['nombre'] . ' ' . (isset($userData['apellido']) ? $userData['apellido'] : '')) : $userData['documento'];
                         
-                        header("Location: index.php");
+                        redirect('index.php');
                         exit();
                     } else {
                         $_SESSION['error_login'] = "Número de documento o contraseña incorrectos";
-                        header("Location: login.php");
+                        redirect('login.php');
                         exit();
                     }
                 } else {
                     $_SESSION['error_login'] = "Por favor complete todos los campos";
-                    header("Location: login.php");
+                    redirect('login.php');
                     exit();
                 }
             } else {
-                header("Location: login.php");
+                redirect('login.php');
                 exit();
             }
         }

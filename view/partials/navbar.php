@@ -40,7 +40,7 @@
                         <div class="quick-actions-scroll scrollbar-outer">
                             <div class="quick-actions-items">
                                 <div class="row m-0">
-                                    <a class="col-6 col-md-4 p-0" href="#">
+                                    <a class="col-6 col-md-4 p-0" href="<?php echo getUrl("Seguimiento","Seguimiento","getCreate"); ?>">
                                         <div class="quick-actions-item">
                                             <div class="avatar-item bg-danger rounded-circle">
                                                 <i class="fa fa-plus"></i>

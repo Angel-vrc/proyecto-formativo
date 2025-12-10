@@ -71,11 +71,9 @@
         }
         
         // Casos especiales o alias si los tienes
-        $moduleAliases = [
-            'Dashboard' => ['', 'Dashboard', 'Inicio'],
-            'Mapa' => ['Mapa', 'Visualizacion'],
+        $moduleAliases = array('Dashboard' => array('', 'Dashboard', 'Inicio'),'Mapa' => array('Mapa', 'Visualizacion')
             // Agrega más si es necesario
-        ];
+        );
         
         if (isset($moduleAliases[$moduleName])) {
             if (in_array($currentModulo, $moduleAliases[$moduleName])) {

@@ -1,4 +1,5 @@
 <?php
+include_once '../lib/helpers.php';
 session_start();
 
 if(isset($_SESSION['auth']) && $_SESSION['auth'] == "ok"){
@@ -7,7 +8,7 @@ if(isset($_SESSION['auth']) && $_SESSION['auth'] == "ok"){
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usuario']) && isset($_POST['password'])){
-    include_once __DIR__ . '/../controller/Login/LoginController.php';
+    include_once '../controller/Login/LoginController.php';
     $loginController = new LoginController();
     $loginController->autenticar();
             exit();
@@ -20,7 +21,7 @@ if(isset($_SESSION['error_login'])){
 }
 
 // Cargar configuración de reCAPTCHA
-require_once __DIR__ . '/../lib/conf/recaptcha_config.php';
+require_once '../lib/conf/recaptcha_config.php';
 ?>
 <?php 
 $cargar_recaptcha = true; // Variable para indicar que se debe cargar reCAPTCHA
