@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="assets/css/arregloTablas.css">
+
 <div class="page-inner">
     <div class="page-header">
         <h4 class="page-title">Gestión de Zoocriaderos</h4>
@@ -65,7 +67,7 @@
                                             echo "<td>".$zoo['id_zoocriadero']."</td>";
                                             echo "<td>".$zoo['nombre']."</td>";
                                             echo "<td>".$zoo['direccion']."</td>";
-                                            echo "<td class='text-wrap text-break' style='max-width: 150px;'>".$zoo['barrio']."</td>";
+                                            echo "<td>".$zoo['barrio']."</td>";
                                             echo "<td>".$zoo['nombre_responsable']." ".$zoo['apellido_responsable']."</td>";
                                             echo "<td>";
                                                 echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getDetalles", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-info mx-2'>Detalles</a>";

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="assets/css/Seguimiento.css">
+<link rel="stylesheet" href="assets/css/arregloTablas.css">
 
 <div class="page-inner">
     <div class="page-header">
