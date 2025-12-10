@@ -1,6 +1,6 @@
 <?php
 
-    include_once '../model/Zoocriaderos/UsuarioModel.php';
+    include_once '../model/Usuarios/UsuarioModel.php';
 
     class UsuarioController{
 
