@@ -1,0 +1,1628 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.2.9
+-- Dumped by pg_dump version 9.2.9
+-- Started on 2025-12-09 22:16:39
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 7 (class 2615 OID 17896)
+-- Name: tiger; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA tiger;
+
+
+ALTER SCHEMA tiger OWNER TO postgres;
+
+--
+-- TOC entry 278 (class 3079 OID 17885)
+-- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public;
+
+
+--
+-- TOC entry 3852 (class 0 OID 0)
+-- Dependencies: 278
+-- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
+
+
+--
+-- TOC entry 281 (class 3079 OID 16394)
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
+
+
+--
+-- TOC entry 3853 (class 0 OID 0)
+-- Dependencies: 281
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
+
+
+--
+-- TOC entry 277 (class 3079 OID 17897)
+-- Name: postgis_tiger_geocoder; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder WITH SCHEMA tiger;
+
+
+--
+-- TOC entry 3854 (class 0 OID 0)
+-- Dependencies: 277
+-- Name: EXTENSION postgis_tiger_geocoder; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis_tiger_geocoder IS 'PostGIS tiger geocoder and reverse geocoder';
+
+
+--
+-- TOC entry 6 (class 2615 OID 17727)
+-- Name: topology; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA topology;
+
+
+ALTER SCHEMA topology OWNER TO postgres;
+
+--
+-- TOC entry 275 (class 3079 OID 11727)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 3855 (class 0 OID 0)
+-- Dependencies: 275
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- TOC entry 279 (class 3079 OID 17878)
+-- Name: address_standardizer; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS address_standardizer WITH SCHEMA public;
+
+
+--
+-- TOC entry 280 (class 3079 OID 17680)
+-- Name: pgrouting; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS pgrouting WITH SCHEMA public;
+
+
+--
+-- TOC entry 3856 (class 0 OID 0)
+-- Dependencies: 280
+-- Name: EXTENSION pgrouting; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pgrouting IS 'pgRouting Extension';
+
+
+--
+-- TOC entry 276 (class 3079 OID 17728)
+-- Name: postgis_topology; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis_topology WITH SCHEMA topology;
+
+
+--
+-- TOC entry 3857 (class 0 OID 0)
+-- Dependencies: 276
+-- Name: EXTENSION postgis_topology; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis_topology IS 'PostGIS topology spatial types and functions';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 243 (class 1259 OID 18894)
+-- Name: acciones; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE acciones (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.acciones OWNER TO postgres;
+
+--
+-- TOC entry 244 (class 1259 OID 18897)
+-- Name: acciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE acciones_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.acciones_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3858 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: acciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE acciones_id_seq OWNED BY acciones.id;
+
+
+--
+-- TOC entry 245 (class 1259 OID 18899)
+-- Name: actividad; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE actividad (
+    id integer NOT NULL,
+    nombre character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.actividad OWNER TO postgres;
+
+--
+-- TOC entry 246 (class 1259 OID 18902)
+-- Name: actividad_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE actividad_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.actividad_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3859 (class 0 OID 0)
+-- Dependencies: 246
+-- Name: actividad_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE actividad_id_seq OWNED BY actividad.id;
+
+
+--
+-- TOC entry 247 (class 1259 OID 18904)
+-- Name: modulos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE modulos (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.modulos OWNER TO postgres;
+
+--
+-- TOC entry 248 (class 1259 OID 18907)
+-- Name: modulos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE modulos_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.modulos_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3860 (class 0 OID 0)
+-- Dependencies: 248
+-- Name: modulos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE modulos_id_seq OWNED BY modulos.id;
+
+
+--
+-- TOC entry 249 (class 1259 OID 18909)
+-- Name: movimiento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE movimiento (
+    id integer NOT NULL,
+    origen character varying(100) NOT NULL,
+    destino character varying(100) NOT NULL,
+    id_tipo_movimiento integer NOT NULL,
+    observaciones text,
+    fecha date NOT NULL,
+    id_responsable integer NOT NULL,
+    cantidad_peces integer NOT NULL
+);
+
+
+ALTER TABLE public.movimiento OWNER TO postgres;
+
+--
+-- TOC entry 250 (class 1259 OID 18915)
+-- Name: movimiento_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE movimiento_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.movimiento_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3861 (class 0 OID 0)
+-- Dependencies: 250
+-- Name: movimiento_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE movimiento_id_seq OWNED BY movimiento.id;
+
+
+--
+-- TOC entry 251 (class 1259 OID 18917)
+-- Name: permisos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE permisos (
+    id integer NOT NULL,
+    id_roles integer NOT NULL,
+    id_modulos integer NOT NULL,
+    id_acciones integer NOT NULL
+);
+
+
+ALTER TABLE public.permisos OWNER TO postgres;
+
+--
+-- TOC entry 252 (class 1259 OID 18920)
+-- Name: permisos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE permisos_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.permisos_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3862 (class 0 OID 0)
+-- Dependencies: 252
+-- Name: permisos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE permisos_id_seq OWNED BY permisos.id;
+
+
+--
+-- TOC entry 253 (class 1259 OID 18922)
+-- Name: roles; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE roles (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.roles OWNER TO postgres;
+
+--
+-- TOC entry 254 (class 1259 OID 18925)
+-- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE roles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.roles_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3863 (class 0 OID 0)
+-- Dependencies: 254
+-- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE roles_id_seq OWNED BY roles.id;
+
+
+--
+-- TOC entry 255 (class 1259 OID 18927)
+-- Name: seguimiento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE seguimiento (
+    id integer NOT NULL,
+    id_zoo integer NOT NULL,
+    id_tanque integer NOT NULL,
+    id_responsable integer NOT NULL,
+    fecha date NOT NULL
+);
+
+
+ALTER TABLE public.seguimiento OWNER TO postgres;
+
+--
+-- TOC entry 256 (class 1259 OID 18930)
+-- Name: seguimiento_detalle; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE seguimiento_detalle (
+    id integer NOT NULL,
+    id_seguimiento integer NOT NULL,
+    id_actividad integer NOT NULL,
+    ph numeric(5,2) NOT NULL,
+    temperatura numeric(5,2) NOT NULL,
+    num_alevines integer NOT NULL,
+    num_muertes integer NOT NULL,
+    num_machos integer NOT NULL,
+    num_hembras integer NOT NULL,
+    cloro numeric(5,2) NOT NULL,
+    observaciones text,
+    total integer NOT NULL,
+    estado_id integer
+);
+
+
+ALTER TABLE public.seguimiento_detalle OWNER TO postgres;
+
+--
+-- TOC entry 257 (class 1259 OID 18936)
+-- Name: seguimiento_detalle_estado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE seguimiento_detalle_estado (
+    id integer NOT NULL,
+    nombre character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.seguimiento_detalle_estado OWNER TO postgres;
+
+--
+-- TOC entry 258 (class 1259 OID 18939)
+-- Name: seguimiento_detalle_estado_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE seguimiento_detalle_estado_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seguimiento_detalle_estado_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3864 (class 0 OID 0)
+-- Dependencies: 258
+-- Name: seguimiento_detalle_estado_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seguimiento_detalle_estado_id_seq OWNED BY seguimiento_detalle_estado.id;
+
+
+--
+-- TOC entry 259 (class 1259 OID 18941)
+-- Name: seguimiento_detalle_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE seguimiento_detalle_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seguimiento_detalle_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3865 (class 0 OID 0)
+-- Dependencies: 259
+-- Name: seguimiento_detalle_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seguimiento_detalle_id_seq OWNED BY seguimiento_detalle.id;
+
+
+--
+-- TOC entry 260 (class 1259 OID 18943)
+-- Name: seguimiento_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE seguimiento_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seguimiento_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3866 (class 0 OID 0)
+-- Dependencies: 260
+-- Name: seguimiento_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seguimiento_id_seq OWNED BY seguimiento.id;
+
+
+--
+-- TOC entry 261 (class 1259 OID 18945)
+-- Name: tanque_estado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tanque_estado (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.tanque_estado OWNER TO postgres;
+
+--
+-- TOC entry 262 (class 1259 OID 18948)
+-- Name: tanque_estado_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE tanque_estado_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tanque_estado_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3867 (class 0 OID 0)
+-- Dependencies: 262
+-- Name: tanque_estado_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE tanque_estado_id_seq OWNED BY tanque_estado.id;
+
+
+--
+-- TOC entry 263 (class 1259 OID 18950)
+-- Name: tanques; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tanques (
+    id integer NOT NULL,
+    nombre character varying(100) NOT NULL,
+    medidas character varying(100) NOT NULL,
+    id_tipo_tanque integer NOT NULL,
+    cantidad_peces integer NOT NULL,
+    id_zoocriadero integer,
+    id_estado integer
+);
+
+
+ALTER TABLE public.tanques OWNER TO postgres;
+
+--
+-- TOC entry 264 (class 1259 OID 18953)
+-- Name: tanques_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE tanques_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tanques_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3868 (class 0 OID 0)
+-- Dependencies: 264
+-- Name: tanques_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE tanques_id_seq OWNED BY tanques.id;
+
+
+--
+-- TOC entry 265 (class 1259 OID 18955)
+-- Name: tipo_movimiento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tipo_movimiento (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.tipo_movimiento OWNER TO postgres;
+
+--
+-- TOC entry 266 (class 1259 OID 18958)
+-- Name: tipo_movimiento_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE tipo_movimiento_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tipo_movimiento_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3869 (class 0 OID 0)
+-- Dependencies: 266
+-- Name: tipo_movimiento_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE tipo_movimiento_id_seq OWNED BY tipo_movimiento.id;
+
+
+--
+-- TOC entry 267 (class 1259 OID 18960)
+-- Name: tipo_tanque; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tipo_tanque (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.tipo_tanque OWNER TO postgres;
+
+--
+-- TOC entry 268 (class 1259 OID 18963)
+-- Name: tipo_tanque_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE tipo_tanque_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tipo_tanque_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3870 (class 0 OID 0)
+-- Dependencies: 268
+-- Name: tipo_tanque_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE tipo_tanque_id_seq OWNED BY tipo_tanque.id;
+
+
+--
+-- TOC entry 269 (class 1259 OID 18965)
+-- Name: usuarios; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE usuarios (
+    id integer NOT NULL,
+    nombre character varying(100) NOT NULL,
+    apellido character varying(100) NOT NULL,
+    documento character varying(50) NOT NULL,
+    correo character varying(100) NOT NULL,
+    telefono character varying(20) NOT NULL,
+    contrasena character varying(200) NOT NULL
+);
+
+
+ALTER TABLE public.usuarios OWNER TO postgres;
+
+--
+-- TOC entry 270 (class 1259 OID 18971)
+-- Name: usuarios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE usuarios_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.usuarios_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3871 (class 0 OID 0)
+-- Dependencies: 270
+-- Name: usuarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE usuarios_id_seq OWNED BY usuarios.id;
+
+
+--
+-- TOC entry 271 (class 1259 OID 18973)
+-- Name: zoocriadero; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE zoocriadero (
+    id_zoocriadero integer NOT NULL,
+    responsable integer NOT NULL,
+    direccion character varying(150) NOT NULL,
+    coordenadas character varying(100) NOT NULL,
+    telefono character varying(20) NOT NULL,
+    comuna character varying(50) NOT NULL,
+    barrio character varying(50) NOT NULL,
+    nombre character varying(100) NOT NULL,
+    geom geometry(Point,4326),
+    id_estado integer,
+    correo character varying
+);
+
+
+ALTER TABLE public.zoocriadero OWNER TO postgres;
+
+--
+-- TOC entry 274 (class 1259 OID 19104)
+-- Name: zoocriadero_estado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE zoocriadero_estado (
+    id_estado integer NOT NULL,
+    nombre character varying
+);
+
+
+ALTER TABLE public.zoocriadero_estado OWNER TO postgres;
+
+--
+-- TOC entry 273 (class 1259 OID 19102)
+-- Name: zoocriadero_estado_id_estado_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE zoocriadero_estado_id_estado_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.zoocriadero_estado_id_estado_seq OWNER TO postgres;
+
+--
+-- TOC entry 3872 (class 0 OID 0)
+-- Dependencies: 273
+-- Name: zoocriadero_estado_id_estado_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE zoocriadero_estado_id_estado_seq OWNED BY zoocriadero_estado.id_estado;
+
+
+--
+-- TOC entry 272 (class 1259 OID 18979)
+-- Name: zoocriadero_id_zoocriadero_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE zoocriadero_id_zoocriadero_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.zoocriadero_id_zoocriadero_seq OWNER TO postgres;
+
+--
+-- TOC entry 3873 (class 0 OID 0)
+-- Dependencies: 272
+-- Name: zoocriadero_id_zoocriadero_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE zoocriadero_id_zoocriadero_seq OWNED BY zoocriadero.id_zoocriadero;
+
+
+--
+-- TOC entry 3636 (class 2604 OID 18981)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY acciones ALTER COLUMN id SET DEFAULT nextval('acciones_id_seq'::regclass);
+
+
+--
+-- TOC entry 3637 (class 2604 OID 18982)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY actividad ALTER COLUMN id SET DEFAULT nextval('actividad_id_seq'::regclass);
+
+
+--
+-- TOC entry 3638 (class 2604 OID 18983)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY modulos ALTER COLUMN id SET DEFAULT nextval('modulos_id_seq'::regclass);
+
+
+--
+-- TOC entry 3639 (class 2604 OID 18984)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY movimiento ALTER COLUMN id SET DEFAULT nextval('movimiento_id_seq'::regclass);
+
+
+--
+-- TOC entry 3640 (class 2604 OID 18985)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY permisos ALTER COLUMN id SET DEFAULT nextval('permisos_id_seq'::regclass);
+
+
+--
+-- TOC entry 3641 (class 2604 OID 18986)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY roles ALTER COLUMN id SET DEFAULT nextval('roles_id_seq'::regclass);
+
+
+--
+-- TOC entry 3642 (class 2604 OID 18987)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento ALTER COLUMN id SET DEFAULT nextval('seguimiento_id_seq'::regclass);
+
+
+--
+-- TOC entry 3643 (class 2604 OID 18988)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento_detalle ALTER COLUMN id SET DEFAULT nextval('seguimiento_detalle_id_seq'::regclass);
+
+
+--
+-- TOC entry 3644 (class 2604 OID 18989)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento_detalle_estado ALTER COLUMN id SET DEFAULT nextval('seguimiento_detalle_estado_id_seq'::regclass);
+
+
+--
+-- TOC entry 3645 (class 2604 OID 18990)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tanque_estado ALTER COLUMN id SET DEFAULT nextval('tanque_estado_id_seq'::regclass);
+
+
+--
+-- TOC entry 3646 (class 2604 OID 18991)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tanques ALTER COLUMN id SET DEFAULT nextval('tanques_id_seq'::regclass);
+
+
+--
+-- TOC entry 3647 (class 2604 OID 18992)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tipo_movimiento ALTER COLUMN id SET DEFAULT nextval('tipo_movimiento_id_seq'::regclass);
+
+
+--
+-- TOC entry 3648 (class 2604 OID 18993)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tipo_tanque ALTER COLUMN id SET DEFAULT nextval('tipo_tanque_id_seq'::regclass);
+
+
+--
+-- TOC entry 3649 (class 2604 OID 18994)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY usuarios ALTER COLUMN id SET DEFAULT nextval('usuarios_id_seq'::regclass);
+
+
+--
+-- TOC entry 3650 (class 2604 OID 18995)
+-- Name: id_zoocriadero; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY zoocriadero ALTER COLUMN id_zoocriadero SET DEFAULT nextval('zoocriadero_id_zoocriadero_seq'::regclass);
+
+
+--
+-- TOC entry 3651 (class 2604 OID 19107)
+-- Name: id_estado; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY zoocriadero_estado ALTER COLUMN id_estado SET DEFAULT nextval('zoocriadero_estado_id_estado_seq'::regclass);
+
+
+--
+-- TOC entry 3813 (class 0 OID 18894)
+-- Dependencies: 243
+-- Data for Name: acciones; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY acciones (id, nombre) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3874 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: acciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('acciones_id_seq', 1, false);
+
+
+--
+-- TOC entry 3815 (class 0 OID 18899)
+-- Dependencies: 245
+-- Data for Name: actividad; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY actividad (id, nombre) FROM stdin;
+1	Lavado
+2	Aspirado
+3	Ajuste nivel del agua
+4	No se requirio ninguna acción
+\.
+
+
+--
+-- TOC entry 3875 (class 0 OID 0)
+-- Dependencies: 246
+-- Name: actividad_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('actividad_id_seq', 4, true);
+
+
+--
+-- TOC entry 3817 (class 0 OID 18904)
+-- Dependencies: 247
+-- Data for Name: modulos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY modulos (id, nombre) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3876 (class 0 OID 0)
+-- Dependencies: 248
+-- Name: modulos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('modulos_id_seq', 1, false);
+
+
+--
+-- TOC entry 3819 (class 0 OID 18909)
+-- Dependencies: 249
+-- Data for Name: movimiento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY movimiento (id, origen, destino, id_tipo_movimiento, observaciones, fecha, id_responsable, cantidad_peces) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3877 (class 0 OID 0)
+-- Dependencies: 250
+-- Name: movimiento_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('movimiento_id_seq', 1, false);
+
+
+--
+-- TOC entry 3821 (class 0 OID 18917)
+-- Dependencies: 251
+-- Data for Name: permisos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY permisos (id, id_roles, id_modulos, id_acciones) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3878 (class 0 OID 0)
+-- Dependencies: 252
+-- Name: permisos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('permisos_id_seq', 1, false);
+
+
+--
+-- TOC entry 3823 (class 0 OID 18922)
+-- Dependencies: 253
+-- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY roles (id, nombre) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3879 (class 0 OID 0)
+-- Dependencies: 254
+-- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('roles_id_seq', 1, false);
+
+
+--
+-- TOC entry 3825 (class 0 OID 18927)
+-- Dependencies: 255
+-- Data for Name: seguimiento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY seguimiento (id, id_zoo, id_tanque, id_responsable, fecha) FROM stdin;
+1	2	1	1	2025-12-08
+2	2	1	1	2025-12-09
+4	2	1	1	2025-12-10
+3	2	1	1	2025-12-09
+\.
+
+
+--
+-- TOC entry 3826 (class 0 OID 18930)
+-- Dependencies: 256
+-- Data for Name: seguimiento_detalle; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY seguimiento_detalle (id, id_seguimiento, id_actividad, ph, temperatura, num_alevines, num_muertes, num_machos, num_hembras, cloro, observaciones, total, estado_id) FROM stdin;
+1	3	3	7.50	25.00	3	4	20	9	0.50	ninguna	58	1
+2	4	2	8.50	98.20	5	5	20	10	0.50	nop	60	1
+\.
+
+
+--
+-- TOC entry 3827 (class 0 OID 18936)
+-- Dependencies: 257
+-- Data for Name: seguimiento_detalle_estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY seguimiento_detalle_estado (id, nombre) FROM stdin;
+1	activo
+2	inactivo
+\.
+
+
+--
+-- TOC entry 3880 (class 0 OID 0)
+-- Dependencies: 258
+-- Name: seguimiento_detalle_estado_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('seguimiento_detalle_estado_id_seq', 2, true);
+
+
+--
+-- TOC entry 3881 (class 0 OID 0)
+-- Dependencies: 259
+-- Name: seguimiento_detalle_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('seguimiento_detalle_id_seq', 1, false);
+
+
+--
+-- TOC entry 3882 (class 0 OID 0)
+-- Dependencies: 260
+-- Name: seguimiento_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('seguimiento_id_seq', 1, true);
+
+
+--
+-- TOC entry 3570 (class 0 OID 16662)
+-- Dependencies: 172
+-- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3831 (class 0 OID 18945)
+-- Dependencies: 261
+-- Data for Name: tanque_estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tanque_estado (id, nombre) FROM stdin;
+1	Activo
+2	Inactivo
+3	Activo
+4	Inactivo
+\.
+
+
+--
+-- TOC entry 3883 (class 0 OID 0)
+-- Dependencies: 262
+-- Name: tanque_estado_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tanque_estado_id_seq', 4, true);
+
+
+--
+-- TOC entry 3833 (class 0 OID 18950)
+-- Dependencies: 263
+-- Data for Name: tanques; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tanques (id, nombre, medidas, id_tipo_tanque, cantidad_peces, id_zoocriadero, id_estado) FROM stdin;
+1	Tanque A	1.2m x 0.8m x 1.0m	1	30	2	1
+\.
+
+
+--
+-- TOC entry 3884 (class 0 OID 0)
+-- Dependencies: 264
+-- Name: tanques_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tanques_id_seq', 1, true);
+
+
+--
+-- TOC entry 3835 (class 0 OID 18955)
+-- Dependencies: 265
+-- Data for Name: tipo_movimiento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tipo_movimiento (id, nombre) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3885 (class 0 OID 0)
+-- Dependencies: 266
+-- Name: tipo_movimiento_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tipo_movimiento_id_seq', 1, false);
+
+
+--
+-- TOC entry 3837 (class 0 OID 18960)
+-- Dependencies: 267
+-- Data for Name: tipo_tanque; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tipo_tanque (id, nombre) FROM stdin;
+1	Siembra
+2	Reproducción
+3	Alevines
+4	Reserva
+\.
+
+
+--
+-- TOC entry 3886 (class 0 OID 0)
+-- Dependencies: 268
+-- Name: tipo_tanque_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tipo_tanque_id_seq', 4, true);
+
+
+--
+-- TOC entry 3839 (class 0 OID 18965)
+-- Dependencies: 269
+-- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY usuarios (id, nombre, apellido, documento, correo, telefono, contrasena) FROM stdin;
+1	Melany	Agredo	123456789	melany45@example.com	3115558899	1234
+\.
+
+
+--
+-- TOC entry 3887 (class 0 OID 0)
+-- Dependencies: 270
+-- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('usuarios_id_seq', 1, true);
+
+
+--
+-- TOC entry 3841 (class 0 OID 18973)
+-- Dependencies: 271
+-- Data for Name: zoocriadero; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY zoocriadero (id_zoocriadero, responsable, direccion, coordenadas, telefono, comuna, barrio, nombre, geom, id_estado, correo) FROM stdin;
+3	1	calle 123 #2312		3114567890	Comuna 19	Aranjuez	Zoocriadero prueba	0101000020E610000014AE47E17AA052C0F7E6411DD4411140	1	prueba@gmail.com
+2	1	Calle 12 # 5-30	3.4512, -76.5321	3114567890	Comuna 13	José Manuel Marroquín Primera Etapa	Zoo La Esperanza	\N	1	responsable1@gmail.com
+\.
+
+
+--
+-- TOC entry 3844 (class 0 OID 19104)
+-- Dependencies: 274
+-- Data for Name: zoocriadero_estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY zoocriadero_estado (id_estado, nombre) FROM stdin;
+1	Activo
+2	Inactivo
+\.
+
+
+--
+-- TOC entry 3888 (class 0 OID 0)
+-- Dependencies: 273
+-- Name: zoocriadero_estado_id_estado_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('zoocriadero_estado_id_estado_seq', 1, false);
+
+
+--
+-- TOC entry 3889 (class 0 OID 0)
+-- Dependencies: 272
+-- Name: zoocriadero_id_zoocriadero_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('zoocriadero_id_zoocriadero_seq', 2, true);
+
+
+SET search_path = tiger, pg_catalog;
+
+--
+-- TOC entry 3566 (class 0 OID 17903)
+-- Dependencies: 195
+-- Data for Name: geocode_settings; Type: TABLE DATA; Schema: tiger; Owner: postgres
+--
+
+COPY geocode_settings (name, setting, unit, category, short_desc) FROM stdin;
+debug_geocode_address	false	boolean	debug	outputs debug information in notice log such as queries when geocode_addresss is called if true
+debug_geocode_intersection	false	boolean	debug	outputs debug information in notice log such as queries when geocode_intersection is called if true
+debug_normalize_address	false	boolean	debug	outputs debug information in notice log such as queries and intermediate expressions when normalize_address is called if true
+debug_reverse_geocode	false	boolean	debug	if true, outputs debug information in notice log such as queries and intermediate expressions when reverse_geocode
+reverse_geocode_numbered_roads	0	integer	rating	For state and county highways, 0 - no preference in name, 1 - prefer the numbered highway name, 2 - prefer local state/county name
+use_pagc_address_parser	false	boolean	normalize	If set to true, will try to use the pagc_address normalizer instead of tiger built one
+\.
+
+
+--
+-- TOC entry 3567 (class 0 OID 18250)
+-- Dependencies: 238
+-- Data for Name: pagc_gaz; Type: TABLE DATA; Schema: tiger; Owner: postgres
+--
+
+COPY pagc_gaz (id, seq, word, stdword, token, is_custom) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3568 (class 0 OID 18262)
+-- Dependencies: 240
+-- Data for Name: pagc_lex; Type: TABLE DATA; Schema: tiger; Owner: postgres
+--
+
+COPY pagc_lex (id, seq, word, stdword, token, is_custom) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3569 (class 0 OID 18274)
+-- Dependencies: 242
+-- Data for Name: pagc_rules; Type: TABLE DATA; Schema: tiger; Owner: postgres
+--
+
+COPY pagc_rules (id, rule, is_custom) FROM stdin;
+\.
+
+
+SET search_path = topology, pg_catalog;
+
+--
+-- TOC entry 3565 (class 0 OID 17744)
+-- Dependencies: 189
+-- Data for Name: layer; Type: TABLE DATA; Schema: topology; Owner: postgres
+--
+
+COPY layer (topology_id, layer_id, schema_name, table_name, feature_column, feature_type, level, child_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3564 (class 0 OID 17731)
+-- Dependencies: 188
+-- Data for Name: topology; Type: TABLE DATA; Schema: topology; Owner: postgres
+--
+
+COPY topology (id, name, srid, "precision", hasz) FROM stdin;
+\.
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 3653 (class 2606 OID 18997)
+-- Name: acciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY acciones
+    ADD CONSTRAINT acciones_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3655 (class 2606 OID 18999)
+-- Name: actividad_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY actividad
+    ADD CONSTRAINT actividad_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3657 (class 2606 OID 19001)
+-- Name: modulos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY modulos
+    ADD CONSTRAINT modulos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3659 (class 2606 OID 19003)
+-- Name: movimiento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY movimiento
+    ADD CONSTRAINT movimiento_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3661 (class 2606 OID 19005)
+-- Name: permisos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY permisos
+    ADD CONSTRAINT permisos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3663 (class 2606 OID 19007)
+-- Name: roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY roles
+    ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3669 (class 2606 OID 19009)
+-- Name: seguimiento_detalle_estado_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY seguimiento_detalle_estado
+    ADD CONSTRAINT seguimiento_detalle_estado_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3667 (class 2606 OID 19011)
+-- Name: seguimiento_detalle_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY seguimiento_detalle
+    ADD CONSTRAINT seguimiento_detalle_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3665 (class 2606 OID 19013)
+-- Name: seguimiento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY seguimiento
+    ADD CONSTRAINT seguimiento_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3671 (class 2606 OID 19015)
+-- Name: tanque_estado_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tanque_estado
+    ADD CONSTRAINT tanque_estado_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3673 (class 2606 OID 19017)
+-- Name: tanques_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tanques
+    ADD CONSTRAINT tanques_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3675 (class 2606 OID 19019)
+-- Name: tipo_movimiento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tipo_movimiento
+    ADD CONSTRAINT tipo_movimiento_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3677 (class 2606 OID 19021)
+-- Name: tipo_tanque_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tipo_tanque
+    ADD CONSTRAINT tipo_tanque_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3679 (class 2606 OID 19023)
+-- Name: usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY usuarios
+    ADD CONSTRAINT usuarios_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3684 (class 2606 OID 19112)
+-- Name: zoocriadero_estado_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY zoocriadero_estado
+    ADD CONSTRAINT zoocriadero_estado_pkey PRIMARY KEY (id_estado);
+
+
+--
+-- TOC entry 3682 (class 2606 OID 19025)
+-- Name: zoocriadero_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY zoocriadero
+    ADD CONSTRAINT zoocriadero_pkey PRIMARY KEY (id_zoocriadero);
+
+
+--
+-- TOC entry 3680 (class 1259 OID 19118)
+-- Name: fki_estado; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_estado ON zoocriadero USING btree (id_estado);
+
+
+--
+-- TOC entry 3699 (class 2606 OID 19113)
+-- Name: fk_estado; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY zoocriadero
+    ADD CONSTRAINT fk_estado FOREIGN KEY (id_estado) REFERENCES zoocriadero_estado(id_estado);
+
+
+--
+-- TOC entry 3693 (class 2606 OID 19026)
+-- Name: fk_estado_seguimiento; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento_detalle
+    ADD CONSTRAINT fk_estado_seguimiento FOREIGN KEY (estado_id) REFERENCES seguimiento_detalle_estado(id);
+
+
+--
+-- TOC entry 3697 (class 2606 OID 19036)
+-- Name: fk_tanque_estado; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tanques
+    ADD CONSTRAINT fk_tanque_estado FOREIGN KEY (id_estado) REFERENCES tanque_estado(id);
+
+
+--
+-- TOC entry 3698 (class 2606 OID 19041)
+-- Name: fk_tanque_zoocriadero; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tanques
+    ADD CONSTRAINT fk_tanque_zoocriadero FOREIGN KEY (id_zoocriadero) REFERENCES zoocriadero(id_zoocriadero) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3685 (class 2606 OID 19046)
+-- Name: movimiento_id_responsable_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY movimiento
+    ADD CONSTRAINT movimiento_id_responsable_fkey FOREIGN KEY (id_responsable) REFERENCES usuarios(id);
+
+
+--
+-- TOC entry 3686 (class 2606 OID 19051)
+-- Name: movimiento_id_tipo_movimiento_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY movimiento
+    ADD CONSTRAINT movimiento_id_tipo_movimiento_fkey FOREIGN KEY (id_tipo_movimiento) REFERENCES tipo_movimiento(id);
+
+
+--
+-- TOC entry 3687 (class 2606 OID 19056)
+-- Name: permisos_id_acciones_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY permisos
+    ADD CONSTRAINT permisos_id_acciones_fkey FOREIGN KEY (id_acciones) REFERENCES acciones(id);
+
+
+--
+-- TOC entry 3688 (class 2606 OID 19061)
+-- Name: permisos_id_modulos_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY permisos
+    ADD CONSTRAINT permisos_id_modulos_fkey FOREIGN KEY (id_modulos) REFERENCES modulos(id);
+
+
+--
+-- TOC entry 3689 (class 2606 OID 19066)
+-- Name: permisos_id_roles_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY permisos
+    ADD CONSTRAINT permisos_id_roles_fkey FOREIGN KEY (id_roles) REFERENCES roles(id);
+
+
+--
+-- TOC entry 3694 (class 2606 OID 19071)
+-- Name: seguimiento_detalle_id_actividad_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento_detalle
+    ADD CONSTRAINT seguimiento_detalle_id_actividad_fkey FOREIGN KEY (id_actividad) REFERENCES actividad(id);
+
+
+--
+-- TOC entry 3695 (class 2606 OID 19076)
+-- Name: seguimiento_detalle_id_seguimiento_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento_detalle
+    ADD CONSTRAINT seguimiento_detalle_id_seguimiento_fkey FOREIGN KEY (id_seguimiento) REFERENCES seguimiento(id);
+
+
+--
+-- TOC entry 3691 (class 2606 OID 19081)
+-- Name: seguimiento_id_responsable_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento
+    ADD CONSTRAINT seguimiento_id_responsable_fkey FOREIGN KEY (id_responsable) REFERENCES usuarios(id);
+
+
+--
+-- TOC entry 3692 (class 2606 OID 19086)
+-- Name: seguimiento_id_tanque_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento
+    ADD CONSTRAINT seguimiento_id_tanque_fkey FOREIGN KEY (id_tanque) REFERENCES tanques(id);
+
+
+--
+-- TOC entry 3690 (class 2606 OID 19091)
+-- Name: seguimiento_id_zoo_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento
+    ADD CONSTRAINT seguimiento_id_zoo_fkey FOREIGN KEY (id_zoo) REFERENCES zoocriadero(id_zoocriadero);
+
+
+--
+-- TOC entry 3696 (class 2606 OID 19096)
+-- Name: tanques_id_tipo_tanque_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tanques
+    ADD CONSTRAINT tanques_id_tipo_tanque_fkey FOREIGN KEY (id_tipo_tanque) REFERENCES tipo_tanque(id);
+
+
+--
+-- TOC entry 3851 (class 0 OID 0)
+-- Dependencies: 9
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2025-12-09 22:16:39
+
+--
+-- PostgreSQL database dump complete
+--
+

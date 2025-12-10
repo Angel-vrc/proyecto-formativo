@@ -1,0 +1,10 @@
+#tableSeguimientos td:last-child {
+    white-space: nowrap;
+    min-width: 160px; 
+}
+
+#tableZoocriaderos td:last-child {
+    white-space: nowrap;
+    min-width: 160px; 
+}
+
