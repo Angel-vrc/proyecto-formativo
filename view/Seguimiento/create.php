@@ -62,7 +62,7 @@
                                     <small class="form-text text-muted">Seleccione el tipo de tanque</small>
                                 </div>
                                 
-                                <!-- ID Actividad (con nombre) -->
+                                <!-- Actividad -->
                                 <div class="form-group">
                                     <label for="id_actividad">Actividad *</label>
                                     <select class="form-control" id="id_actividad" name="id_actividad" required>
@@ -152,7 +152,6 @@
 </div>
 
 <script>
-// Esperar a que todo esté cargado
 (function() {
     function initTanquesAjax() {
         // Verificar que jQuery esté cargado
@@ -164,7 +163,7 @@
         
         console.log('Inicializando carga de tanques por AJAX');
         
-        // Cuando se selecciona un zoocriadero, cargar tanques con AJAX
+        // cargar los tanques con ajax
         jQuery('#id_zoocriadero').off('change').on('change', function() {
             var id_zoocriadero = jQuery(this).val();
             var $tanqueSelect = jQuery('#id_tanque');
@@ -181,8 +180,7 @@
             // Mostrar loading
             $tanqueSelect.html('<option value="">Cargando tanques...</option>').prop('disabled', true);
             
-            // Llamada AJAX usando ajax.php para evitar output previo
-            // La ruta debe ser desde web/ donde se ejecuta index.php
+            
             var urlAjax = 'ajax.php?modulo=Seguimiento&controlador=Seguimiento&funcion=getTanquesByZoocriadero&id_zoocriadero=' + id_zoocriadero;
             console.log('URL AJAX:', urlAjax);
             

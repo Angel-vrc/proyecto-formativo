@@ -20,7 +20,7 @@ if(isset($_SESSION['error_login'])){
 }
 
 // Cargar configuración de reCAPTCHA
-require_once __DIR__ . '/../lib/conf/recaptcha_config.php';
+require_once  '/../lib/conf/recaptcha_config.php';
 ?>
 <?php 
 $cargar_recaptcha = true; // Variable para indicar que se debe cargar reCAPTCHA
@@ -40,7 +40,7 @@ include_once '../view/partials/header.php';
         <?php if($error): ?>
             <div class="alert alert-danger custom-alert" role="alert">
                 <i class="fas fa-exclamation-circle"></i>
-                <span><?php echo htmlspecialchars($error); ?></span>
+                <span><?php echo ($error); ?></span>
             </div>
         <?php endif; ?>
         
