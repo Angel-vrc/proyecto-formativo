@@ -5,7 +5,7 @@
     class SeguimientoController{
 
 
-        public function list(){
+        public function lista(){
             $obj = new SeguimientoModel();
 
             $sql = "SELECT sd.*, 
@@ -139,11 +139,11 @@
 
             if(!$resultado){
                 $_SESSION['error'] = "Error en la insercion de datos";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","list") . "';</script>";
+                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
                 exit();
             }else{                
                 $_SESSION['success'] = "Seguimiento registrado correctamente";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","list") . "';</script>";
+                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
                 exit();
             }
         }
@@ -153,7 +153,7 @@
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
             if($id <= 0){
-                redirect(getUrl("Seguimiento","Seguimiento","list"));
+                redirect(getUrl("Seguimiento","Seguimiento","lista"));
                 return;
             }
 
@@ -186,11 +186,11 @@
             
             if($ejecutar){
                 $_SESSION['success'] = "Seguimiento inactivado correctamente";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","list") . "';</script>";
+                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
                 exit();
             }else{
                 $_SESSION['error'] = "No se pudo actualizar el seguimiento";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","list") . "';</script>";
+                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
                 exit();
             }
 
@@ -201,7 +201,7 @@
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
             if($id <= 0){
-                redirect(getUrl("Seguimiento","Seguimiento","list"));
+                redirect(getUrl("Seguimiento","Seguimiento","lista"));
                 return;
             }
 
@@ -211,11 +211,11 @@
 
             if($ejecutar){
                 $_SESSION['success'] = "Seguimiento activado correctamente";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","list") . "';</script>";
+                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
                 exit();
             }else{
                 $_SESSION['error'] = "El seguimiento solicitado no existe";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","list") . "';</script>";
+                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
                 exit();
             }
         }
@@ -311,11 +311,11 @@
 
             if($resultado){
                 $_SESSION['success'] = "Seguimiento actualizado correctamente";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","list") . "';</script>";
+                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
                 exit();
             }else{
                 $_SESSION['error'] = "Error al actualizar el seguimiento";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","list") . "';</script>";
+                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
                 exit();
             }
         }

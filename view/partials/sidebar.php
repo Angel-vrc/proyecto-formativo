@@ -38,25 +38,25 @@
                     <h4 class="text-section">Gestión del Sistema</h4>
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Zoocriaderos'); ?>">
-                    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","list"); ?>">
+                    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","lista"); ?>">
                         <i class="fas fa-fish"></i>
                         <p>Gestión de Zoocriadero</p>                        
                     </a>
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Tanques'); ?>">
-                    <a href="<?php echo getUrl("Tanques","Tanque","list"); ?>">
+                    <a href="<?php echo getUrl("Tanques","Tanque","lista"); ?>">        
                         <i class="fas fa-tint"></i>
                         <p>Gestión de Tanques</p>                        
                     </a>
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Seguimiento'); ?>">
-                    <a href="<?php echo getUrl("Seguimiento","Seguimiento","list"); ?>">
+                    <a href="<?php echo getUrl("Seguimiento","Seguimiento","lista"); ?>">
                         <i class="fas fa-tasks"></i>
                         <p>Gestión de Seguimiento</p>                        
                     </a>                    
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Usuarios'); ?>">
-                    <a href="<?php echo getUrl("Usuarios","Usuario","list"); ?>">
+                    <a href="<?php echo getUrl("Usuarios","Usuario","lista"); ?>">
                         <i class="fas fa-users"></i>
                         <p>Gestión de Usuarios</p>                        
                     </a>

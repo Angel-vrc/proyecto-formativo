@@ -22,7 +22,7 @@
             <form action="<?php echo getUrl("Seguimiento","Seguimiento","postDelete"); ?>" method="post">
                 <input type="hidden" name="id" value="<?php echo $seg['id']; ?>">
                 <button type="submit" class="btn btn-danger me-2">Confirmar</button>
-                <a href="<?php echo getUrl("Seguimiento","Seguimiento","list"); ?>" class="btn btn-secondary">Cancelar</a>
+                <a href="<?php echo getUrl("Seguimiento","Seguimiento","lista"); ?>" class="btn btn-secondary">Cancelar</a>
             </form>
         <?php } ?>
     </div>

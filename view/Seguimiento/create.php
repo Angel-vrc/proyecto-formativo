@@ -1,6 +1,6 @@
 <div class="page-inner">
 
-    <a href="<?php echo getUrl("Seguimiento","Seguimiento","list") ?>" class="btn btn-primary btn-round" >
+    <a href="<?php echo getUrl("Seguimiento","Seguimiento","lista") ?>" class="btn btn-primary btn-round" >
         <i class="fa fa-chevron-left mx-2"></i>Regresar
     </a>
     <div class="page-header mt-3">
@@ -141,7 +141,7 @@
                     </div>
                     <div class="card-action">
                         <input type="submit" value="Registrar" class="btn btn-success">
-                        <a href="<?php echo getUrl("Seguimiento","Seguimiento","list") ?>" class="btn btn-danger">
+                        <a href="<?php echo getUrl("Seguimiento","Seguimiento","lista") ?>" class="btn btn-danger">
                             Cancelar
                         </a>
                     </div>

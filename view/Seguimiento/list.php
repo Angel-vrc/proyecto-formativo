@@ -75,7 +75,7 @@
 
                             <tbody id="tableBody">
                             <?php
-                                while($seg = pg_fetch_assoc($seguimientos)){
+                                while($seg = pg_fetch_assoc($seguimientos)){    
                                     $fecha_formato = isset($seg['fecha_seguimiento']) && $seg['fecha_seguimiento'] ? date('d/m/Y', strtotime($seg['fecha_seguimiento'])) : 'N/A';
                                     $nombre_tanque = $seg['nombre_tanque'] ? $seg['nombre_tanque'] : 'N/A';
                                     $nombre_tipo_tanque = $seg['nombre_tipo_tanque'] ? $seg['nombre_tipo_tanque'] : 'N/A';

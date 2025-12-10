@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="assets/css/arregloTablas.css">
+
 <div class="page-inner">
     <div class="page-header">
         <h4 class="page-title">Gestión de Zoocriaderos</h4>
@@ -47,17 +49,14 @@
                     
                     <!-- Tabla de resultados -->
                     <div class="table-responsive">
-                        <table id="tableZoocriaderos" class="display table table-striped table-hover">
+                        <table id="tableZoocriaderos" class="display table table-striped table-hover">                             
                             <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Nombre</th>
                                     <th>Dirección</th>
-                                    <th>Comuna</th>
                                     <th>Barrio</th>
                                     <th>Responsable</th>
-                                    <!-- <th>Teléfono</th> -->
-                                    <!-- <th>Correo</th> -->
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -65,24 +64,22 @@
                                <?php
                                     while($zoo = pg_fetch_assoc($zoocriaderos)){
                                         echo "<tr>";
-                                            echo "<td>".$zoo['id']."</td>";
+                                            echo "<td>".$zoo['id_zoocriadero']."</td>";
                                             echo "<td>".$zoo['nombre']."</td>";
                                             echo "<td>".$zoo['direccion']."</td>";
-                                            echo "<td>".$zoo['comuna']."</td>";
                                             echo "<td>".$zoo['barrio']."</td>";
-                                            echo "<td>".$zoo['responsable']."</td>";
-                                            // echo "<td>".$zoo['telefono']."</td>";
-                                            // echo "<td>".$zoo['correo']."</td>";
+                                            echo "<td>".$zoo['nombre_responsable']." ".$zoo['apellido_responsable']."</td>";
                                             echo "<td>";
-                                                echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getUpdate", array("id"=>$zoo['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getDetalles", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-info mx-2'>Detalles</a>";
 
-                                                if ($zoo['estado'] == 1) {
-                                                    echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","getDelete",array("id"=>$zoo['id']))."' class='btn btn-danger'>Eliminar</a>";
+                                                echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getUpdate", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-primary mx-2'>Editar</a>";
 
-                                                } elseif ($zoo['estado'] == 2) {
-                                                    echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","updateStatus",array("id"=>$zoo['id']))."' class='btn btn-success'>Activar</a>";
-                                                }
-                                                
+                                                if ($zoo['id_estado'] == 1) {
+                                                    echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","getDelete",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-danger'>Eliminar</a>";
+
+                                                } elseif ($zoo['id_estado'] == 2) {
+                                                    echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","updateStatus",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-success'>Activar</a>";
+                                                }                          
                                             echo "</td>";
                                         echo "</tr>";
                                     }

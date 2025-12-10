@@ -1,6 +1,6 @@
 <div class="page-inner">
 
-    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","list") ?>" class="btn btn-primary btn-round" >
+    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","lista") ?>" class="btn btn-primary btn-round" >
         <i class="fa fa-chevron-left mx-2"></i>Regresar
     </a>
     <div class="page-header mt-3">
@@ -16,18 +16,11 @@
                 <form id="formZoocriadero" method="POST" action="<?php echo getUrl("Zoocriaderos","Zoocriadero","postUpdate") ?>">
                     
                     <?php
-                        $comunas = [
-                            'Comuna 1', 'Comuna 2', 'Comuna 3', 'Comuna 4', 'Comuna 5',
-                            'Comuna 6', 'Comuna 7', 'Comuna 8', 'Comuna 9', 'Comuna 10',
-                            'Comuna 11', 'Comuna 12', 'Comuna 13', 'Comuna 14', 'Comuna 15',
-                            'Comuna 16', 'Comuna 17', 'Comuna 18', 'Comuna 19', 'Comuna 20',
-                            'Comuna 21', 'Comuna 22'
-                        ];
 
                         while($zoo = pg_fetch_assoc($zoocriadero)){                                            
                     ?>
 
-                    <input type="hidden" name="id" value="<?php echo $zoo['id']; ?>">
+                    <input type="hidden" name="id" value="<?php echo $zoo['id_zoocriadero']; ?>">
                     
                         <div class="card-body">
                             <div class="row">
@@ -52,8 +45,7 @@
                                     <!-- Comuna -->
                                     <div class="form-group">
                                         <label for="comuna">Comuna *</label>
-                                        <select class="form-control select2" id="comuna" name="comuna" required>
-                                            <option value="">Seleccione una comuna</option> 
+                                        <select class="form-control select2" id="comuna" name="comuna" required>                                            
                                             <?php foreach ($comunas as $comuna): ?>
                                                 <option value="<?php echo $comuna; ?>" 
                                                     <?php echo ($comuna == $zoo['comuna']) ? 'selected' : ''; ?>>
@@ -66,9 +58,14 @@
                                     <!-- Barrio -->
                                     <div class="form-group">
                                         <label for="barrio">Barrio *</label>
-                                        <input type="text" class="form-control" id="barrio" name="barrio" 
-                                            placeholder="Ej: El Poblado, San Antonio" required
-                                            maxlength="100" value="<?php echo $zoo['barrio']?>">
+                                        <select class="form-control select2" id="barrio" name="barrio" required>                                             
+                                            <?php foreach ($barrios as $barrio): ?>
+                                                <option value="<?php echo $barrio; ?>" 
+                                                    <?php echo ($barrio == $zoo['barrio']) ? 'selected' : ''; ?>>
+                                                    <?php echo $barrio; ?>
+                                                </option>
+                                            <?php endforeach; ?>                                     
+                                        </select>
                                     </div>
                                 </div>
                                 
@@ -76,9 +73,14 @@
                                     <!-- Responsable -->
                                     <div class="form-group">
                                         <label for="responsable">Responsable *</label>
-                                        <input type="text" class="form-control" id="responsable" name="responsable" 
-                                            placeholder="Nombre completo del responsable" required
-                                            maxlength="150" value="<?php echo $zoo['responsable']?>">
+                                        <select class="form-control select2" id="responsable" name="responsable" required> 
+                                            <?php while($usuario = pg_fetch_assoc($usuarios)){ ?>
+                                                <option value="<?php echo $usuario['id']; ?>" 
+                                                    <?php echo ($usuario['id'] == $zoo['responsable']) ? 'selected' : ''; ?>>
+                                                    <?php echo $usuario['nombre']." ".$usuario['apellido']; ?>
+                                                </option>
+                                            <?php } ?>                                     
+                                        </select>
                                     </div>
                                     
                                     <!-- Teléfono -->
@@ -102,7 +104,7 @@
                         </div>
                         <div class="card-action">
                             <input type="submit" value="Registrar" class="btn btn-success">
-                            <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","list") ?>" class="btn btn-danger">
+                            <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","lista") ?>" class="btn btn-danger">
                                 Cancelar
                             </a>
                         </div>
