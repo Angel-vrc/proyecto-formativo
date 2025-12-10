@@ -64,11 +64,7 @@
                                             $nombre_completo = '';
                                             if(isset($usuario['nombre']) && isset($usuario['apellido'])){
                                                 $nombre_completo = trim($usuario['nombre'] . ' ' . $usuario['apellido']);
-                                            } elseif(isset($usuario['nombre'])){
-                                                $nombre_completo = $usuario['nombre'];
-                                            } elseif(isset($usuario['apellido'])){
-                                                $nombre_completo = $usuario['apellido'];
-                                            }
+                                            } 
                                             echo htmlspecialchars($nombre_completo ? $nombre_completo : 'N/A'); 
                                         ?>
                                     </div>

@@ -1,9 +1,25 @@
-<link rel="stylesheet" href="assets/css/Seguimiento.css">
+<link rel="stylesheet" href="assets/css/arregloTablas.css">
 
 <div class="page-inner">
     <div class="page-header">
         <h4 class="page-title">Gestión de Seguimiento</h4>
     </div>
+    
+    <?php if(isset($_SESSION['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <?php echo ($_SESSION['success']); unset($_SESSION['success']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
+    
+    <?php if(isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <?php echo ($_SESSION['error']); unset($_SESSION['error']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
     
     <div class="row">
         <div class="col-md-12">
@@ -84,7 +100,7 @@
                                             }
 
                                             // ---- Ver Detalles ----
-                                            echo "<button type='button' class='btn btn-info mx-2' data-toggle='modal' data-target='#modalDetalles'
+                                            echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
                                                 data-ph='".$seg['ph']."'
                                                 data-temperatura='".$seg['temperatura']."'
                                                 data-cloro='".$seg['cloro']."'
@@ -93,9 +109,8 @@
                                                 data-machos='".$seg['num_machos']."'
                                                 data-hembras='".$seg['num_hembras']."'
                                                 data-total='".$seg['total']."'>
-                                                <i class='fas fa-eye'></i> Detalles
+                                                Ver Detalles
                                             </button>";
-
                                         echo "</td>";
                                     echo "</tr>";
                                 }
@@ -125,15 +140,15 @@
     </div>
 </div>
 
-<!-- ====== MODAL ====== -->
+<!-- MODAL -->
 <div class="modal fade" id="modalDetalles" tabindex="-1" role="dialog" aria-labelledby="modalDetallesLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
 
             <div class="modal-header" style="background-color:#1a5a5a; color:white;">
                 <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalles del Seguimiento</h5>
-                <button type="button" class="close" data-dismiss="modal" style="color:white;">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="close" onclick="cerrarModalDetalles()" style="color:white;">
+                   
                 </button>
             </div>
 
@@ -154,7 +169,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <button type="button" class="btn btn-secondary" onclick="cerrarModalDetalles()">
                     <i class="fas fa-times"></i> Cerrar
                 </button>
             </div>
@@ -170,33 +185,35 @@ function resetFilters() {
     document.getElementById('searchFecha').value = '';
 }
 
+// Función para abrir la modal
+function abrirModalDetalles(btn) {
 
-document.addEventListener('DOMContentLoaded', function() {
-    var modal = document.getElementById('modalDetalles');
-    if(modal) {
-        modal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget;
-            
-            // Obtener datos de los atributos data-*
-            var ph = button.getAttribute('data-ph') || '0';
-            var temperatura = button.getAttribute('data-temperatura') || '0';
-            var cloro = button.getAttribute('data-cloro') || '0';
-            var alevines = button.getAttribute('data-alevines') || '0';
-            var muertes = button.getAttribute('data-muertes') || '0';
-            var machos = button.getAttribute('data-machos') || '0';
-            var hembras = button.getAttribute('data-hembras') || '0';
-            var total = button.getAttribute('data-total') || '0';
-            
-            // Actualizar el contenido del modal
-            document.getElementById('detalle-ph').textContent = ph;
-            document.getElementById('detalle-temperatura').textContent = temperatura + ' °C';
-            document.getElementById('detalle-cloro').textContent = cloro + ' mg/L';
-            document.getElementById('detalle-alevines').textContent = alevines;
-            document.getElementById('detalle-muertes').textContent = muertes;
-            document.getElementById('detalle-machos').textContent = machos;
-            document.getElementById('detalle-hembras').textContent = hembras;
-            document.getElementById('detalle-total').textContent = total;
-        });
-    }
-});
+    //datos usando query
+    var ph = $(btn).data('ph') || '0';
+    var temperatura = $(btn).data('temperatura') || '0';
+    var cloro = $(btn).data('cloro') || '0';
+    var alevines = $(btn).data('alevines') || '0';
+    var muertes = $(btn).data('muertes') || '0';
+    var machos = $(btn).data('machos') || '0';
+    var hembras = $(btn).data('hembras') || '0';
+    var total = $(btn).data('total') || '0';
+    
+    // Actualizar contenido
+    $('#detalle-ph').text(ph);
+    $('#detalle-temperatura').text(temperatura + ' °C');
+    $('#detalle-cloro').text(cloro + ' mg/L');
+    $('#detalle-alevines').text(alevines);
+    $('#detalle-muertes').text(muertes);
+    $('#detalle-machos').text(machos);
+    $('#detalle-hembras').text(hembras);
+    $('#detalle-total').text(total);
+    
+    $('#modalDetalles').modal('show');
+}
+
+// cerrar la modal
+function cerrarModalDetalles() {
+    $('#modalDetalles').modal('hide');
+}
+
 </script>

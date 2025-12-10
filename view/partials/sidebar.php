@@ -97,7 +97,7 @@
                             </li>
                             <li>
                                 <a href="<?php echo getUrl("Reportes","Reporte","listSeguimientos"); ?>">
-                                    <span class="sub-item">Seguimiento de seguimientos</span>
+                                    <span class="sub-item">Reporte de seguimientos</span>
                                 </a>
                             </li>
                             <li>
