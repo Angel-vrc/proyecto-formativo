@@ -8,17 +8,23 @@
         public function lista(){
             $obj = new ZoocriaderoModel();
 
-            $sql = "SELECT z.*, u.nombre AS nombre_responsable, u.apellido AS apellido_responsable FROM zoocriadero AS z
+            $sql = "SELECT z.*, e.nombre AS nombre_estado, u.nombre AS nombre_responsable, u.apellido AS apellido_responsable FROM zoocriadero AS z
             JOIN usuarios AS u ON z.responsable = u.id
+            JOIN zoocriadero_estado AS e ON z.id_estado = e.id_estado
             ORDER BY id_zoocriadero ASC";
 
             $zoocriaderos = $obj->select($sql);
 
+            include_once '../lib/data/ubicacion.php';
             include_once '../view/zoocriaderos/list.php';
         }
         
         public function getCreate(){
             $obj = new ZoocriaderoModel();
+
+            //Falta hacer el echo en su respectivo input en el formulario
+            // $longitud = $_GET['longitud'];
+            // $latitud = $_GET['latitud'];
 
             $sql = "SELECT id, nombre, apellido FROM usuarios";
 
