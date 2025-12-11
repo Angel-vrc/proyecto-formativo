@@ -115,17 +115,6 @@
                                            placeholder="0" min="0" value="">
                                 </div>
                                 
-                                <!-- Total de Peces Calculado -->
-                                <div class="form-group">
-                                    <label for="total_peces_calculado">Total de Peces Calculado</label>
-                                    <input type="number" class="form-control" id="total_peces_calculado" 
-                                           placeholder="0" readonly style="background-color: #e9ecef;">
-                                    <small class="form-text text-muted">Total = Cantidad de peces del tanque - Muertes</small>
-                                </div>
-                                
-                                <!-- Cantidad de Peces del Tanque (oculto) -->
-                                <input type="hidden" id="cantidad_peces_tanque" name="cantidad_peces_tanque" value="0">
-                                
                                 <!-- Observaciones -->
                                 <div class="form-group">
                                     <label for="observaciones">Observaciones</label>
@@ -160,8 +149,6 @@
                         
             if(!id_zoocriadero || id_zoocriadero == '' || id_zoocriadero == null) {
                 $tanqueSelect.html('<option value="">Primero seleccione un zoocriadero</option>').prop('disabled', true);
-                jQuery('#cantidad_peces_tanque').val(0);
-                updateTotal();
                 return;
             }
             
@@ -180,9 +167,8 @@
                         if(response.tanques.length > 0) {
                             var options = '<option value="">Seleccione un tanque</option>';
                             jQuery.each(response.tanques, function(index, tanque) {
-                                var cantidad = tanque.cantidad_peces || 0;
                                 var nombre = tanque.nombre || 'Sin nombre';
-                                options += '<option value="' + tanque.id + '" data-cantidad="' + cantidad + '">' + nombre + '</option>';
+                                options += '<option value="' + tanque.id + '">' + nombre + '</option>';
                             });
                             $tanqueSelect.html(options).prop('disabled', false);
                             console.log('Tanques cargados:', response.tanques.length);
@@ -191,8 +177,6 @@
                             console.log('No hay tanques disponibles');
                         }
                     }
-                    jQuery('#cantidad_peces_tanque').val(0);
-                    updateTotal();
                 },
             });
         });
@@ -210,58 +194,4 @@
         }
     }
 })();
-
-// Cuando se selecciona un tanque, actualizar cantidad_peces
-jQuery(document).ready(function() {
-    jQuery('#id_tanque').on('change', function() {
-        var selectedOption = jQuery(this).find('option:selected');
-        var cantidadPeces = selectedOption.data('cantidad') || 0;
-        
-        jQuery('#cantidad_peces_tanque').val(cantidadPeces);
-        
-        updateTotal();
-    });
-    
-    // Actualizar total cuando cambian los campos numéricos
-    jQuery('#num_alevines, #num_muertes, #num_machos, #num_hembras').on('input', function() {
-        updateTotal();
-    });
-});
-
-// Función para calcular y validar el total de peces
-function updateTotal() {
-    // Obtener valores de los campos (convertir a número, si está vacío usar 0)
-    var num_alevines = parseFloat(jQuery('#num_alevines').val()) || 0;
-    var num_hembras = parseFloat(jQuery('#num_hembras').val()) || 0;
-    var num_machos = parseFloat(jQuery('#num_machos').val()) || 0;
-    var num_muertes = parseFloat(jQuery('#num_muertes').val()) || 0;
-    var cantidad_peces_tanque = parseFloat(jQuery('#cantidad_peces_tanque').val()) || 0;
-    
-    // Suma de alevines, hembras y machos
-    var suma_peces = num_alevines + num_hembras + num_machos;
-    
-    // Calcular total: Cantidad de peces del tanque - Muertes
-    var total_calculado = cantidad_peces_tanque - num_muertes;
-    
-    // Actualizar el campo de total calculado
-    jQuery('#total_peces_calculado').val(total_calculado);
-    
-    // Validar y mostrar feedback
-    var $totalField = jQuery('#total_peces_calculado');
-    var $formGroup = $totalField.closest('.form-group');
-    
-    // Remover clases de validación previas
-    $totalField.removeClass('is-valid is-invalid');
-    $formGroup.find('.invalid-feedback').remove();
-    
-    // Validar que la suma de alevines, hembras y machos sea igual a la cantidad de peces del tanque
-    if (cantidad_peces_tanque > 0) {
-        if (suma_peces === cantidad_peces_tanque) {
-            $totalField.addClass('is-valid');
-        } else {
-            $totalField.addClass('is-invalid');
-            $formGroup.append('<div class="invalid-feedback">La suma de Alevines (' + num_alevines + ') + Hembras (' + num_hembras + ') + Machos (' + num_machos + ') = ' + suma_peces + ' debe ser igual a la cantidad de peces del tanque (' + cantidad_peces_tanque + ')</div>');
-        }
-    }
-}
 </script>

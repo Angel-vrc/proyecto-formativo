@@ -120,16 +120,7 @@
             $cloro = $_POST['cloro'];
             $observaciones = $_POST['observaciones'] ? pg_escape_string($obj->getConnect(), $_POST['observaciones']) : '';
             
-            // Validar que la suma de alevines, hembras y machos sea igual a la cantidad de peces del tanque
-            $suma_peces = $num_alevines + $num_hembras + $num_machos;
-            if($cantidad_peces_tanque > 0 && $suma_peces != $cantidad_peces_tanque) {
-                $_SESSION['error'] = "La suma de Alevines ($num_alevines) + Hembras ($num_hembras) + Machos ($num_machos) = $suma_peces debe ser igual a la cantidad de peces del tanque ($cantidad_peces_tanque)";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","create") . "';</script>";
-                exit();
-            }
-            
-            // Calcular total: Cantidad de peces del tanque - Muertes
-            $total = $cantidad_peces_tanque - $num_muertes;
+            $total = $cantidad_peces_tanque + $num_alevines - $num_muertes + $num_machos + $num_hembras;
             
             $sql = "INSERT INTO seguimiento_detalle (id, id_seguimiento, id_actividad, ph, temperatura, num_alevines, num_muertes, num_machos, num_hembras, cloro, observaciones, total, estado_id) 
                     VALUES ($id, $id_seguimiento, $id_actividad, $ph, $temperatura, $num_alevines, $num_muertes, $num_machos, $num_hembras, $cloro, '$observaciones', $total, 1)";
@@ -273,7 +264,6 @@
                 $id_seguimiento = $id_seguimiento_new;
             }
             
-            $cantidad_peces_tanque = 0;
             if($id_tanque > 0){
                 $sql_tanque = "SELECT cantidad_peces FROM tanques WHERE id=$id_tanque";
                 $result_tanque = $obj->select($sql_tanque);
@@ -292,16 +282,14 @@
             $num_hembras = $_POST['num_hembras'];
             $cloro = $_POST['cloro'];
             $observaciones = $_POST['observaciones'];
+
             
-            // Validar que la suma de alevines, hembras y machos sea igual a la cantidad de peces del tanque
-            $suma_peces = $num_alevines + $num_hembras + $num_machos;
-            if($cantidad_peces_tanque > 0 && $suma_peces != $cantidad_peces_tanque) {
-                $_SESSION['error'] = "La suma de Alevines ($num_alevines) + Hembras ($num_hembras) + Machos ($num_machos) = $suma_peces debe ser igual a la cantidad de peces del tanque ($cantidad_peces_tanque)";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","update", array("id" => $id)) . "';</script>";
-                exit();
+            $suma = $num_alevines + $num_machos + $num_hembras = $cantidad_peces_tanque;
+
+            if($suma = $cantidad_peces_tanque ){
+                $total = $cantidad_peces_tanque - $num_muertes;
             }
             
-            // Calcular total: Cantidad de peces del tanque - Muertes
             $total = $cantidad_peces_tanque - $num_muertes;
 
             $sql = "UPDATE seguimiento_detalle SET id_seguimiento=$id_seguimiento, id_actividad=$id_actividad, ph=$ph, temperatura=$temperatura, num_alevines=$num_alevines, num_muertes=$num_muertes, num_machos=$num_machos, num_hembras=$num_hembras, cloro=$cloro, observaciones='$observaciones', total=$total WHERE id=$id";
