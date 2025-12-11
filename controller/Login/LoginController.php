@@ -1,9 +1,9 @@
 <?php
 
-    include_once("../model/MasterModel.php");
+    include_once("../model/Usuarios/UsuarioModel.php");
     require_once("../lib/conf/recaptcha_config.php");
 
-    class LoginController extends MasterModel{
+    class LoginController extends UsuarioModel{
 
         public function autenticar(){
 

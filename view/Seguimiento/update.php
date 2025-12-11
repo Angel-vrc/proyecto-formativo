@@ -17,9 +17,9 @@
                     
                     <?php
                         while($seg = pg_fetch_assoc($seguimiento)){
-                            $id_tanque_actual = isset($seg['id_tanque_actual']) ? $seg['id_tanque_actual'] : 0;
-                            $id_tipo_tanque_actual = isset($seg['id_tipo_tanque_actual']) ? $seg['id_tipo_tanque_actual'] : 0;
-                            $cantidad_peces_tanque_actual = isset($seg['cantidad_peces_tanque']) ? $seg['cantidad_peces_tanque'] : 0;
+                            $id_tanque_actual = $seg['id_tanque_actual'];
+                            $id_tipo_tanque_actual = $seg['id_tipo_tanque_actual'];
+                            $cantidad_peces_tanque_actual = $seg['cantidad_peces_tanque'];
                     ?>
 
                     <input type="hidden" name="id" value="<?php echo $seg['id']; ?>">
@@ -45,28 +45,15 @@
                                                 pg_result_seek($tanques, 0);
                                                 while($tanque = pg_fetch_assoc($tanques)){
                                                     $selected = ($tanque['id'] == $id_tanque_actual) ? 'selected' : '';
-                                                    echo "<option value='".$tanque['id']."' data-tipo='".$tanque['tipo_tanque']."' data-tipo-id='".$tanque['id_tipo_tanque']."' $selected>".$tanque['nombre']."</option>";
+                                                    $nombre_completo = $tanque['nombre'];
+                                                    if(!empty($tanque['tipo_tanque'])){
+                                                        $nombre_completo .= ' - ' . $tanque['tipo_tanque'];
+                                                    }
+                                                    echo "<option value='".$tanque['id']."' $selected>".($nombre_completo)."</option>";
                                                 }
                                             ?>
                                         </select>
                                         <small class="form-text text-muted">Seleccione el tanque</small>
-                                    </div>
-                                    
-                                    <!-- Tipo Tanque -->
-                                    <div class="form-group">
-                                        <label for="id_tipo_tanque">Tipo de Tanque *</label>
-                                        <select class="form-control" id="id_tipo_tanque" name="id_tipo_tanque" required>
-                                            <option value="">Seleccione un tipo de tanque</option>
-                                            <?php
-                                                // Resetear el puntero del resultado
-                                                pg_result_seek($tipos_tanque, 0);
-                                                while($tipo = pg_fetch_assoc($tipos_tanque)){
-                                                    $selected = ($tipo['id'] == $id_tipo_tanque_actual) ? 'selected' : '';
-                                                    echo "<option value='".$tipo['id']."' $selected>".$tipo['nombre']."</option>";
-                                                }
-                                            ?>
-                                        </select>
-                                        <small class="form-text text-muted">Seleccione el tipo de tanque</small>
                                     </div>
                                     
                                     <!-- ID Seguimiento (oculto) -->
@@ -140,11 +127,22 @@
                                                placeholder="0" min="0" value="<?php echo $seg['num_hembras']; ?>">
                                     </div>
                                     
+                                    <!-- Total de Peces Calculado -->
+                                    <div class="form-group">
+                                        <label for="total_peces_calculado">Total de Peces Calculado</label>
+                                        <input type="number" class="form-control" id="total_peces_calculado" 
+                                               placeholder="0" readonly style="background-color: #e9ecef;">
+                                        <small class="form-text text-muted">Total = Cantidad de peces del tanque - Muertes</small>
+                                    </div>
+                                    
+                                    <!-- Cantidad de Peces del Tanque (oculto) -->
+                                    <input type="hidden" id="cantidad_peces_tanque" name="cantidad_peces_tanque" value="<?php echo $cantidad_peces_tanque_actual; ?>">
+                                    
                                     <!-- Observaciones -->
                                     <div class="form-group">
                                         <label for="observaciones">Observaciones</label>
                                         <textarea class="form-control" id="observaciones" name="observaciones" 
-                                                  rows="4" placeholder="Observaciones adicionales..." maxlength="50"><?php echo htmlspecialchars($seg['observaciones']); ?></textarea>
+                                                  rows="4" placeholder="Observaciones adicionales..." maxlength="50"><?php echo ($seg['observaciones']); ?></textarea>
                                         <small class="form-text text-muted">Máximo 50 caracteres</small>
                                     </div>
                             </div>
@@ -166,48 +164,58 @@
 </div>
 
 <script>
-// Esperar a que todo esté cargado
-(function() {
-    function initUpdateForm() {
-        // Verificar que jQuery esté cargado
-        if(typeof jQuery === 'undefined') {
-            setTimeout(initUpdateForm, 100);
-            return;
-        }
-        
-        // Función para calcular el total
-        function updateTotal() {
-            var cantidadPecesTanque = parseInt(jQuery('#cantidad_peces_tanque').val()) || 0;
-            var numAlevines = parseInt(jQuery('#num_alevines').val()) || 0;
-            var numMuertes = parseInt(jQuery('#num_muertes').val()) || 0;
-            var numMachos = parseInt(jQuery('#num_machos').val()) || 0;
-            var numHembras = parseInt(jQuery('#num_hembras').val()) || 0;
-            
-            // Total = cantidad_peces del tanque + alevines - muertes + machos + hembras
-            var total = cantidadPecesTanque + numAlevines - numMuertes + numMachos + numHembras;
-            
-            jQuery('#total').val(total);
-        }
-        
-        // Actualizar total cuando cambian los campos numéricos
-        jQuery('#num_alevines, #num_muertes, #num_machos, #num_hembras').on('input', function() {
-            updateTotal();
-        });
-        
-        // Calcular total inicial
-        updateTotal();
-    }
+// Función para calcular y validar el total de peces
+function updateTotal() {
+    // Obtener valores de los campos (convertir a número, si está vacío usar 0)
+    var num_alevines = parseFloat(jQuery('#num_alevines').val()) || 0;
+    var num_hembras = parseFloat(jQuery('#num_hembras').val()) || 0;
+    var num_machos = parseFloat(jQuery('#num_machos').val()) || 0;
+    var num_muertes = parseFloat(jQuery('#num_muertes').val()) || 0;
+    var cantidad_peces_tanque = parseFloat(jQuery('#cantidad_peces_tanque').val()) || 0;
     
-    // Intentar inicializar cuando el DOM esté listo
-    if(document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initUpdateForm);
-    } else {
-        if(typeof jQuery !== 'undefined') {
-            jQuery(document).ready(initUpdateForm);
+    // Suma de alevines, hembras y machos
+    var suma_peces = num_alevines + num_hembras + num_machos;
+    
+    // Calcular total: Cantidad de peces del tanque - Muertes
+    var total_calculado = cantidad_peces_tanque - num_muertes;
+    
+    // Actualizar el campo de total calculado
+    jQuery('#total_peces_calculado').val(total_calculado);
+    
+    // Validar y mostrar feedback
+    var $totalField = jQuery('#total_peces_calculado');
+    var $formGroup = $totalField.closest('.form-group');
+    
+    // Remover clases de validación previas
+    $totalField.removeClass('is-valid is-invalid');
+    $formGroup.find('.invalid-feedback').remove();
+    
+    // Validar que la suma de alevines, hembras y machos sea igual a la cantidad de peces del tanque
+    if (cantidad_peces_tanque > 0) {
+        if (suma_peces === cantidad_peces_tanque) {
+            $totalField.addClass('is-valid');
         } else {
-            setTimeout(initUpdateForm, 100);
+            $totalField.addClass('is-invalid');
+            $formGroup.append('<div class="invalid-feedback">La suma de Alevines (' + num_alevines + ') + Hembras (' + num_hembras + ') + Machos (' + num_machos + ') = ' + suma_peces + ' debe ser igual a la cantidad de peces del tanque (' + cantidad_peces_tanque + ')</div>');
         }
     }
-})();
+}
+
+// Actualizar total cuando cambian los campos numéricos
+jQuery(document).ready(function() {
+    // Calcular total inicial
+    updateTotal();
+    
+    // Actualizar total cuando cambian los campos numéricos
+    jQuery('#num_alevines, #num_muertes, #num_machos, #num_hembras').on('input', function() {
+        updateTotal();
+    });
+    
+    // Actualizar cuando cambia el tanque (si hay lógica AJAX para cargar cantidad_peces_tanque)
+    jQuery('#id_tanque').on('change', function() {
+        // Aquí podrías agregar lógica AJAX para actualizar cantidad_peces_tanque si es necesario
+        updateTotal();
+    });
+});
 </script>
 

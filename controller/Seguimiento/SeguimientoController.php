@@ -37,9 +37,6 @@
             $sql_zoocriaderos = "SELECT id_zoocriadero, nombre FROM zoocriadero ORDER BY nombre";
             $zoocriaderos = $obj->select($sql_zoocriaderos);
             
-            $sql_tipos_tanque = "SELECT id, nombre FROM tipo_tanque ORDER BY nombre";
-            $tipos_tanque = $obj->select($sql_tipos_tanque);
-            
             include_once '../view/Seguimiento/create.php';
         }
 
@@ -47,12 +44,8 @@
             header('Content-Type: application/json');
             
             $obj = new SeguimientoModel();
-            $id_zoocriadero = isset($_GET['id_zoocriadero']) ? intval($_GET['id_zoocriadero']) : 0;
+            $id_zoocriadero = $_GET['id_zoocriadero'];
             
-            if($id_zoocriadero <= 0){
-                echo json_encode(array('success' => false, 'message' => 'ID de zoocriadero inválido', 'tanques' => array()));
-                exit();
-            }
             
             $sql_tanques = "SELECT t.id, t.nombre, t.cantidad_peces, t.id_tipo_tanque, tt.nombre as tipo_tanque
                            FROM tanques t
@@ -64,19 +57,22 @@
             
             $tanques_array = array();
             
-            if($tanques === false){
-                echo json_encode(array('success' => false, 'message' => 'Error en la consulta SQL', 'tanques' => array()));
-                exit();
-            }
             
             if($tanques && pg_num_rows($tanques) > 0){
                 while($tanque = pg_fetch_assoc($tanques)){
+                    // Formatear el nombre del tanque con su tipo: "Tanque A - Siembra"
+                    $nombre_completo = $tanque['nombre'];
+                    if(!empty($tanque['tipo_tanque'])){
+                        $nombre_completo .= ' - ' . $tanque['tipo_tanque'];
+                    }
+                    
                     $tanques_array[] = array(
-                        'id' => intval($tanque['id']),
-                        'nombre' => isset($tanque['nombre']) ? $tanque['nombre'] : '',
-                        'cantidad_peces' => isset($tanque['cantidad_peces']) ? intval($tanque['cantidad_peces']) : 0,
-                        'tipo_tanque' => isset($tanque['tipo_tanque']) ? $tanque['tipo_tanque'] : '',
-                        'id_tipo_tanque' => isset($tanque['id_tipo_tanque']) ? intval($tanque['id_tipo_tanque']) : null
+                        'id' => $tanque['id'],
+                        'nombre' => $nombre_completo,
+                        'nombre_solo' => $tanque['nombre'],
+                        'cantidad_peces' => $tanque['cantidad_peces'],
+                        'tipo_tanque' => $tanque['tipo_tanque'],
+                        'id_tipo_tanque' => $tanque['id_tipo_tanque']
                     );
                 }
             }
@@ -88,24 +84,18 @@
         public function postCreate(){
             $obj = new SeguimientoModel();
 
-            $fecha = $_POST['fecha'];
-            $id_zoocriadero = isset($_POST['id_zoocriadero']) ? intval($_POST['id_zoocriadero']) : 0;
-            $id_tanque = isset($_POST['id_tanque']) ? intval($_POST['id_tanque']) : 0;
-            $id_responsable = isset($_SESSION['usuario_id']) ? intval($_SESSION['usuario_id']) : 0;
-            
-            $id_tipo_tanque = isset($_POST['id_tipo_tanque']) ? intval($_POST['id_tipo_tanque']) : 0;
-            if($id_tanque > 0 && $id_tipo_tanque > 0){
-                $sql_update_tanque = "UPDATE tanques SET id_tipo_tanque=$id_tipo_tanque WHERE id=$id_tanque";
-                $obj->update($sql_update_tanque);
-            }
-            
-            $cantidad_peces_tanque = 0;
+             $fecha = $_POST['fecha'];
+             $id_zoocriadero = $_POST['id_zoocriadero'];
+             $id_tanque = $_POST['id_tanque'];
+             $id_responsable = $_SESSION['usuario_id'];
+             
+             $cantidad_peces_tanque = 0;
             if($id_tanque > 0){
                 $sql_tanque = "SELECT cantidad_peces FROM tanques WHERE id=$id_tanque";
                 $result_tanque = $obj->select($sql_tanque);
                 if(pg_num_rows($result_tanque) > 0){
                     $tanque_data = pg_fetch_assoc($result_tanque);
-                    $cantidad_peces_tanque = isset($tanque_data['cantidad_peces']) ? intval($tanque_data['cantidad_peces']) : 0;
+                    $cantidad_peces_tanque = $tanque_data['cantidad_peces'];
                 }
             }
             
@@ -120,17 +110,26 @@
             }
 
             $id = $obj->autoincrement("seguimiento_detalle", "id");
-            $id_actividad = isset($_POST['id_actividad']) ? intval($_POST['id_actividad']) : 0;
-            $ph = isset($_POST['ph']) ? floatval($_POST['ph']) : 0;
-            $temperatura = isset($_POST['temperatura']) ? floatval($_POST['temperatura']) : 0;
-            $num_alevines = isset($_POST['num_alevines']) ? intval($_POST['num_alevines']) : 0;
-            $num_muertes = isset($_POST['num_muertes']) ? intval($_POST['num_muertes']) : 0;
-            $num_machos = isset($_POST['num_machos']) ? intval($_POST['num_machos']) : 0;
-            $num_hembras = isset($_POST['num_hembras']) ? intval($_POST['num_hembras']) : 0;
-            $cloro = isset($_POST['cloro']) ? floatval($_POST['cloro']) : 0;
-            $observaciones = isset($_POST['observaciones']) ? pg_escape_string($obj->getConnect(), $_POST['observaciones']) : '';
+            $id_actividad = $_POST['id_actividad'];
+            $ph = $_POST['ph'];
+            $temperatura = $_POST['temperatura'];
+            $num_alevines = $_POST['num_alevines'];
+            $num_muertes = $_POST['num_muertes'];
+            $num_machos = $_POST['num_machos'];
+            $num_hembras = $_POST['num_hembras'];
+            $cloro = $_POST['cloro'];
+            $observaciones = $_POST['observaciones'] ? pg_escape_string($obj->getConnect(), $_POST['observaciones']) : '';
             
-            $total = $cantidad_peces_tanque + $num_alevines - $num_muertes + $num_machos + $num_hembras;
+            // Validar que la suma de alevines, hembras y machos sea igual a la cantidad de peces del tanque
+            $suma_peces = $num_alevines + $num_hembras + $num_machos;
+            if($cantidad_peces_tanque > 0 && $suma_peces != $cantidad_peces_tanque) {
+                $_SESSION['error'] = "La suma de Alevines ($num_alevines) + Hembras ($num_hembras) + Machos ($num_machos) = $suma_peces debe ser igual a la cantidad de peces del tanque ($cantidad_peces_tanque)";
+                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","create") . "';</script>";
+                exit();
+            }
+            
+            // Calcular total: Cantidad de peces del tanque - Muertes
+            $total = $cantidad_peces_tanque - $num_muertes;
             
             $sql = "INSERT INTO seguimiento_detalle (id, id_seguimiento, id_actividad, ph, temperatura, num_alevines, num_muertes, num_machos, num_hembras, cloro, observaciones, total, estado_id) 
                     VALUES ($id, $id_seguimiento, $id_actividad, $ph, $temperatura, $num_alevines, $num_muertes, $num_machos, $num_hembras, $cloro, '$observaciones', $total, 1)";
@@ -161,7 +160,7 @@
             $sql = "SELECT sd.*, 
                            a.nombre as nombre_actividad,
                            sde.nombre as nombre_estado
-                    FROM seguimiento_detalle sd
+                    FROM seguimiento_detalle sd 
                     LEFT JOIN actividad a ON sd.id_actividad = a.id
                     LEFT JOIN seguimiento_detalle_estado sde ON sd.estado_id = sde.id
                     WHERE sd.id=$id";
@@ -198,7 +197,7 @@
 
         public function updateStatus(){
             $obj = new SeguimientoModel();
-            $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+            $id = $_GET['id'];
 
             if($id <= 0){
                 redirect(getUrl("Seguimiento","Seguimiento","lista"));
@@ -232,7 +231,7 @@
                            s.id_tanque as id_tanque_actual,
                            t.id_tipo_tanque as id_tipo_tanque_actual,
                            t.cantidad_peces as cantidad_peces_tanque
-                    FROM seguimiento_detalle sd
+                    FROM seguimiento_detalle sd 
                     LEFT JOIN actividad a ON sd.id_actividad = a.id
                     LEFT JOIN seguimiento s ON sd.id_seguimiento = s.id
                     LEFT JOIN tanques t ON s.id_tanque = t.id
@@ -249,9 +248,6 @@
                            LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id
                            ORDER BY t.nombre";
             $tanques = $obj->select($sql_tanques);
-            
-            $sql_tipos_tanque = "SELECT id, nombre FROM tipo_tanque ORDER BY nombre";
-            $tipos_tanque = $obj->select($sql_tipos_tanque);
 
             include_once '../view/Seguimiento/update.php';
         }
@@ -259,20 +255,14 @@
         public function postUpdate(){
             $obj = new SeguimientoModel();
 
-            $id = $_POST['id'];
-            $fecha = $_POST['fecha'];
-            $id_tanque = isset($_POST['id_tanque']) ? intval($_POST['id_tanque']) : 0;
-            $id_tipo_tanque = isset($_POST['id_tipo_tanque']) ? intval($_POST['id_tipo_tanque']) : 0;
-            $id_seguimiento = isset($_POST['id_seguimiento']) ? intval($_POST['id_seguimiento']) : 0;
-            $id_responsable = isset($_SESSION['usuario_id']) ? intval($_SESSION['usuario_id']) : 0;
-            $id_zoo = 0;
-            
-            if($id_tanque > 0 && $id_tipo_tanque > 0){
-                $sql_update_tanque = "UPDATE tanques SET id_tipo_tanque=$id_tipo_tanque WHERE id=$id_tanque";
-                $obj->update($sql_update_tanque);
-            }
-            
-            if($id_seguimiento > 0){
+             $id = $_POST['id'];
+             $fecha = $_POST['fecha'];
+             $id_tanque = $_POST['id_tanque'];
+             $id_seguimiento = $_POST['id_seguimiento'];
+             $id_responsable = $_SESSION['usuario_id'];
+             $id_zoo = 0;
+             
+             if($id_seguimiento > 0){
                 $sql_update_seguimiento = "UPDATE seguimiento SET fecha='$fecha', id_tanque=$id_tanque, id_responsable=$id_responsable WHERE id=$id_seguimiento";
                 $obj->update($sql_update_seguimiento);
             } else {
@@ -289,21 +279,30 @@
                 $result_tanque = $obj->select($sql_tanque);
                 if(pg_num_rows($result_tanque) > 0){
                     $tanque_data = pg_fetch_assoc($result_tanque);
-                    $cantidad_peces_tanque = isset($tanque_data['cantidad_peces']) ? intval($tanque_data['cantidad_peces']) : 0;
+                    $cantidad_peces_tanque = $tanque_data['cantidad_peces'];
                 }
             }
+
+            $id_actividad = $_POST['id_actividad'];
+            $ph = $_POST['ph'];
+            $temperatura = $_POST['temperatura'];
+            $num_alevines = $_POST['num_alevines'];
+            $num_muertes = $_POST['num_muertes'];
+            $num_machos = $_POST['num_machos'];
+            $num_hembras = $_POST['num_hembras'];
+            $cloro = $_POST['cloro'];
+            $observaciones = $_POST['observaciones'];
             
-            $id_actividad = isset($_POST['id_actividad']) ? intval($_POST['id_actividad']) : 0;
-            $ph = isset($_POST['ph']) && $_POST['ph'] !== '' ? floatval($_POST['ph']) : 0;
-            $temperatura = isset($_POST['temperatura']) && $_POST['temperatura'] !== '' ? floatval($_POST['temperatura']) : 0;
-            $num_alevines = isset($_POST['num_alevines']) && $_POST['num_alevines'] !== '' ? intval($_POST['num_alevines']) : 0;
-            $num_muertes = isset($_POST['num_muertes']) && $_POST['num_muertes'] !== '' ? intval($_POST['num_muertes']) : 0;
-            $num_machos = isset($_POST['num_machos']) && $_POST['num_machos'] !== '' ? intval($_POST['num_machos']) : 0;
-            $num_hembras = isset($_POST['num_hembras']) && $_POST['num_hembras'] !== '' ? intval($_POST['num_hembras']) : 0;
-            $cloro = isset($_POST['cloro']) && $_POST['cloro'] !== '' ? floatval($_POST['cloro']) : 0;
-            $observaciones = isset($_POST['observaciones']) ? pg_escape_string($obj->getConnect(), $_POST['observaciones']) : '';
+            // Validar que la suma de alevines, hembras y machos sea igual a la cantidad de peces del tanque
+            $suma_peces = $num_alevines + $num_hembras + $num_machos;
+            if($cantidad_peces_tanque > 0 && $suma_peces != $cantidad_peces_tanque) {
+                $_SESSION['error'] = "La suma de Alevines ($num_alevines) + Hembras ($num_hembras) + Machos ($num_machos) = $suma_peces debe ser igual a la cantidad de peces del tanque ($cantidad_peces_tanque)";
+                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","update", array("id" => $id)) . "';</script>";
+                exit();
+            }
             
-            $total = $cantidad_peces_tanque + $num_alevines - $num_muertes + $num_machos + $num_hembras;
+            // Calcular total: Cantidad de peces del tanque - Muertes
+            $total = $cantidad_peces_tanque - $num_muertes;
 
             $sql = "UPDATE seguimiento_detalle SET id_seguimiento=$id_seguimiento, id_actividad=$id_actividad, ph=$ph, temperatura=$temperatura, num_alevines=$num_alevines, num_muertes=$num_muertes, num_machos=$num_machos, num_hembras=$num_hembras, cloro=$cloro, observaciones='$observaciones', total=$total WHERE id=$id";
 

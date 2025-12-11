@@ -66,7 +66,6 @@
                                     <th>ID</th>
                                     <th>Fecha</th>
                                     <th>Tanque</th>
-                                    <th>Tipo Tanque</th>
                                     <th>Actividad</th>
                                     <th>Observaciones</th>
                                     <th>Acciones</th>
@@ -76,17 +75,19 @@
                             <tbody id="tableBody">
                             <?php
                                 while($seg = pg_fetch_assoc($seguimientos)){    
-                                    $fecha_formato = isset($seg['fecha_seguimiento']) && $seg['fecha_seguimiento'] ? date('d/m/Y', strtotime($seg['fecha_seguimiento'])) : 'N/A';
+                                    $fecha_formato = ($seg['fecha_seguimiento']) && $seg['fecha_seguimiento'] ? date('d/m/Y', strtotime($seg['fecha_seguimiento'])) : 'N/A';
                                     $nombre_tanque = $seg['nombre_tanque'] ? $seg['nombre_tanque'] : 'N/A';
-                                    $nombre_tipo_tanque = $seg['nombre_tipo_tanque'] ? $seg['nombre_tipo_tanque'] : 'N/A';
+                                    // Mostrar tanque con su tipo si existe
+                                    if(!empty($seg['nombre_tipo_tanque'])){
+                                        $nombre_tanque .= ' - ' . $seg['nombre_tipo_tanque'];
+                                    }
 
                                     echo "<tr>";
                                         echo "<td>".$seg['id']."</td>";
                                         echo "<td>".$fecha_formato."</td>";
                                         echo "<td>".$nombre_tanque."</td>";
-                                        echo "<td>".$nombre_tipo_tanque."</td>";
                                         echo "<td>".($seg['nombre_actividad'] ? $seg['nombre_actividad'] : 'N/A')."</td>";
-                                        echo "<td>".substr($seg['observaciones'], 0, 30).(strlen($seg['observaciones']) > 30 ? '...' : '')."</td>";
+                                        echo "<td>".substr($seg['observaciones'], 0, 30).(($seg['observaciones']) > 30 ? '...' : '')."</td>";
                                         
                                         echo "<td>";
 
