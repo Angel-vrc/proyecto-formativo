@@ -96,7 +96,7 @@
                                     <div class="u-text">
                                         <h4><?php
                                         echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre']) : htmlspecialchars($_SESSION['usuario']); ?></h4>
-                                        <p class="text-muted"><?php echo isset($_SESSION['usuario']) ? htmlspecialchars($_SESSION['usuario']) : 'Usuario'; ?></p><a href="<?php echo getUrl('Perfil', 'Perfil', 'view'); ?>" class="btn btn-xs btn-secondary btn-sm">Ver Perfil</a>
+                                        <p class="text-muted"><?php echo isset($_SESSION['usuario_rol_nombre']) ? htmlspecialchars($_SESSION['usuario_rol_nombre']) : 'Usuario'; ?></p><a href="<?php echo getUrl('Perfil', 'Perfil', 'view'); ?>" class="btn btn-xs btn-secondary btn-sm">Ver Perfil</a>
                                     </div>
                                 </div>
                             </li>
