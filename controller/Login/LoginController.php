@@ -6,6 +6,7 @@
     class LoginController extends UsuarioModel{
 
         public function autenticar(){
+            $obj = new UsuarioModel();
 
             if(isset($_SESSION['auth']) && $_SESSION['auth'] == "ok"){
                 redirect('index.php');
@@ -39,7 +40,9 @@
                     $password = pg_escape_string($this->getConnect(), $password);
                     
                     $condition = "documento = '$documento' AND contrasena = '$password'";
-                    $result = $this->findOne("usuarios", "id, documento, contrasena, nombre, apellido, correo, telefono", $condition);
+                    $result = $obj->select("SELECT u.id, u.documento, u.contrasena, u.nombre, u.apellido, 
+                    u.correo, u.telefono, r.id, r.nombre AS nombre_rol FROM usuarios u JOIN roles r ON u.id_rol = r.id WHERE $condition");
+
                     
                     if($result != "No se encontro ningun registro"){
                         $userData = pg_fetch_assoc($result);
@@ -47,8 +50,12 @@
                         $_SESSION['auth'] = "ok";
                         $_SESSION['usuario'] = $userData['documento'];
                         $_SESSION['usuario_id'] = $userData['id'];
+                        $_SESSION['usuario_id_rol'] = $userData['id_rol'];
+                        $_SESSION['usuario_rol_nombre'] = $userData['nombre_rol'];
                         $_SESSION['nombre'] = isset($userData['nombre']) ? trim($userData['nombre'] . ' ' . (isset($userData['apellido']) ? $userData['apellido'] : '')) : $userData['documento'];
                         
+                        echo $sql;
+
                         redirect('index.php');
                         exit();
                     } else {
