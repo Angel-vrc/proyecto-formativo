@@ -17,6 +17,13 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
+                
+                                <div class="form-group">                                    
+                                    <input type="text" class="form-control" id="longitud" name="longitud" 
+                                           required
+                                           maxlength="150" hidden>
+                                </div>
+
                                 <!-- Nombre -->
                                 <div class="form-group">
                                     <label for="nombre">Nombre del Zoocriadero *</label>
@@ -62,6 +69,12 @@
                             </div>
                             
                             <div class="col-md-6">
+                                <div class="form-group">                                
+                                <input type="text" class="form-control" id="latitud" name="latitud" 
+                                        required
+                                        maxlength="150" hidden>
+                            </div>
+
                                 <!-- Responsable -->
                                 <div class="form-group">
                                     <label for="responsable">Responsable *</label>
