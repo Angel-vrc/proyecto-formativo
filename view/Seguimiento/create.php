@@ -161,7 +161,6 @@
                 dataType: 'json',
                 cache: false,
                 success: function(response) {   
-                    console.log('Respuesta AJAX recibida:', response);
                     
                     if(response && response.success !== false && response.tanques) {
                         if(response.tanques.length > 0) {
@@ -171,10 +170,8 @@
                                 options += '<option value="' + tanque.id + '">' + nombre + '</option>';
                             });
                             $tanqueSelect.html(options).prop('disabled', false);
-                            console.log('Tanques cargados:', response.tanques.length);
                         } else {
                             $tanqueSelect.html('<option value="">No hay tanques disponibles para este zoocriadero</option>').prop('disabled', true);
-                            console.log('No hay tanques disponibles');
                         }
                     }
                 },
