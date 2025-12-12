@@ -71,6 +71,32 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-users" style="color: #1a5a5a; margin-right: 8px;"></i>
+                                        <strong>Rol</strong>
+                                    </label>
+                                <div class="form-control-plaintext" style="font-size: 16px; padding: 10px; background-color: #f8f9fa; border-radius: 8px;">
+                                    <?php echo isset($usuario['rol_nombre']) ? htmlspecialchars($usuario['rol_nombre']) : 'N/A'; ?>
+                                </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        <i class="fas fa-exclamation-triangle" style="color: #1a5a5a; margin-right: 8px;"></i>
+                                        <strong>Estado</strong>
+                                    </label>
+                                    <div class="form-control-plaintext" style="font-size: 16px; padding: 10px; background-color: #f8f9fa; border-radius: 8px;">
+                                        <?php echo isset($usuario['estado_nombre']) ? htmlspecialchars($usuario['estado_nombre']) : 'N/A'; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         
                         <div class="row mt-3">
                             <div class="col-md-6">
@@ -98,6 +124,22 @@
                                     <small class="form-text text-muted">Campo editable</small>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label" for="contrasena">
+                                        <i class="fas fa-lock" style="color: #1a5a5a; margin-right: 8px;"></i>
+                                        <strong>Contraseña</strong>
+                                    </label>
+                                    <input type="password" class="form-control" id="contrasena" name="contrasena" 
+                                           value="<?php echo isset($usuario['contrasena']) ? htmlspecialchars($usuario['contrasena']) : ''; ?>" 
+                                           placeholder="Ingrese una nueva contraseña" required>
+                                    <small class="form-text text-muted">Campo editable</small>
+                                </div>
+                            </div>
+                            
                         </div>
                         
                         <div class="row mt-4">

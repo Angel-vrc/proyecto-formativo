@@ -1,11 +1,12 @@
 <?php
 
-    include_once("../model/MasterModel.php");
+    include_once("../model/Usuarios/UsuarioModel.php");
     require_once("../lib/conf/recaptcha_config.php");
 
-    class LoginController extends MasterModel{
+    class LoginController{
 
         public function autenticar(){
+            $obj = new UsuarioModel();
 
             if(isset($_SESSION['auth']) && $_SESSION['auth'] == "ok"){
                 redirect('index.php');
@@ -14,7 +15,7 @@
 
             if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usuario']) && isset($_POST['password'])){
                 $usuario = trim($_POST['usuario']);
-                $password = $_POST['password'];
+                $password = $_POST["password"];
                 
                 // Validar reCAPTCHA
                 $recaptcha_response = isset($_POST['g-recaptcha-response']) ? $_POST['g-recaptcha-response'] : '';
@@ -35,11 +36,13 @@
                 // }
                 
                 if(!empty($usuario) && !empty($password)){
-                    $documento = pg_escape_string($this->getConnect(), $usuario);
-                    $password = pg_escape_string($this->getConnect(), $password);
+
+                    $passHashIngresada = md5($passIngresada);
                     
-                    $condition = "documento = '$documento' AND contrasena = '$password'";
-                    $result = $this->findOne("usuarios", "id, documento, contrasena, nombre, apellido, correo, telefono", $condition);
+                    $condition = "documento = '$usuario' AND contrasena = '$passHashIngresada'";
+                    $result = $obj->select("SELECT u.id, u.documento, u.contrasena, u.nombre, u.apellido, 
+                    u.correo, u.telefono, r.id, r.nombre AS nombre_rol FROM usuarios u JOIN roles r ON u.id_rol = r.id WHERE $condition");
+
                     
                     if($result != "No se encontro ningun registro"){
                         $userData = pg_fetch_assoc($result);
@@ -47,8 +50,12 @@
                         $_SESSION['auth'] = "ok";
                         $_SESSION['usuario'] = $userData['documento'];
                         $_SESSION['usuario_id'] = $userData['id'];
+                        $_SESSION['usuario_id_rol'] = $userData['id_rol'];
+                        $_SESSION['usuario_rol_nombre'] = $userData['nombre_rol'];
                         $_SESSION['nombre'] = isset($userData['nombre']) ? trim($userData['nombre'] . ' ' . (isset($userData['apellido']) ? $userData['apellido'] : '')) : $userData['documento'];
                         
+                        echo $sql;
+
                         redirect('index.php');
                         exit();
                     } else {

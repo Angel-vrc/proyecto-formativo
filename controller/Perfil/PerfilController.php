@@ -1,62 +1,52 @@
 <?php
 
-    include_once(__DIR__ . "/../../model/MasterModel.php");
+    include_once('../model/Usuarios/UsuarioModel.php');
 
-    class PerfilController extends MasterModel{
+    class PerfilController{
 
         public function view(){
-            
+            $obj = new UsuarioModel();
+
             // Obtener el ID del usuario de la sesión
-            $usuario_id = isset($_SESSION['usuario_id']) ? intval($_SESSION['usuario_id']) : 0;
+            $id = isset($_SESSION['usuario_id']) ? intval($_SESSION['usuario_id']) : 0;
 
-            // Obtener los datos del usuario
-            $condition = "id = $usuario_id";
-            $result = $this->findOne("usuarios", "id, documento, nombre, apellido, correo, telefono", $condition);
+            $sql = "SELECT u.*, r.nombre rol_nombre, e.nombre estado_nombre FROM usuarios u, roles r, usuario_estado e WHERE u.id=$id AND u.id_rol = r.id AND u.id_estado = e.id_estado";
+            $usuario = $obj->select($sql);
 
-            if($result == "No se encontro ningun registro"){
+            if(!$usuario){
                 $_SESSION['error'] = "Usuario no encontrado";
-                echo "<script>window.location.href = 'index.php';</script>";
+                redirect('index.php');
                 exit();
             }
 
-            $usuario = pg_fetch_assoc($result);
+            $usuario = pg_fetch_assoc($usuario);
 
             include_once '../view/perfil/view.php';
         }
 
         public function postUpdate(){
-            // Verificar que el usuario esté autenticado
-            if(!isset($_SESSION['auth']) || $_SESSION['auth'] != "ok"){
-                echo "<script>window.location.href = 'login.php';</script>";
+            $obj = new UsuarioModel();
+
+            $id = isset($_SESSION['usuario_id']) ? intval($_SESSION['usuario_id']) : 0;
+
+            if($id <= 0){
+                redirect('index.php');
                 exit();
             }
 
-            $usuario_id = isset($_SESSION['usuario_id']) ? intval($_SESSION['usuario_id']) : 0;
+            $telefono = $_POST['telefono'];
+            $correo = $_POST['correo'];
+            $password = str_replace(' ', '', $password);
+            $hash = md5($password);
 
-            if($usuario_id <= 0){
-                echo "<script>window.location.href = 'index.php';</script>";
-                exit();
-            }
+            $sql = "UPDATE usuarios SET correo='$correo',telefono='$telefono', contrasena='$hash' WHERE id=$id";
 
-            if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['correo']) && isset($_POST['telefono'])){
-                $correo = pg_escape_string($this->getConnect(), $_POST['correo']);
-                $telefono = pg_escape_string($this->getConnect(), $_POST['telefono']);
+            $resultado = $obj->update($sql);
 
-                $sql = "UPDATE usuarios SET correo = '$correo', telefono = '$telefono' WHERE id = $usuario_id";
-                $result = $this->update($sql);
-
-                if($result){
-                    $_SESSION['success'] = "Perfil actualizado correctamente";
-                    echo "<script>window.location.href = '" . getUrl('Perfil', 'Perfil', 'view') . "';</script>";
-                    exit();
-                } else {
-                    $_SESSION['error'] = "Error al actualizar el perfil";
-                    echo "<script>window.location.href = '" . getUrl('Perfil', 'Perfil', 'view') . "';</script>";
-                    exit();
-                }
-            } else {
-                echo "<script>window.location.href = '" . getUrl('Perfil', 'Perfil', 'view') . "';</script>";
-                exit();
+            if(!$resultado){
+                echo "Error en la actualizacion de datos";
+            }else{                
+                redirect(getUrl("Usuarios","Usuario","lista"));
             }
         }
 
