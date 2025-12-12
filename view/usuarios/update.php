@@ -60,7 +60,7 @@
                                     <label for="telefono">Teléfono *</label>
                                     <input type="tel" class="form-control" id="telefono" name="telefono" 
                                            placeholder="Ej: 3001234567" required
-                                           pattern="[0-9]{7,20}" maxlength="20" value="<?php echo $usuario['telefono']; ?>">                                    
+                                           pattern="3[0-9]{7,20}" maxlength="20" value="<?php echo $usuario['telefono']; ?>">                                    
                                 </div>                                                                                       
 
                                 <!-- Rol -->

@@ -7,7 +7,9 @@
         public function lista(){
             $obj = new UsuarioModel();
 
-            $sql = "SELECT u.*, r.nombre rol_nombre, e.nombre estado_nombre FROM usuarios u, roles r, usuario_estado e WHERE u.id_rol = r.id AND u.id_estado = e.id_estado ORDER BY id ASC";
+            $id = $_SESSION['usuario_id'];
+
+            $sql = "SELECT u.*, r.nombre rol_nombre, e.nombre estado_nombre FROM usuarios u, roles r, usuario_estado e WHERE u.id_rol = r.id AND u.id_estado = e.id_estado AND u.id<>$id ORDER BY id ASC";
 
             $usuarios = $obj->select($sql);
 
@@ -90,7 +92,6 @@
                 redirect(getUrl("Usuarios","Usuario","lista"));
                 return;
             }
-
 
             $sql = "SELECT u.id, u.nombre, u.apellido, u.telefono, u.id_estado, u.id_rol, e.nombre estado_nombre, r.nombre rol_nombre FROM usuarios u, usuario_estado e, roles r WHERE u.id=$id AND u.id_rol=r.id AND u.id_estado=e.id_estado";
 
