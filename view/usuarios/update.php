@@ -41,7 +41,7 @@
                                     <label for="documento">Documento *</label>
                                     <input type="text" class="form-control" id="documento" name="documento" 
                                            placeholder="Ej: 123456789" required
-                                           maxlength="200" disabled value="<?php echo $usuario['documento']; ?>">
+                                           maxlength="200" value="<?php echo $usuario['documento']; ?>" readonly>
                                 </div>    
                             </div>
                                 
@@ -60,7 +60,7 @@
                                     <label for="telefono">Teléfono *</label>
                                     <input type="tel" class="form-control" id="telefono" name="telefono" 
                                            placeholder="Ej: 3001234567" required
-                                           pattern="[0-9]{7,20}" maxlength="20" value="<?php echo $usuario['telefono']; ?>">                                    
+                                           pattern="3[0-9]{7,20}" maxlength="20" value="<?php echo $usuario['telefono']; ?>">                                    
                                 </div>                                                                                       
 
                                 <!-- Rol -->

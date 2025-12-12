@@ -4,7 +4,7 @@
 
 -- Dumped from database version 9.2.9
 -- Dumped by pg_dump version 9.2.9
--- Started on 2025-12-11 11:56:17
+-- Started on 2025-12-11 23:16:39
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -1265,8 +1265,10 @@ SELECT pg_catalog.setval('usuario_estado_id_estado_seq', 1, false);
 --
 
 COPY usuarios (id, nombre, apellido, documento, correo, telefono, contrasena, id_rol, id_estado) FROM stdin;
-1	Melany	Agredo	123456789	melany45@example.com	3115558899	1234	1	1
-2	Angelica   	Vargas	1234564567	ang@gmail.com	12345678	1234567	3	2
+2	Angelica   	Vargas	1234564567	ang@gmail.com	34567888	1234567	3	1
+3	Camila	Lopez Torres 	1098456721	camila.torres@gmail.com	3114567890	Camila1098456721	2	1
+4	prueba	prueba	23456789	prueba@gmail.com	3124567890	5811cb13848453588636a8c1da382aed	3	1
+1	Melany	Agredo	123456789	melany45@gmail.com	3115558899	d41d8cd98f00b204e9800998ecf8427e	1	1
 \.
 
 
@@ -1727,7 +1729,7 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2025-12-11 11:56:18
+-- Completed on 2025-12-11 23:16:40
 
 --
 -- PostgreSQL database dump complete

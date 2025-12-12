@@ -56,27 +56,21 @@
                     </a>                    
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Usuarios'); ?>">
-                    <a href="<?php echo getUrl("Usuarios","Usuario","lista"); ?>">
-                        <i class="fas fa-users"></i>
-                        <p>Gestión de Usuarios</p>                        
-                    </a>
-                </li>
-                <li class="nav-item <?php echo isActiveModule('Seguridad'); ?>">
                     <a data-bs-toggle="collapse" href="#gestionSeguridad">
-                        <i class="fas fa-lock"></i>
-                        <p>Seguridad del Sistema</p>
+                        <i class="fas fa-users"></i>
+                        <p>Usuarios y Roles</p>
                         <span class="caret"></span>
                     </a>
                     <div class="collapse" id="gestionSeguridad">
                         <ul class="nav nav-collapse">
                             <li>
-                                <a href="<?php echo getUrl("Seguridad","Seguridad","listRoles"); ?>">
-                                    <span class="sub-item">Roles</span>
+                                <a href="<?php echo getUrl("Usuarios","Usuario","lista"); ?>">
+                                    <span class="sub-item">Gestion Usuarios</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="<?php echo getUrl("Seguridad","Seguridad","listPermisos"); ?>">
-                                    <span class="sub-item">Permisos</span>
+                                <a href="<?php echo getUrl("Seguridad","Seguridad","listRoles"); ?>">
+                                    <span class="sub-item">Gestion Roles</span>
                                 </a>
                             </li>                            
                         </ul>
