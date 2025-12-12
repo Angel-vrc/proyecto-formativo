@@ -3,7 +3,7 @@
     include_once("../model/Usuarios/UsuarioModel.php");
     require_once("../lib/conf/recaptcha_config.php");
 
-    class LoginController extends UsuarioModel{
+    class LoginController{
 
         public function autenticar(){
             $obj = new UsuarioModel();
@@ -15,7 +15,7 @@
 
             if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usuario']) && isset($_POST['password'])){
                 $usuario = trim($_POST['usuario']);
-                $password = $_POST['password'];
+                $password = $_POST["password"];
                 
                 // Validar reCAPTCHA
                 $recaptcha_response = isset($_POST['g-recaptcha-response']) ? $_POST['g-recaptcha-response'] : '';
@@ -36,10 +36,10 @@
                 // }
                 
                 if(!empty($usuario) && !empty($password)){
-                    $documento = pg_escape_string($this->getConnect(), $usuario);
-                    $password = pg_escape_string($this->getConnect(), $password);
+
+                    $passHashIngresada = md5($passIngresada);
                     
-                    $condition = "documento = '$documento' AND contrasena = '$password'";
+                    $condition = "documento = '$usuario' AND contrasena = '$passHashIngresada'";
                     $result = $obj->select("SELECT u.id, u.documento, u.contrasena, u.nombre, u.apellido, 
                     u.correo, u.telefono, r.id, r.nombre AS nombre_rol FROM usuarios u JOIN roles r ON u.id_rol = r.id WHERE $condition");
 

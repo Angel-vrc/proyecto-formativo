@@ -36,8 +36,9 @@
             $correo = $_POST['correo'];
             $rol = $_POST['rol'];
             $password = str_replace(' ', '', $nombre.$documento);
+            $hash = md5($password);
 
-            $sql = "INSERT INTO usuarios VALUES ($id, '$nombre','$apellido','$documento','$correo','$telefono','$password', $rol,1)";
+            $sql = "INSERT INTO usuarios VALUES ($id, '$nombre','$apellido','$documento','$correo','$telefono','$hash', $rol,1)";
 
             $resultado = $obj->insert($sql);
 
@@ -74,6 +75,7 @@
             $rol = $_POST['rol'];
 
             $sql = "UPDATE usuarios SET nombre='$nombre', apellido='$apellido', documento='$documento', correo='$correo',telefono='$telefono', id_rol=$rol WHERE id=$id";
+
 
             $resultado = $obj->update($sql);
 

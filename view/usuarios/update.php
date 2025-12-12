@@ -41,7 +41,7 @@
                                     <label for="documento">Documento *</label>
                                     <input type="text" class="form-control" id="documento" name="documento" 
                                            placeholder="Ej: 123456789" required
-                                           maxlength="200" disabled value="<?php echo $usuario['documento']; ?>">
+                                           maxlength="200" value="<?php echo $usuario['documento']; ?>" readonly>
                                 </div>    
                             </div>
                                 
