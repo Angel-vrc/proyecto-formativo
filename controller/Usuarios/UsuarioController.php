@@ -42,10 +42,14 @@
 
             $resultado = $obj->insert($sql);
 
-            if(!$resultado){
-                echo "Error en la insercion de datos";
-            }else{                
+            if($resultado){
+                $_SESSION['success'] = "Usuario creado correctamente";
                 redirect(getUrl("Usuarios","Usuario","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al crear el usuario";
+                redirect(getUrl("Usuarios","Usuario","lista"));
+                exit();
             }
         }
 
@@ -79,10 +83,14 @@
 
             $resultado = $obj->update($sql);
 
-            if(!$resultado){
-                echo "Error en la actualizacion de datos";
-            }else{                
+            if($resultado){
+                $_SESSION['success'] = "Usuario actualizado correctamente";
                 redirect(getUrl("Usuarios","Usuario","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al actualizar el usuario";
+                redirect(getUrl("Usuarios","Usuario","lista"));
+                exit();
             }
         }
 
@@ -113,12 +121,16 @@
 
             $sql = "UPDATE usuarios SET id_estado = 2 WHERE id = $id";
 
-            $ejecutar = $obj->update($sql);
+            $resultado = $obj->update($sql);
             
-            if($ejecutar){
+            if($resultado){
+                $_SESSION['success'] = "Usuario deshabilitado correctamente";
                 redirect(getUrl("Usuarios","Usuario","lista"));
+                exit();
             }else{
-                echo "No se pudo deshabilitar el usuario";
+                $_SESSION['error'] = "Error al deshabilitar el usuario";
+                redirect(getUrl("Usuarios","Usuario","lista"));
+                exit();
             }
 
         }
@@ -134,13 +146,16 @@
 
             $sql = "UPDATE usuarios SET id_estado=1 WHERE id=$id";
 
-            $ejecutar = $obj->update($sql);
+            $resultado = $obj->update($sql);
 
-            if($ejecutar){
+            if($resultado){
+                $_SESSION['success'] = "Usuario habilitado correctamente";
                 redirect(getUrl("Usuarios","Usuario","lista"));
+                exit();
             }else{
-                echo "El usuario solicitado no existe.";
-                return;
+                $_SESSION['error'] = "Error al habilitar el usuario";
+                redirect(getUrl("Usuarios","Usuario","lista"));
+                exit();
             }
         }
 

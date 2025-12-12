@@ -4,6 +4,22 @@
     <div class="page-header">
         <h4 class="page-title">Gestión de Usuarios</h4>
     </div>
+
+    <?php if(isset($_SESSION['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <?php echo ($_SESSION['success']); unset($_SESSION['success']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
+    
+    <?php if(isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <?php echo ($_SESSION['error']); unset($_SESSION['error']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
     
     <div class="row">
         <div class="col-md-12">

@@ -54,10 +54,14 @@
 
             $resultado = $obj->insert($sql);
 
-            if(!$resultado){
-                echo "Error en la insercion de datos";
-            }else{                
+            if($resultado){
+                $_SESSION['success'] = "Zoocriadero creado correctamente";
                 redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al crear el zoocriadero";
+                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
+                exit();
             }
         }
 
@@ -93,12 +97,16 @@
 
             $sql = "UPDATE zoocriadero SET id_estado = 2 WHERE id_zoocriadero = $id_zoocriadero";
 
-            $ejecutar = $obj->update($sql);
+            $resultado = $obj->update($sql);
             
-            if($ejecutar){
+            if($resultado){
+                $_SESSION['success'] = "Zoocriadero deshabilitado correctamente";
                 redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
+                exit();
             }else{
-                echo "No se pudo actualizar el zoocriadero";
+                $_SESSION['error'] = "Error al deshabilitar el zoocriadero";
+                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
+                exit();
             }
 
         }
@@ -114,13 +122,16 @@
 
             $sql = "UPDATE zoocriadero SET id_estado=1 WHERE id_zoocriadero=$id_zoocriadero";
 
-            $ejecutar = $obj->update($sql);
+            $resultado = $obj->update($sql);
 
-            if($ejecutar){
+            if($resultado){
+                $_SESSION['success'] = "Zoocriadero habilitado correctamente";
                 redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
+                exit();
             }else{
-                echo "El zoocriadero solicitado no existe.";
-                return;
+                $_SESSION['error'] = "Error al habilitar el zoocriadero";
+                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
+                exit();
             }
         }
 
@@ -158,9 +169,13 @@
             $resultado = $obj->update($sql);
 
             if($resultado){
+                $_SESSION['success'] = "Zoocriadero actualizado correctamente";
                 redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
+                exit();
             }else{
-                echo "error de insercion";
+                $_SESSION['error'] = "Error al actualizar el zoocriadero";
+                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
+                exit();
             }
         }
 
