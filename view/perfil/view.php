@@ -103,7 +103,7 @@
                                 <div class="form-group">
                                     <label class="form-label" for="correo">
                                         <i class="fas fa-envelope" style="color: #1a5a5a; margin-right: 8px;"></i>
-                                        <strong>Correo Electrónico</strong>
+                                        <strong>Correo Electrónico *</strong>
                                     </label>
                                     <input type="email" class="form-control" id="correo" name="correo" 
                                            value="<?php echo isset($usuario['correo']) ? htmlspecialchars($usuario['correo']) : ''; ?>" 
@@ -116,7 +116,7 @@
                                 <div class="form-group">
                                     <label class="form-label" for="telefono">
                                         <i class="fas fa-phone" style="color: #1a5a5a; margin-right: 8px;"></i>
-                                        <strong>Teléfono</strong>
+                                        <strong>Teléfono *</strong>
                                     </label>
                                     <input type="tel" class="form-control" id="telefono" name="telefono" 
                                            value="<?php echo isset($usuario['telefono']) ? htmlspecialchars($usuario['telefono']) : ''; ?>" 
@@ -131,7 +131,7 @@
                                 <div class="form-group">
                                     <label class="form-label" for="contrasena">
                                         <i class="fas fa-lock" style="color: #1a5a5a; margin-right: 8px;"></i>
-                                        <strong>Contraseña</strong>
+                                        <strong>Contraseña *</strong>
                                     </label>
                                     <input type="password" class="form-control" id="contrasena" name="contrasena" 
                                            value="<?php echo isset($usuario['contrasena']) ? htmlspecialchars($usuario['contrasena']) : ''; ?>" 

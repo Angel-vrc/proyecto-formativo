@@ -15,8 +15,6 @@
 
             if(!$usuario){
                 $_SESSION['error'] = "Usuario no encontrado";
-                redirect('index.php');
-                exit();
             }
 
             $usuario = pg_fetch_assoc($usuario);
@@ -43,10 +41,14 @@
 
             $resultado = $obj->update($sql);
 
-            if(!$resultado){
-                echo "Error en la actualizacion de datos";
-            }else{                
-                redirect(getUrl("Usuarios","Usuario","lista"));
+             if($resultado){
+                $_SESSION['success'] = "Usuario actualizado correctamente";
+                redirect(getUrl("Perfil","Perfil","view"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al actualizar el usuario";
+                redirect(getUrl("Perfil","Perfil","view"));
+                exit();
             }
         }
 
