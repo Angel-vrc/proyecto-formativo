@@ -8,10 +8,8 @@
         public function lista(){
             $obj = new ZoocriaderoModel();
 
-            $sql = "SELECT z.*, e.nombre AS nombre_estado, u.nombre AS nombre_responsable, u.apellido AS apellido_responsable FROM zoocriadero AS z
-            JOIN usuarios AS u ON z.responsable = u.id
-            JOIN zoocriadero_estado AS e ON z.id_estado = e.id_estado
-            ORDER BY id_zoocriadero ASC";
+            $sql = "SELECT z.*, e.nombre nombre_estado, u.nombre nombre_responsable, u.apellido apellido_responsable FROM zoocriadero z, usuarios u,zoocriadero_estado e WHERE z.responsable = u.id AND z.id_estado = e.id_estado
+            ORDER BY z.id_zoocriadero ASC";
 
             $zoocriaderos = $obj->select($sql);
 
@@ -179,6 +177,47 @@
             }
         }
 
+        public function filtro() {
+            $obj = new ZoocriaderoModel();
+
+            // Obtener filtros
+            $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
+            $comuna = isset($_GET['comuna']) ? trim($_GET['comuna']) : '';
+
+            $where = array();
+
+            // Filtro por texto (nombre o responsable)
+            if ($buscar !== '') {
+                $buscar_escaped = pg_escape_string($buscar);
+                $where[] = "(z.nombre ILIKE '%$buscar_escaped%' 
+                            OR u.nombre ILIKE '%$buscar_escaped%' 
+                            OR u.apellido ILIKE '%$buscar_escaped%')";
+            }
+
+            // Filtro por comuna (igualdad exacta)
+            if ($comuna !== '') {
+                $comuna_escaped = pg_escape_string($comuna);
+                $where[] = "z.comuna = '$comuna_escaped'";
+            }
+
+            // SQL base
+            $sql = "SELECT z.*, e.nombre nombre_estado, u.nombre nombre_responsable, u.apellido apellido_responsable
+                    FROM zoocriadero z
+                    JOIN usuarios u ON z.responsable = u.id
+                    JOIN zoocriadero_estado e ON z.id_estado = e.id_estado";
+
+            // Agregar WHERE dinámico si hay filtros
+            if (count($where) > 0) {
+                $sql .= " WHERE " . implode(" AND ", $where);
+            }
+
+            $sql .= " ORDER BY z.id_zoocriadero ASC";
+
+            $zoocriaderos = $obj->select($sql);
+
+            include_once '../view/zoocriaderos/filtro.php';
+        }
+        
     }
 
 
