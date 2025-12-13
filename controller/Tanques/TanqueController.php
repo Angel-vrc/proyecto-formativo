@@ -44,7 +44,7 @@
             if(!$resultado){
                 echo "Error en la insercion de datos";
             }else{
-                redirect(getUrl("Tanques","Tanque","list"));
+                redirect(getUrl("Tanques","Tanque","lista"));
             }
         }
 //        falta la tabla de estado
@@ -53,7 +53,7 @@
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
             if($id <= 0){
-                redirect(getUrl("Tanques","Tanque","list"));
+                redirect(getUrl("Tanques","Tanque","lista"));
                 return;
             }
             include_once '../view/tanques/delete.php';
@@ -66,7 +66,7 @@
             $sql = "UPDATE tanques SET id_estado = 2 WHERE id = $id";
 
             if($obj->update($sql)){
-                redirect(getUrl("Tanques","Tanque","list"));
+                redirect(getUrl("Tanques","Tanque","lista"));
             } else {
                 echo "No se pudo actualizar el estado del tanque";
             }
@@ -80,7 +80,7 @@
                 $obj->update("UPDATE tanques SET id_estado = 1 WHERE id = $id");
             }
 
-            redirect(getUrl("Tanques","Tanque","list"));
+            redirect(getUrl("Tanques","Tanque","lista"));
         }
 
         public function getUpdate(){
@@ -88,7 +88,7 @@
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
             if($id <= 0){
-                redirect(getUrl("Tanques","Tanque","list"));
+                redirect(getUrl("Tanques","Tanque","lista"));
                 return;
             }
 
@@ -96,7 +96,7 @@
             $tanque = pg_fetch_assoc($obj->select($sql));
 
             if(!$tanque){
-                redirect(getUrl("Tanques","Tanque","list"));
+                redirect(getUrl("Tanques","Tanque","lista"));
                 return;
             }
 
@@ -122,7 +122,7 @@
             if(!$resultado){
                 echo "Error al actualizar el tanque";
             } else {
-                redirect(getUrl("Tanques","Tanque","list"));
+                redirect(getUrl("Tanques","Tanque","lista"));
             }
         }
     }
