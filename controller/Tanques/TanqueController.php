@@ -83,8 +83,8 @@
 
             $sql = "UPDATE tanques SET id_estado = 2 WHERE id = $id";
 
-            $resultado = $obj->update($sql);
-            
+            $resultado = $obj->update($sql);            
+
             if($resultado){
                 redirect(getUrl("Tanques","Tanque","lista"));
                 exit();
@@ -93,6 +93,7 @@
                 exit();
             }
         }
+
         //para el activar
         public function updateStatus(){
             $obj = new TanquesModel();
