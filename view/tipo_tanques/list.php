@@ -9,7 +9,7 @@
                 <div class="card-header">
                     <div class="" style="display:flex; justify-content: space-between;">
                         <h4 class="card-title">Listado de Tipos de Tanque</h4>
-                        <a href="<?php echo getUrl("Tipo_tanques","Tipotanque","getCreate") ?>" class="btn btn-primary">
+                        <a href="<?php echo getUrl("Tipo_tanques","Tipotanque","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right">
                             <i class="fa fa-plus mx-2"></i> Nuevo tipo de Tanque
                         </a>
                     </div>
@@ -32,7 +32,7 @@
                                             echo "<td>".$tipo['id']."</td>";
                                             echo "<td>".$tipo['nombre']."</td>";
                                             echo "<td>";
-                                                echo "<a href='".getUrl("Tipo_tanques","Tipotanque","getUpdate",array("id"=>$tipo['id']))."' class='btn btn-primary mx-2'><i class='fa fa-edit'></i></a>";
+                                                echo "<a href='".getUrl("Tipo_tanques","Tipotanque","getUpdate",array("id"=>$tipo['id']))."' class='btn btn-primary mx-2'>Editar</a>";
                                                 if ($tipo['estado'] == 1) {
                                                     echo "<a href='".getUrl("Tipo_tanques", "Tipotanque","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
 

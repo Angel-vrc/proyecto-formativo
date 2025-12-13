@@ -61,7 +61,7 @@
                 <?php if (validacionPermisos('tipo_tanques')): ?>
                     <li class="nav-item <?php echo isActiveModule('Tipo_tanques'); ?>">
                         <a href="<?php echo getUrl("Tipo_tanques","Tipotanque","lista"); ?>">
-                            <i class="fas fa-tasks"></i>
+                            <i class="fas fa-box"></i>
                             <p>Tipo de Tanque</p>
                         </a>
                     </li>
@@ -70,7 +70,7 @@
                 <?php if (validacionPermisos('tipo_actividad')): ?>
                     <li class="nav-item <?php echo isActiveModule('Actividad'); ?>">
                         <a href="<?php echo getUrl("Actividad","Activida","lista"); ?>">
-                            <i class="fas fa-tint"></i>
+                            <i class="fas fa-th"></i>
                             <p>Tipo de Actividad</p>
                         </a>
                     </li>
@@ -102,7 +102,6 @@
                                     </a>
                                 </li>
                                 <?php endif; ?>
-
                                 <?php if (validacionPermisos('roles')): ?>
                                 <li>
                                     <a href="<?php echo getUrl("Roles","Rol","lista"); ?>">
@@ -131,7 +130,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="<?php echo getUrl("Reportes","Reporte","listSeguimientos"); ?>">
+                                    <a href="<?php echo getUrl("Reportes","ReporteSeguimiento","listSeguimientos"); ?>">
                                         <span class="sub-item">Reporte de seguimientos</span>
                                     </a>
                                 </li>

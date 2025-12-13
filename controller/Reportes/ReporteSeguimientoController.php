@@ -9,7 +9,6 @@
         public function listSeguimientos(){
             $obj = new ReporteSeguimientoModel();
 
-            // Obtener todos los seguimientos con información relacionada
             $sql = "SELECT sd.*, 
                            a.nombre as nombre_actividad,
                            t.nombre as nombre_tanque,
@@ -27,7 +26,6 @@
 
             $seguimientos = $obj->select($sql);
 
-            // Obtener datos para estadísticas (agrupados por mes)
             $sql_estadisticas = "SELECT 
                                     TO_CHAR(s.fecha, 'YYYY-MM') as mes,
                                     TO_CHAR(s.fecha, 'Month YYYY') as mes_nombre,
@@ -49,7 +47,6 @@
 
         public function exportarExcel() {
 
-    // 🔴 LIMPIAR CUALQUIER SALIDA PREVIA
     if (ob_get_length()) {
         ob_end_clean();
     }
@@ -82,7 +79,6 @@
 
     $seguimientos = $obj->select($sql);
 
-    // 🔴 HEADERS (ANTES DE CUALQUIER ECHO)
     header("Content-Type: application/vnd.ms-excel; charset=utf-8");
     header("Content-Disposition: attachment; filename=reporte_seguimientos_" . date('Y-m-d') . ".xls");
     header("Pragma: no-cache");
@@ -135,7 +131,7 @@
 
     echo "</table>";
 
-    exit; // 🔴 OBLIGATORIO
+    exit; 
 }
 
 

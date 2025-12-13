@@ -1,28 +1,28 @@
 <div class="mt-3">
     <div class="display-4">
-        Inactivar Zoocriadero
+        Inactivar Seguimiento
     </div>
 
     <div class="mt-4">
-        <?php while($zoo = pg_fetch_assoc($zoocriadero)){ ?>
+        <?php while($seg = pg_fetch_assoc($seguimiento)){ 
+            $nombre_actividad = isset($seg['nombre_actividad']) && $seg['nombre_actividad'] ? $seg['nombre_actividad'] : 'N/A';
+            $nombre_estado = isset($seg['nombre_estado']) && $seg['nombre_estado'] ? $seg['nombre_estado'] : 'N/A';
+        ?>
             <div class="alert alert-warning">
-                ¿Seguro que desea inactivar al zoo <strong><?php echo $zoo['nombre']; ?></strong>?
+                ¿Seguro que desea inactivar el seguimiento con actividad <strong><?php echo $nombre_actividad; ?></strong>?
             </div>
             <ul class="list-group mb-4">
                 <li class="list-group-item">
-                    <strong>Direccion: </strong> <?php echo $zoo['direccion']; ?>
+                    <strong>Actividad:</strong> <?php echo $nombre_actividad; ?>
                 </li>
                 <li class="list-group-item">
-                    <strong>Encargado: </strong> <?php echo $zoo['responsable_nombre']." ".$zoo['responsable_apellido']; ?>
-                </li>
-                <li class="list-group-item">
-                    <strong>Estado actual: </strong> <?php echo $zoo['estado_nombre']; ?>
+                    <strong>Estado actual:</strong> <?php echo $nombre_estado; ?>
                 </li>
             </ul>
-            <form action="<?php echo getUrl("Zoocriaderos","Zoocriadero","postDelete"); ?>" method="post">
-                <input type="hidden" name="id" value="<?php echo $zoo['id_zoocriadero']; ?>">
+            <form action="<?php echo getUrl("Seguimiento","Seguimiento","postDelete"); ?>" method="post">
+                <input type="hidden" name="id" value="<?php echo $seg['id']; ?>">
                 <button type="submit" class="btn btn-danger me-2">Confirmar</button>
-                <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","lista"); ?>" class="btn btn-secondary">Cancelar</a>
+                <a href="<?php echo getUrl("Seguimiento","Seguimiento","lista"); ?>" class="btn btn-secondary">Cancelar</a>
             </form>
         <?php } ?>
     </div>

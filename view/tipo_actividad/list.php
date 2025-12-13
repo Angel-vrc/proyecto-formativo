@@ -7,7 +7,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="" style="display:flex; justify-content: space-between;">
+                    <div class="" style="display:flex; justibetween;">fy-content: space-
                         <h4 class="card-title">Listado de Tipos de Actividad</h4>
                         <a href="<?php echo getUrl("Tipo_actividad","Tipoactivida","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
                             <i class="fa fa-plus mx-2"></i> Nuevo tipo de actividad

@@ -160,8 +160,7 @@
 // Esperar a que todo esté cargado
 (function() {
     function initTanquesAjax() {
-        
-        // Cuando se selecciona un zoocriadero, cargar tanques con AJAX
+
         jQuery('#id_zoocriadero').off('change').on('change', function() {
             var id_zoocriadero = jQuery(this).val();
             var $tanqueSelect = jQuery('#id_tanque');
@@ -171,7 +170,6 @@
                 return;
             }
             
-            // Llamada AJAX usando ajax.php 
             var urlAjax = 'ajax.php?modulo=Seguimiento&controlador=Seguimiento&funcion=getTanquesByZoocriadero&id_zoocriadero=' + id_zoocriadero;
             
             jQuery.ajax({
