@@ -44,9 +44,21 @@
                     </a>
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Tanques'); ?>">
-                    <a href="<?php echo getUrl("Tanques","Tanque","lista"); ?>">        
+                    <a href="<?php echo getUrl("Tanques","Tanque","lista"); ?>">
                         <i class="fas fa-tint"></i>
                         <p>Gestión de Tanques</p>                        
+                    </a>
+                </li>
+                <li class="nav-item <?php echo isActiveModule('Tipo_tanques'); ?>">
+                    <a href="<?php echo getUrl("Tipo_tanques","Tipotanque","lista"); ?>">
+                        <i class="fas fa-tasks"></i>
+                        <p> Tipo de Tanque</p>
+                    </a>
+                </li>
+                <li class="nav-item <?php echo isActiveModule('Actividad'); ?>">
+                    <a href="<?php echo getUrl("Actividad","Activida","lista"); ?>">
+                        <i class="fas fa-tint"></i>
+                        <p>Tipo de Actividad</p>
                     </a>
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Seguimiento'); ?>">
@@ -55,7 +67,7 @@
                         <p>Gestión de Seguimiento</p>                        
                     </a>                    
                 </li>
-                <li class="nav-item <?php echo isActiveModule('Seguridad'); ?>">
+                <li class="nav-item <?php echo isActiveModule('Usuarios'); ?>">
                     <a data-bs-toggle="collapse" href="#gestionSeguridad">
                         <i class="fas fa-users"></i>
                         <p>Usuarios y Roles</p>
