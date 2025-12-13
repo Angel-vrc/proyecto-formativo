@@ -1,5 +1,24 @@
 <div class="page-inner">
 
+<?php if(isset($_SESSION['error'])): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <?php echo $_SESSION['error']; ?>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        </button>
+    </div>
+    <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
+
+    <?php if(isset($_SESSION['success'])): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <?php echo $_SESSION['success']; ?>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        </button>
+    </div>
+    <?php unset($_SESSION['success']); ?>
+    <?php endif; ?>
+
+
     <a href="<?php echo getUrl("Seguimiento","Seguimiento","lista") ?>" class="btn btn-primary btn-round" >
         <i class="fa fa-chevron-left mx-2"></i>Regresar
     </a>
@@ -90,27 +109,27 @@
                             <div class="col-md-6">
                                 <!-- Números de Alevines (Nacimientos) -->
                                 <div class="form-group">
-                                    <label for="num_alevines">Números de Alevines (Nacimientos)</label>
+                                    <label for="num_alevines">Números de Alevines (Nacimientos) *</label>
                                     <input type="number" class="form-control" id="num_alevines" name="num_alevines" 
                                            placeholder="0" min="0" value="">
                                 </div>
                                 
                                 <!-- Número de Muertes -->
                                 <div class="form-group">
-                                    <label for="num_muertes">Número de Muertes</label>
+                                    <label for="num_muertes">Número de Muertes *</label>
                                     <input type="number" class="form-control" id="num_muertes" name="num_muertes" 
                                            placeholder="0" min="0" value="">
                                 </div>
                                 <!-- Número de Machos -->
                                 <div class="form-group">
-                                    <label for="num_machos">Número de Machos</label>
+                                    <label for="num_machos">Número de Machos *</label>
                                     <input type="number" class="form-control" id="num_machos" name="num_machos" 
                                            placeholder="0" min="0" value="">
                                 </div>
                                 
                                 <!-- Número de Hembras -->
                                 <div class="form-group">
-                                    <label for="num_hembras">Número de Hembras</label>
+                                    <label for="num_hembras">Número de Hembras *</label>
                                     <input type="number" class="form-control" id="num_hembras" name="num_hembras" 
                                            placeholder="0" min="0" value="">
                                 </div>

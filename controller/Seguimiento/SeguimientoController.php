@@ -1,9 +1,7 @@
 <?php
-
     include_once '../model/Seguimiento/SeguimientoModel.php';
 
     class SeguimientoController{
-
 
         public function lista(){
             $obj = new SeguimientoModel();
@@ -37,6 +35,9 @@
             $sql_zoocriaderos = "SELECT id_zoocriadero, nombre FROM zoocriadero ORDER BY nombre";
             $zoocriaderos = $obj->select($sql_zoocriaderos);
             
+            $form_data = isset($_SESSION['form_data']) ? $_SESSION['form_data'] : array();
+            unset($_SESSION['form_data']); 
+            
             include_once '../view/Seguimiento/create.php';
         }
 
@@ -60,7 +61,6 @@
             
             if($tanques && pg_num_rows($tanques) > 0){
                 while($tanque = pg_fetch_assoc($tanques)){
-                    // Formatear el nombre del tanque con su tipo: "Tanque A - Siembra"
                     $nombre_completo = $tanque['nombre'];
                     if(!empty($tanque['tipo_tanque'])){
                         $nombre_completo .= ' - ' . $tanque['tipo_tanque'];
@@ -84,32 +84,29 @@
         public function postCreate(){
             $obj = new SeguimientoModel();
 
-             $fecha = $_POST['fecha'];
-             $id_zoocriadero = $_POST['id_zoocriadero'];
-             $id_tanque = $_POST['id_tanque'];
-             $id_responsable = $_SESSION['usuario_id'];
-             
-             $cantidad_peces_tanque = 0;
-            if($id_tanque > 0){
-                $sql_tanque = "SELECT cantidad_peces FROM tanques WHERE id=$id_tanque";
-                $result_tanque = $obj->select($sql_tanque);
-                if(pg_num_rows($result_tanque) > 0){
-                    $tanque_data = pg_fetch_assoc($result_tanque);
-                    $cantidad_peces_tanque = $tanque_data['cantidad_peces'];
-                }
-            }
+            $fecha = $_POST['fecha'];
+            $id_zoocriadero = $_POST['id_zoocriadero'];
+            $id_tanque = $_POST['id_tanque'];
+            $id_responsable = $_SESSION['usuario_id'];
             
-            $id_seguimiento = $obj->autoincrement("seguimiento", "id");
-            $sql_new_seguimiento = "INSERT INTO seguimiento (id, id_zoo, id_tanque, id_responsable, fecha) 
-                                   VALUES ($id_seguimiento, $id_zoocriadero, $id_tanque, $id_responsable, '$fecha')";
-            $result_seguimiento = $obj->insert($sql_new_seguimiento);
-            
-            if(!$result_seguimiento){
-                echo "Error al crear el seguimiento";
+            // Validar que se haya seleccionado un tanque
+            if($id_tanque <= 0){
+                $_SESSION['error'] = "Debe seleccionar un tanque";
+                // Guardar datos del formulario para rellenar
+                $_SESSION['form_data'] = $_POST;
+                redirect(getUrl("Seguimiento","Seguimiento","getCreate"));
                 exit();
             }
-
-            $id = $obj->autoincrement("seguimiento_detalle", "id");
+            
+            // Obtener cantidad de peces del tanque
+            $cantidad_peces_tanque = 0;
+            $sql_tanque = "SELECT cantidad_peces FROM tanques WHERE id=$id_tanque";
+            $result_tanque = $obj->select($sql_tanque);
+            if(pg_num_rows($result_tanque) > 0){
+                $tanque_data = pg_fetch_assoc($result_tanque);
+                $cantidad_peces_tanque = $tanque_data['cantidad_peces'];
+            }
+            
             $id_actividad = $_POST['id_actividad'];
             $ph = $_POST['ph'];
             $temperatura = $_POST['temperatura'];
@@ -118,22 +115,52 @@
             $num_machos = $_POST['num_machos'];
             $num_hembras = $_POST['num_hembras'];
             $cloro = $_POST['cloro'];
-            $observaciones = $_POST['observaciones'] ? pg_escape_string($obj->getConnect(), $_POST['observaciones']) : '';
+            $observaciones = isset($_POST['observaciones']) ? pg_escape_string($obj->getConnect(), $_POST['observaciones']) : '';
             
-            $total = $cantidad_peces_tanque + $num_alevines - $num_muertes + $num_machos + $num_hembras;
+            $suma_machos_hembras = $num_machos + $num_hembras;
+            if($suma_machos_hembras != $cantidad_peces_tanque) {
+                $_SESSION['error'] = "Error: La suma de machos ($num_machos) y hembras ($num_hembras) = $suma_machos_hembras, debe ser igual a la cantidad de peces del tanque ($cantidad_peces_tanque)";
+                $_SESSION['form_data'] = $_POST;
+                redirect(getUrl("Seguimiento","Seguimiento","getCreate"));
+                exit();
+            }
             
+            $total_posible_muertes = $cantidad_peces_tanque + $num_alevines;
+            if($num_muertes > $total_posible_muertes) {
+                $_SESSION['error'] = "Error: No puede haber $num_muertes muertes cuando hay $total_posible_muertes peces en total ($cantidad_peces_tanque en tanque + $num_alevines alevines)";
+                $_SESSION['form_data'] = $_POST;
+                redirect(getUrl("Seguimiento","Seguimiento","getCreate"));
+                exit();
+            }
+            
+            $id_seguimiento = $obj->autoincrement("seguimiento", "id");
+            $sql_new_seguimiento = "INSERT INTO seguimiento (id, id_zoo, id_tanque, id_responsable, fecha) 
+                                   VALUES ($id_seguimiento, $id_zoocriadero, $id_tanque, $id_responsable, '$fecha')";
+            $result_seguimiento = $obj->insert($sql_new_seguimiento);
+            
+            if(!$result_seguimiento){
+                $_SESSION['error'] = "Error al crear el seguimiento";
+                $_SESSION['form_data'] = $_POST;
+                redirect(getUrl("Seguimiento","Seguimiento","getCreate"));
+                exit();
+            }
+
+            $total = $cantidad_peces_tanque + $num_alevines - $num_muertes;
+            
+            $id = $obj->autoincrement("seguimiento_detalle", "id");
             $sql = "INSERT INTO seguimiento_detalle (id, id_seguimiento, id_actividad, ph, temperatura, num_alevines, num_muertes, num_machos, num_hembras, cloro, observaciones, total, estado_id) 
                     VALUES ($id, $id_seguimiento, $id_actividad, $ph, $temperatura, $num_alevines, $num_muertes, $num_machos, $num_hembras, $cloro, '$observaciones', $total, 1)";
 
             $resultado = $obj->insert($sql);
 
             if(!$resultado){
-                $_SESSION['error'] = "Error en la insercion de datos";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
+                $_SESSION['error'] = "Error en la inserción de datos";
+                $_SESSION['form_data'] = $_POST;
+                redirect(getUrl("Seguimiento","Seguimiento","getCreate"));
                 exit();
             }else{                
-                $_SESSION['success'] = "Seguimiento registrado correctamente";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
+                $_SESSION['success'] = "Seguimiento registrado correctamente. Total de peces: $total";
+                redirect(getUrl("Seguimiento","Seguimiento","lista"));
                 exit();
             }
         }
@@ -176,11 +203,11 @@
             
             if($ejecutar){
                 $_SESSION['success'] = "Seguimiento inactivado correctamente";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
+                redirect(getUrl("Seguimiento","Seguimiento","lista"));
                 exit();
             }else{
                 $_SESSION['error'] = "No se pudo actualizar el seguimiento";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
+                redirect(getUrl("Seguimiento","Seguimiento","lista"));
                 exit();
             }
 
@@ -201,69 +228,81 @@
 
             if($ejecutar){
                 $_SESSION['success'] = "Seguimiento activado correctamente";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
+                redirect(getUrl("Seguimiento","Seguimiento","lista"));
                 exit();
             }else{
                 $_SESSION['error'] = "El seguimiento solicitado no existe";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
+                redirect(getUrl("Seguimiento","Seguimiento","lista"));
                 exit();
             }
         }
 
         public function getUpdate(){
-            $obj = new SeguimientoModel();  
+    $obj = new SeguimientoModel();  
 
-            $id = $_GET['id'];
-            $sql = "SELECT sd.*, 
-                           a.nombre as nombre_actividad,
-                           t.nombre as nombre_tanque,
-                           tt.nombre as nombre_tipo_tanque,
-                           s.fecha as fecha_seguimiento,
-                           s.id_tanque as id_tanque_actual,
-                           t.id_tipo_tanque as id_tipo_tanque_actual,
-                           t.cantidad_peces as cantidad_peces_tanque
-                    FROM seguimiento_detalle sd 
-                    LEFT JOIN actividad a ON sd.id_actividad = a.id
-                    LEFT JOIN seguimiento s ON sd.id_seguimiento = s.id
-                    LEFT JOIN tanques t ON s.id_tanque = t.id
-                    LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id
-                    WHERE sd.id=$id";
+    $id = $_GET['id'];
+    $sql = "SELECT sd.*, 
+                   a.nombre as nombre_actividad,
+                   t.nombre as nombre_tanque,
+                   tt.nombre as nombre_tipo_tanque,
+                   s.fecha as fecha_seguimiento,
+                   s.id_tanque as id_tanque_actual,
+                   t.id_tipo_tanque as id_tipo_tanque_actual,
+                   t.cantidad_peces as cantidad_peces_tanque
+            FROM seguimiento_detalle sd 
+            LEFT JOIN actividad a ON sd.id_actividad = a.id
+            LEFT JOIN seguimiento s ON sd.id_seguimiento = s.id
+            LEFT JOIN tanques t ON s.id_tanque = t.id
+            LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id
+            WHERE sd.id=$id";
 
-            $seguimiento = $obj->select($sql);
-            
-            $sql_actividades = "SELECT id, nombre FROM actividad ORDER BY nombre";
-            $actividades = $obj->select($sql_actividades);
-            
-            $sql_tanques = "SELECT t.id, t.nombre, tt.nombre as tipo_tanque, t.id_tipo_tanque
-                           FROM tanques t
-                           LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id
-                           ORDER BY t.nombre";
-            $tanques = $obj->select($sql_tanques);
-
-            include_once '../view/Seguimiento/update.php';
+    $seguimiento_result = $obj->select($sql);
+    
+    $form_data = array();
+    if(isset($_SESSION['form_data'])) {
+        $form_data = $_SESSION['form_data'];
+    }
+    
+    $seguimiento = pg_fetch_assoc($seguimiento_result);
+    
+    if(!empty($form_data) && $seguimiento) {
+        foreach($form_data as $key => $value) {
+            if(array_key_exists($key, $seguimiento)) {
+                $seguimiento[$key] = $value;
+            }
         }
+    }
+    
+    if(isset($_SESSION['error'])) {
+        unset($_SESSION['error']);
+    }
+    if(isset($_SESSION['form_data'])) {
+        unset($_SESSION['form_data']);
+    }
+    
+    $sql_actividades = "SELECT id, nombre FROM actividad ORDER BY nombre";
+    $actividades = $obj->select($sql_actividades);
+    
+    $sql_tanques = "SELECT t.id, t.nombre, tt.nombre as tipo_tanque, t.id_tipo_tanque
+                   FROM tanques t
+                   LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id
+                   ORDER BY t.nombre";
+    $tanques = $obj->select($sql_tanques);
+
+    include_once '../view/Seguimiento/update.php';
+}
 
         public function postUpdate(){
             $obj = new SeguimientoModel();
 
-             $id = $_POST['id'];
-             $fecha = $_POST['fecha'];
-             $id_tanque = $_POST['id_tanque'];
-             $id_seguimiento = $_POST['id_seguimiento'];
-             $id_responsable = $_SESSION['usuario_id'];
-             $id_zoo = 0;
-             
-             if($id_seguimiento > 0){
-                $sql_update_seguimiento = "UPDATE seguimiento SET fecha='$fecha', id_tanque=$id_tanque, id_responsable=$id_responsable WHERE id=$id_seguimiento";
-                $obj->update($sql_update_seguimiento);
-            } else {
-                $id_seguimiento_new = $obj->autoincrement("seguimiento", "id");
-                $sql_new_seguimiento = "INSERT INTO seguimiento (id, id_zoo, id_tanque, id_responsable, fecha) 
-                                       VALUES ($id_seguimiento_new, $id_zoo, $id_tanque, $id_responsable, '$fecha')";
-                $obj->insert($sql_new_seguimiento);
-                $id_seguimiento = $id_seguimiento_new;
-            }
+            $id = $_POST['id'];
+            $fecha = $_POST['fecha'];
+            $id_tanque = $_POST['id_tanque'];
+            $id_seguimiento = $_POST['id_seguimiento'];
+            $id_responsable = $_SESSION['usuario_id'];
+            $id_zoo = 0;
             
+            $cantidad_peces_tanque = 0;
             if($id_tanque > 0){
                 $sql_tanque = "SELECT cantidad_peces FROM tanques WHERE id=$id_tanque";
                 $result_tanque = $obj->select($sql_tanque);
@@ -272,7 +311,7 @@
                     $cantidad_peces_tanque = $tanque_data['cantidad_peces'];
                 }
             }
-
+            
             $id_actividad = $_POST['id_actividad'];
             $ph = $_POST['ph'];
             $temperatura = $_POST['temperatura'];
@@ -281,31 +320,35 @@
             $num_machos = $_POST['num_machos'];
             $num_hembras = $_POST['num_hembras'];
             $cloro = $_POST['cloro'];
-            $observaciones = $_POST['observaciones'];
-
+            $observaciones = isset($_POST['observaciones']) ? pg_escape_string($obj->getConnect(), $_POST['observaciones']) : '';
             
-            $suma = $num_alevines + $num_machos + $num_hembras = $cantidad_peces_tanque;
-
-            if($suma = $cantidad_peces_tanque ){
-                $total = $cantidad_peces_tanque - $num_muertes;
+            $suma_machos_hembras = $num_machos + $num_hembras;
+            if($suma_machos_hembras != $cantidad_peces_tanque && $cantidad_peces_tanque > 0) {
+                $_SESSION['error'] = "Error: La suma de machos ($num_machos) y hembras ($num_hembras) = $suma_machos_hembras, debe ser igual a la cantidad de peces del tanque ($cantidad_peces_tanque)";
+                $_SESSION['form_data'] = $_POST;
+                redirect(getUrl("Seguimiento","Seguimiento","getUpdate", array("id" => $id)));
+                exit();
             }
             
-            $total = $cantidad_peces_tanque - $num_muertes;
-
+            $sql_update_seguimiento = "UPDATE seguimiento SET fecha='$fecha', id_tanque=$id_tanque, id_responsable=$id_responsable WHERE id=$id_seguimiento";
+            $obj->update($sql_update_seguimiento);
+            
+            $total = $cantidad_peces_tanque + $num_alevines - $num_muertes;
+            
             $sql = "UPDATE seguimiento_detalle SET id_seguimiento=$id_seguimiento, id_actividad=$id_actividad, ph=$ph, temperatura=$temperatura, num_alevines=$num_alevines, num_muertes=$num_muertes, num_machos=$num_machos, num_hembras=$num_hembras, cloro=$cloro, observaciones='$observaciones', total=$total WHERE id=$id";
 
             $resultado = $obj->update($sql);
 
             if($resultado){
-                $_SESSION['success'] = "Seguimiento actualizado correctamente";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
+                $_SESSION['success'] = "Seguimiento actualizado correctamente. Total calculado: $total peces";
+                redirect(getUrl("Seguimiento","Seguimiento","lista"));
                 exit();
             }else{
                 $_SESSION['error'] = "Error al actualizar el seguimiento";
-                echo "<script>window.location.href = '" . getUrl("Seguimiento","Seguimiento","lista") . "';</script>";
+                $_SESSION['form_data'] = $_POST;
+                redirect(getUrl("Seguimiento","Seguimiento","getUpdate", array("id" => $id)));
                 exit();
             }
         }
 
     }
-
