@@ -71,8 +71,11 @@
         }
         
         // Casos especiales o alias si los tienes
-        $moduleAliases = array('Dashboard' => array('', 'Dashboard', 'Inicio'),'Mapa' => array('Mapa', 'Visualizacion')
-            // Agrega más si es necesario
+
+        $moduleAliases = array('Dashboard' => array('', 'Dashboard', 'Inicio'),
+                                'Mapa' => array('Mapa', 'Visualizacion'),
+                                'Seguridad' => array('Usuarios', 'Roles')
+
         );
         
         if (isset($moduleAliases[$moduleName])) {
@@ -87,6 +90,20 @@
     function isActiveController($controllerName) {
         $currentControlador = isset($_GET['controlador']) ? $_GET['controlador'] : '';
         return ($currentControlador == $controllerName) ? 'active' : '';
+    }
+
+    function validacionPermisos($slugModulo) {
+        include_once '../lib/conf/connection.php';
+
+        $obj = new Connection();
+
+        $idRol = $_SESSION['id_rol'];
+
+        $sql = "SELECT 1 FROM permisos p, modulos m WHERE (p.id_modulos = m.id OR p.id_modulos = m.id_modulo_padre) AND m.slug = '$slugModulo' AND p.id_roles = $idRol";
+
+
+        $res = pg_query($obj->getConnect(), $sql);
+        return pg_num_rows($res) > 0;
     }
 
 ?>

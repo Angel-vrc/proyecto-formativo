@@ -21,3 +21,20 @@ $(document).ready(function() {
 
 
 });
+
+function cargarPermisosRol(idRol) {
+
+    $.ajax({
+        url: '/proyectoformativo/web/ajax.php',
+        type: 'GET',
+        data: {
+            accion: 'getPermisosRoles',
+            id_rol: idRol
+        },
+        success: function (html) {
+            console.log(idRol);
+            $('#contenedorPermisos').html(html);
+        },
+    });
+
+}
