@@ -2,7 +2,7 @@
 
 <div class="page-inner">
     <div class="page-header">
-        <h4 class="page-title">Gestión de Usuarios</h4>
+        <h4 class="page-title">Gestión de Roles</h4>
     </div>
 
     <?php if(isset($_SESSION['success'])): ?>
@@ -26,9 +26,9 @@
             <div class="card">
                 <div class="card-header">
                     <div class="" style="display:flex; justify-content: space-between;">
-                        <h4 class="card-title">Listado de Usuarios</h4>
-                        <a href="<?php echo getUrl("Usuarios","Usuario","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
-                            <i class="fa fa-plus mx-2"></i> Nuevo Usuario
+                        <h4 class="card-title">Listado de Roles</h4>
+                        <a href="<?php echo getUrl("Roles","Rol","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
+                            <i class="fa fa-plus mx-2"></i> Nuevo Rol
                         </a>
                     </div>
                 </div>
@@ -49,50 +49,44 @@
                     
                     <!-- Tabla de resultados -->
                     <div class="table-responsive">
-                        <table id="tableUsuarios" class="display table table-striped table-hover">                             
+                        <table id="tableRoles" class="display table table-striped table-hover">                             
                             <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Nombre</th>
-                                    <th>Apellido</th>
-                                    <th>Telefono</th>
-                                    <th>Rol</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
                                <?php
-                                    while($usuario = pg_fetch_assoc($usuarios)){
+                                    while($rol = pg_fetch_assoc($roles)){
                                         echo "<tr>";
-                                            echo "<td>".$usuario['id']."</td>";
-                                            echo "<td>".$usuario['nombre']."</td>";
-                                            echo "<td>".$usuario['apellido']."</td>";
-                                            echo "<td>".$usuario['telefono']."</td>";
-                                            echo "<td>".$usuario['rol_nombre']."</td>";
+                                            echo "<td>".$rol['id']."</td>";
+                                            echo "<td>".$rol['nombre']."</td>";
                                             echo "<td>";
                                                 echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
-                                                    data-nombre='".$usuario['nombre']."'
-                                                    data-apellido='".$usuario['apellido']."'
-                                                    data-documento='".$usuario['documento']."'
-                                                    data-telefono='".$usuario['telefono']."'
-                                                    data-correo='".$usuario['correo']."'
-                                                    data-rol='".$usuario['rol_nombre']."'
-                                                    data-estado ='".$usuario['estado_nombre']."'>
+                                                    data-nombre='".$rol['nombre']."'
+                                                    data-apellido='".$rol['apellido']."'
+                                                    data-documento='".$rol['documento']."'
+                                                    data-telefono='".$rol['telefono']."'
+                                                    data-correo='".$rol['correo']."'
+                                                    data-rol='".$rol['rol_nombre']."'
+                                                    data-estado ='".$rol['estado_nombre']."'>
                                                     Ver Detalles
                                                 </button>";
 
-                                                echo "<a href='".getUrl("Usuarios", "Usuario", "getUpdate", array("id"=>$usuario['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                echo "<a href='".getUrl("Roles", "Rol", "getUpdate", array("id"=>$rol['id']))."' class='btn btn-primary mx-2'>Editar</a>";
 
-                                                if ($usuario['id_estado'] == 1) {
-                                                    echo "<a href='".getUrl("Usuarios","Usuario","getDelete",array("id"=>$usuario['id']))."' class='btn btn-danger'>Eliminar</a>";
+                                                if ($rol['id_estado'] == 1) {
+                                                    echo "<a href='".getUrl("Roles","Rol","getDelete",array("id"=>$rol['id']))."' class='btn btn-danger'>Eliminar</a>";
 
-                                                } elseif ($usuario['id_estado'] == 2) {
-                                                    echo "<a href='".getUrl("Usuarios","Usuario","updateStatus",array("id"=>$usuario['id']))."' class='btn btn-success'>Activar</a>";
+                                                } elseif ($rol['id_estado'] == 2) {
+                                                    echo "<a href='".getUrl("Roles","Rol","updateStatus",array("id"=>$rol['id']))."' class='btn btn-success'>Activar</a>";
                                                 }                          
                                             echo "</td>";
                                         echo "</tr>";
-                                    }
-                                    $c = pg_num_rows($usuarios);
+                                    }   
+                                    $c = pg_num_rows($roles);
                                 ?>
                             </tbody>
                         </table>

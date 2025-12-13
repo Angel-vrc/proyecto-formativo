@@ -55,7 +55,7 @@
                         <p>Gestión de Seguimiento</p>                        
                     </a>                    
                 </li>
-                <li class="nav-item <?php echo isActiveModule('Usuarios'); ?>">
+                <li class="nav-item <?php echo isActiveModule('Seguridad'); ?>">
                     <a data-bs-toggle="collapse" href="#gestionSeguridad">
                         <i class="fas fa-users"></i>
                         <p>Usuarios y Roles</p>
@@ -69,7 +69,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="<?php echo getUrl("Seguridad","Seguridad","listRoles"); ?>">
+                                <a href="<?php echo getUrl("Roles","Rol","lista"); ?>">
                                     <span class="sub-item">Gestion Roles</span>
                                 </a>
                             </li>                            

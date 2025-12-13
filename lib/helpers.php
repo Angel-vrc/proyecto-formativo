@@ -71,8 +71,9 @@
         }
         
         // Casos especiales o alias si los tienes
-        $moduleAliases = array('Dashboard' => array('', 'Dashboard', 'Inicio'),'Mapa' => array('Mapa', 'Visualizacion')
-            // Agrega más si es necesario
+        $moduleAliases = array('Dashboard' => array('', 'Dashboard', 'Inicio'),
+                                'Mapa' => array('Mapa', 'Visualizacion'),
+                                'Seguridad' => array('Usuarios', 'Roles')
         );
         
         if (isset($moduleAliases[$moduleName])) {
