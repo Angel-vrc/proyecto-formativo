@@ -9,10 +9,9 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="card-title">Reporte de Seguimientos</div>
-                        <a href="index.php?modulo=Reportes&controlador=ReporteSeguimiento&funcion=exportarExcel"
-   class="btn btn-success btn-sm">
-    <i class="fas fa-file-excel"></i> Exportar a Excel
-</a>
+                        <a href="export_excel.php?modulo=Reportes&controlador=ReporteSeguimiento&funcion=exportarExcel" class="btn btn-success btn-sm">
+                            <i class="fas fa-file-excel"></i> Exportar a Excel
+                        </a>
 
                     </div>
                 </div>
@@ -148,10 +147,9 @@
                                     <div class="d-flex justify-content-between align-items-center">
                                         <h5 class="card-title mb-0">Estadísticas de Seguimientos</h5>
                                         <div>
-                                            <a href="../controller/Reportes/exportarSeguimientos.php" class="btn btn-success">
-    Exportar Excel
-</a>
-                                          
+                                            <button type="button" class="btn btn-success btn-sm" onclick="exportarGrafico()">
+                                                <i class="fas fa-file-excel"></i> Exportar
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -356,6 +354,7 @@ function crearGrafico() {
     });
 }
 
+/* Bootstrap 5: evento correcto */
 document.getElementById('pills-estadisticas-tab')
     .addEventListener('shown.bs.tab', function () {
         crearGrafico();
@@ -363,9 +362,7 @@ document.getElementById('pills-estadisticas-tab')
 
 /* Exportar Excel */
 function exportarGrafico() {
-    window.location.href =
-        'index.php?modulo=Reportes&controlador=ReporteSeguimiento&funcion=exportarExcel';
+    window.location.href = 'export_excel.php?modulo=Reportes&controlador=ReporteSeguimiento&funcion=exportarExcel';
 }
-
 </script>
 

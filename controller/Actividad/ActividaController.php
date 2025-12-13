@@ -33,8 +33,7 @@
                 redirect(getUrl("Actividad","Activida","lista"));
             }
         }
-//        falta la tabla de estado por ahora se queda como referencia el de tanque
-         public function getDelete(){
+        public function getDelete(){
             $obj = new ActividadModel();
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -42,22 +41,41 @@
                 redirect(getUrl("Actividad","Activida","lista"));
                 return;
             }
+
+            $sql = "SELECT *, 
+                           CASE WHEN id_estado = 1 THEN 'Activo' WHEN id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
+                    FROM actividad 
+                    WHERE id = $id";
+
+            $actividad = $obj->select($sql);
+
+            if(!$actividad || pg_num_rows($actividad) == 0){
+                redirect(getUrl("Actividad","Activida","lista"));
+                return;
+            }
+
             include_once '../view/actividad/delete.php';
         }
 
         public function postDelete(){
             $obj = new ActividadModel();
+            $id = intval($_POST['id']);
 
-            $id = ($_POST['id']);
+            if($id <= 0){
+                redirect(getUrl("Actividad","Activida","lista"));
+                return;
+            }
 
             $sql = "UPDATE actividad SET id_estado = 2 WHERE id = $id";
 
-            $ejecutar = $obj->update($sql);
+            $resultado = $obj->update($sql);
             
-            if($ejecutar){
+            if($resultado){
                 redirect(getUrl("Actividad","Activida","lista"));
+                exit();
             }else{
-                echo "No se pudo eliminar la actividad";
+                redirect(getUrl("Actividad","Activida","lista"));
+                exit();
             }
         }
         //para el activar

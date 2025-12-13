@@ -33,8 +33,7 @@
                 redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
             }
         }
-//        falta la tabla de estado por ahora se queda como referencia el de tanque
-         public function getDelete(){
+        public function getDelete(){
             $obj = new Tipo_tanquesModel();
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -42,22 +41,41 @@
                 redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
                 return;
             }
+
+            $sql = "SELECT *, 
+                           CASE WHEN id_estado = 1 THEN 'Activo' WHEN id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
+                    FROM tipo_tanque 
+                    WHERE id = $id";
+
+            $tipo_tanque = $obj->select($sql);
+
+            if(!$tipo_tanque || pg_num_rows($tipo_tanque) == 0){
+                redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                return;
+            }
+
             include_once '../view/tipo_tanques/delete.php';
         }
 
         public function postDelete(){
             $obj = new Tipo_tanquesModel();
+            $id = intval($_POST['id']);
 
-            $id = ($_POST['id']);
+            if($id <= 0){
+                redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                return;
+            }
 
             $sql = "UPDATE tipo_tanque SET id_estado = 2 WHERE id = $id";
 
-            $ejecutar = $obj->update($sql);
+            $resultado = $obj->update($sql);
             
-            if($ejecutar){
+            if($resultado){
                 redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                exit();
             }else{
-                echo "No se pudo actualizar el  tipo de tanque";
+                redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                exit();
             }
         }
 
