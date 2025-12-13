@@ -5,73 +5,67 @@
 
     class LoginController{
 
-        public function autenticar(){
-            $obj = new UsuarioModel();
+        public function autenticar() {
+                session_start();
+                $obj = new UsuarioModel();
 
-            if(isset($_SESSION['auth']) && $_SESSION['auth'] == "ok"){
-                redirect('index.php');
-                exit();
-            }
-
-            if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usuario']) && isset($_POST['password'])){
-                $usuario = trim($_POST['usuario']);
-                $password = $_POST["password"];
-                
-                // Validar reCAPTCHA
-                $recaptcha_response = isset($_POST['g-recaptcha-response']) ? $_POST['g-recaptcha-response'] : '';
-                
-                if(empty($recaptcha_response)){
-                    $_SESSION['error_login'] = "Por favor complete la verificación de seguridad";
-                    redirect('login.php');
+                if (isset($_SESSION['auth']) && $_SESSION['auth'] === "ok") {
+                    redirect('index.php');
                     exit();
                 }
-                
-                // Verificar reCAPTCHA con Google
-                //$recaptcha_verified = $this->verificarRecaptcha($recaptcha_response);
-                
-                // if(!$recaptcha_verified){
-                //     $_SESSION['error_login'] = "La verificación de seguridad falló. Por favor, inténtelo de nuevo.";
-                //     redirect('login.php');
-                //     exit();
-                // }
-                
-                if(!empty($usuario) && !empty($password)){
 
-                    $passHashIngresada = md5($passIngresada);
-                    
-                    $condition = "documento = '$usuario' AND contrasena = '$passHashIngresada'";
-                    $result = $obj->select("SELECT u.id, u.documento, u.contrasena, u.nombre, u.apellido, 
-                    u.correo, u.telefono, r.id, r.nombre AS nombre_rol FROM usuarios u JOIN roles r ON u.id_rol = r.id WHERE $condition");
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-                    
-                    if($result != "No se encontro ningun registro"){
+                    if (empty($_POST['usuario']) || empty($_POST['password'])) {
+                        $_SESSION['error_login'] = "Por favor complete todos los campos";
+                        redirect('login.php');
+                        exit();
+                    }
+
+                    $usuario  = trim($_POST['usuario']);
+                    $password = trim($_POST['password']);
+
+                    // Escapar para PostgreSQL
+                    $usuario = pg_escape_string($usuario);
+
+                    // Hash (temporalmente MD5)
+                    $passHashIngresada = md5($password);
+
+                    //dd($passHashIngresada);
+
+                    $sql = "SELECT u.id, u.documento, u.nombre, u.apellido, u.id_rol, r.nombre AS nombre_rol
+                        FROM usuarios u
+                        INNER JOIN roles r ON u.id_rol = r.id
+                        WHERE u.documento = '$usuario'
+                        AND u.contrasena = '$passHashIngresada'
+                        LIMIT 1
+                    ";
+
+                    $result = $obj->select($sql);
+
+                    if ($result && pg_num_rows($result) === 1) {
+
                         $userData = pg_fetch_assoc($result);
-                        
+
                         $_SESSION['auth'] = "ok";
                         $_SESSION['usuario'] = $userData['documento'];
                         $_SESSION['usuario_id'] = $userData['id'];
-                        $_SESSION['usuario_id_rol'] = $userData['id_rol'];
+                        $_SESSION['id_rol'] = $userData['id_rol'];
                         $_SESSION['usuario_rol_nombre'] = $userData['nombre_rol'];
-                        $_SESSION['nombre'] = isset($userData['nombre']) ? trim($userData['nombre'] . ' ' . (isset($userData['apellido']) ? $userData['apellido'] : '')) : $userData['documento'];
-                        
-                        echo $sql;
+                        $_SESSION['nombre'] = trim($userData['nombre'] . ' ' . $userData['apellido']);
 
                         redirect('index.php');
                         exit();
+
                     } else {
                         $_SESSION['error_login'] = "Número de documento o contraseña incorrectos";
                         redirect('login.php');
                         exit();
                     }
-                } else {
-                    $_SESSION['error_login'] = "Por favor complete todos los campos";
-                    redirect('login.php');
-                    exit();
                 }
-            } else {
+
                 redirect('login.php');
                 exit();
-            }
         }
 
         public function cerrarSesion(){

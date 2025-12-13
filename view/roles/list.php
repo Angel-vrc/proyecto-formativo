@@ -65,12 +65,8 @@
                                             echo "<td>".$rol['nombre']."</td>";
                                             echo "<td>";
                                                 echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
+                                                    data-id='".$rol['id']."'
                                                     data-nombre='".$rol['nombre']."'
-                                                    data-apellido='".$rol['apellido']."'
-                                                    data-documento='".$rol['documento']."'
-                                                    data-telefono='".$rol['telefono']."'
-                                                    data-correo='".$rol['correo']."'
-                                                    data-rol='".$rol['rol_nombre']."'
                                                     data-estado ='".$rol['estado_nombre']."'>
                                                     Ver Detalles
                                                 </button>";
@@ -128,17 +124,20 @@
                 <!-- DATOS -->
                 <div class="row">
                     <div class="col-md-6"><strong>Nombre: </strong> <p id="detalle-nombre"></p></div>
-                    <div class="col-md-6"><strong>Apellido: </strong> <p id="detalle-apellido"></p></div>
-                    <div class="col-md-6"><strong>Documento: </strong> <p id="detalle-documento"></p></div>
-                    <div class="col-md-6"><strong>Telefono: </strong> <p id="detalle-telefono"></p></div>
-                    <div class="col-md-6"><strong>Correo: </strong> <p id="detalle-correo"></p></div>
-                    <div class="col-md-6"><strong>Rol: </strong> <p id="detalle-rol"></p></div>
                     <div class="col-md-6"><strong>Estado: </strong> <p id="detalle-estado"></p></div>                
+                </div>
+
+                <hr>
+
+                <h5><i class="fas fa-lock"></i> Permisos del Rol</h5>
+
+                <div id="contenedorPermisos">
+                    <p class="text-muted">Cargando permisos...</p>
                 </div>
 
             </div>
 
-            <div class="modal-footer">
+             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="cerrarModalDetalles()">
                     <i class="fas fa-times"></i> Cerrar
                 </button>
@@ -148,40 +147,31 @@
     </div>
 </div>
 
+<script src="../web/js/global.js"></script>
 <script>
-function resetFilters() {
-    document.getElementById('searchNombre').value = '';
-    document.getElementById('searchNumeroTanque').value = '';
-    document.getElementById('searchFecha').value = '';
-}
+    function resetFilters() {
+        document.getElementById('searchNombre').value = '';
+        document.getElementById('searchNumeroTanque').value = '';
+        document.getElementById('searchFecha').value = '';
+    }
 
-// Función para abrir la modal
-function abrirModalDetalles(btn) {
+    // Función para abrir la modal
+    function abrirModalDetalles(btn) {
 
-    //datos usando query
-    var nombre = $(btn).data('nombre') || '0';
-    var apellido = $(btn).data('apellido') || '0';
-    var documento = $(btn).data('documento') || '0';
-    var telefono = $(btn).data('telefono') || '0';
-    var correo = $(btn).data('correo') || '0';
-    var estado = $(btn).data('estado') || '0';
-    var rol = $(btn).data('rol') || '0';
-    
-    // Actualizar contenido
-    $('#detalle-nombre').text(nombre);
-    $('#detalle-apellido').text(apellido);
-    $('#detalle-documento').text(documento);
-    $('#detalle-telefono').text(telefono);
-    $('#detalle-correo').text(correo);
-    $('#detalle-rol').text(rol);
-    $('#detalle-estado').text(estado);
-    
-    $('#modalDetalles').modal('show');
-}
+        var idRol = $(btn).data('id');
+        var nombre = $(btn).data('nombre');
+        var estado = $(btn).data('estado');
 
-// cerrar la modal
-function cerrarModalDetalles() {
-    $('#modalDetalles').modal('hide');
-}
+        // Actualizar contenido
+        $('#detalle-nombre').text(nombre);
+        $('#detalle-estado').text(estado);
+
+        $('#modalDetalles').modal('show');
+        cargarPermisosRol(idRol);
+    }
+
+    function cerrarModalDetalles() {
+        $('#modalDetalles').modal('hide');
+    }
 
 </script>

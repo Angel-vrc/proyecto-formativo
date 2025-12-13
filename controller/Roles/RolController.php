@@ -19,8 +19,11 @@
         public function getCreate(){
             $obj = new RolModel();
 
-            $sql = "SELECT * FROM roles ORDER BY nombre ASC";
-            $roles = $obj->select($sql);
+            $sql = "SELECT * FROM modulos WHERE id_modulo_padre IS NULL ORDER BY id ASC";
+            $modulos = $obj->select($sql);
+
+            $sql = "SELECT * FROM acciones ORDER BY id ASC";
+            $acciones = $obj->select($sql);
 
             include_once '../view/roles/create.php';
         }
@@ -28,40 +31,54 @@
         public function postCreate(){
             $obj = new RolModel();
 
-            $id = $obj->autoincrement('roles', 'id');
+            $rol_id = $obj->autoincrement('roles', 'id');
             $nombre = $_POST['nombre'];
-            $apellido = $_POST['apellido'];
-            $documento = $_POST['documento'];
-            $telefono = $_POST['telefono'];
-            $correo = $_POST['correo'];
-            $rol = $_POST['rol'];
-            $password = str_replace(' ', '', $nombre.$documento);
-            $hash = md5($password);
+           
 
-            $sql = "INSERT INTO roles VALUES ($id, '$nombre','$apellido','$documento','$correo','$telefono','$hash', $rol,1)";
-
+            $sql = "INSERT INTO roles VALUES($rol_id, '$nombre', 1)";
+            
             $resultado = $obj->insert($sql);
 
-            if($resultado){
-                $_SESSION['success'] = "Rol creado correctamente";
-                redirect(getUrl("Roles","Rol","lista"));
-                exit();
-            }else{
-                $_SESSION['error'] = "Error al crear el rol";
-                redirect(getUrl("Roles","Rol","lista"));
-                exit();
+            $permisos = $_POST['permisos'];
+
+            $permisosFormateados = array();
+
+            foreach ($permisos as $mod_id => $acciones) {
+                foreach ($acciones as $acc_id => $val) {
+                    $permisosFormateados[$mod_id][] = $acc_id;
+                    $per_id = $obj->autoincrement('permisos','id');
+                    
+                    $sql = "INSERT INTO permisos VALUES ($per_id, $rol_id, $mod_id, $acc_id)";
+                    $obj->insert($sql);
+                }
             }
+
+            $_SESSION['success'] = "Rol creado correctamente";
+            redirect(getUrl("Roles","Rol","lista"));
+            exit();
         }
 
         public function getUpdate(){
             $obj = new RolModel();
 
-            $id = $_GET['id'];
-            $sql = "SELECT * FROM roles WHERE id=$id";
+            $rol_id = $_GET['id'];
+
+            $sql = "SELECT * FROM roles WHERE id=$rol_id";
             $rol = pg_fetch_assoc($obj->select($sql));
 
-            $sql = "SELECT * FROM roles ORDER BY nombre ASC";
-            $roles = $obj->select($sql);
+            $sql = "SELECT * FROM modulos WHERE id_modulo_padre IS NULL ORDER BY id ASC";
+            $modulos = $obj->select($sql);
+
+            $sql = "SELECT * FROM acciones ORDER BY id ASC";
+            $acciones = $obj->select($sql);
+
+            $sql = "SELECT * FROM permisos WHERE id_roles=$rol_id";
+            $permisos = $obj->select($sql);
+
+            $permisos_rol = array();
+            while($perm = pg_fetch_assoc($permisos)){
+                $permisos_rol[$perm['id_modulos']][] = $perm['id_acciones'];
+            }
 
             include_once '../view/roles/update.php';
 
@@ -70,28 +87,33 @@
         public function postUpdate(){
             $obj = new RolModel();
 
-            $id = $_POST['id'];
+            $rol_id = $_POST['id_rol'];
             $nombre = $_POST['nombre'];
-            $apellido = $_POST['apellido'];
-            $documento = $_POST['documento'];
-            $telefono = $_POST['telefono'];
-            $correo = $_POST['correo'];
-            $rol = $_POST['rol'];
+           
 
-            $sql = "UPDATE roles SET nombre='$nombre', apellido='$apellido', documento='$documento', correo='$correo',telefono='$telefono', id_rol=$rol WHERE id=$id";
+            $sql = "UPDATE roles SET nombre = '$nombre' WHERE id=$rol_id";
+            $obj->update($sql);
 
+            $sql = "DELETE FROM permisos WHERE id_roles=$rol_id";
+            $obj->delete($sql);
 
-            $resultado = $obj->update($sql);
+            $permisos = $_POST['permisos'];
 
-            if($resultado){
-                $_SESSION['success'] = "Rol actualizado correctamente";
-                redirect(getUrl("Roles","Rol","lista"));
-                exit();
-            }else{
-                $_SESSION['error'] = "Error al actualizar el rol";
-                redirect(getUrl("Roles","Rol","lista"));
-                exit();
+            $permisosFormateados = array();
+
+            foreach ($permisos as $mod_id => $acciones) {
+                foreach ($acciones as $acc_id => $val) {
+                    $permisosFormateados[$mod_id][] = $acc_id;
+                    $per_id = $obj->autoincrement('permisos','id');
+                    
+                    $sql = "INSERT INTO permisos VALUES ($per_id, $rol_id, $mod_id, $acc_id)";
+                    $obj->insert($sql);
+                }
             }
+
+            $_SESSION['success'] = "Rol actualizado correctamente";
+            redirect(getUrl("Roles","Rol","lista"));
+            exit();
         }
 
        public function getDelete(){
@@ -157,6 +179,32 @@
                 redirect(getUrl("Roles","Rol","lista"));
                 exit();
             }
+        }
+
+        public function getPermisosRol(){
+
+            $obj = new RolModel();
+
+            $idRol = $_GET['id_rol'];
+
+            echo $idRol;
+
+
+            $sql = "SELECT p.*, m.nombre modulo, a.nombre accion FROM permisos p, modulos m, acciones a WHERE p.id_roles = $idRol AND p.id_modulos = m.id AND p.id_acciones = a.id ORDER BY modulo ASC";
+
+            $permisos = pg_fetch_assoc($obj->select($sql));
+
+            // HTML
+            foreach ($permisos as $modulo => $acciones) {
+                echo "<h6 class='mt-3'>$modulo</h6>";
+                echo "<ul>";
+                foreach ($acciones as $accion) {
+                    echo "<li>$accion</li>";
+                }
+                echo "</ul>";
+            }
+
+            exit;
         }
 
     }

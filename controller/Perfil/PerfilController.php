@@ -34,6 +34,7 @@
 
             $telefono = $_POST['telefono'];
             $correo = $_POST['correo'];
+            $password = $_POST['contrasena'];
             $password = str_replace(' ', '', $password);
             $hash = md5($password);
 

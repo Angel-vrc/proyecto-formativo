@@ -51,7 +51,7 @@
                                 <div class="form-group">
                                     <label for="correo">Correo Electrónico *</label>
                                     <input type="email" class="form-control" id="correo" name="correo" 
-                                           placeholder="ejemplo@dominio.com" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}" required
+                                           placeholder="ejemplo@dominio.com" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" required
                                            maxlength="100" value="<?php echo $usuario['correo']; ?>">
                                 </div>
 
