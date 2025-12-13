@@ -38,51 +38,51 @@
                     <h4 class="text-section">Gestión del Sistema</h4>
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Zoocriaderos'); ?>">
-                    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","list"); ?>">
+                    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","lista"); ?>">
                         <i class="fas fa-fish"></i>
                         <p>Gestión de Zoocriadero</p>                        
                     </a>
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Tanques'); ?>">
-                    <a href="<?php echo getUrl("Tanques","Tanque","list"); ?>">
+                    <a href="<?php echo getUrl("Tanques","Tanque","lista"); ?>">
                         <i class="fas fa-tint"></i>
                         <p>Gestión de Tanques</p>                        
                     </a>
                 </li>
-                <li class="nav-item <?php echo isActiveModule('Tipo_actividad'); ?>">
-                    <a href="<?php echo getUrl("Tipo_actividad","Tipoactivida","list"); ?>">
-                        <i class="fas fa-tint"></i>
-                        <p> Tipo de Actividad</p>
+                <li class="nav-item <?php echo isActiveModule('Tipo_tanques'); ?>">
+                    <a href="<?php echo getUrl("Tipo_tanques","Tipotanque","lista"); ?>">
+                        <i class="fas fa-tasks"></i>
+                        <p> Tipo de Tanque</p>
                     </a>
                 </li>
-                <li class="nav-item <?php echo isActiveModule('Actividades'); ?>">
-                    <a href="<?php echo getUrl("Actividades","Actividad","list"); ?>">
+                <li class="nav-item <?php echo isActiveModule('Actividad'); ?>">
+                    <a href="<?php echo getUrl("Actividad","Activida","lista"); ?>">
+                        <i class="fas fa-tint"></i>
+                        <p>Tipo de Actividad</p>
+                    </a>
+                </li>
+                <li class="nav-item <?php echo isActiveModule('Seguimiento'); ?>">
+                    <a href="<?php echo getUrl("Seguimiento","Seguimiento","lista"); ?>">
                         <i class="fas fa-tasks"></i>
-                        <p>Gestión de Actividades</p>                        
+                        <p>Gestión de Seguimiento</p>                        
                     </a>                    
                 </li>
                 <li class="nav-item <?php echo isActiveModule('Usuarios'); ?>">
-                    <a href="<?php echo getUrl("Usuarios","Usuario","list"); ?>">
-                        <i class="fas fa-users"></i>
-                        <p>Gestión de Usuarios</p>                        
-                    </a>
-                </li>
-                <li class="nav-item <?php echo isActiveModule('Seguridad'); ?>">
                     <a data-bs-toggle="collapse" href="#gestionSeguridad">
-                        <i class="fas fa-lock"></i>
-                        <p>Seguridad del Sistema</p>
+                        <i class="fas fa-users"></i>
+                        <p>Usuarios y Roles</p>
                         <span class="caret"></span>
                     </a>
                     <div class="collapse" id="gestionSeguridad">
                         <ul class="nav nav-collapse">
                             <li>
-                                <a href="<?php echo getUrl("Seguridad","Seguridad","listRoles"); ?>">
-                                    <span class="sub-item">Roles</span>
+                                <a href="<?php echo getUrl("Usuarios","Usuario","lista"); ?>">
+                                    <span class="sub-item">Gestion Usuarios</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="<?php echo getUrl("Seguridad","Seguridad","listPermisos"); ?>">
-                                    <span class="sub-item">Permisos</span>
+                                <a href="<?php echo getUrl("Seguridad","Seguridad","listRoles"); ?>">
+                                    <span class="sub-item">Gestion Roles</span>
                                 </a>
                             </li>                            
                         </ul>
@@ -103,7 +103,7 @@
                             </li>
                             <li>
                                 <a href="<?php echo getUrl("Reportes","Reporte","listSeguimientos"); ?>">
-                                    <span class="sub-item">Seguimiento de actividades</span>
+                                    <span class="sub-item">Reporte de seguimientos</span>
                                 </a>
                             </li>
                             <li>

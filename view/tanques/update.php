@@ -1,5 +1,5 @@
 <div class="page-inner">
-    <a href="<?php echo getUrl("Tanques","Tanque","list") ?>" class="btn btn-primary btn-round">
+    <a href="<?php echo getUrl("Tanques","Tanque","lista") ?>" class="btn btn-primary btn-round">
         <i class="fa fa-chevron-left mx-2"></i>Regresar
     </a>
 
@@ -69,7 +69,7 @@
 
                     <div class="card-action">
                         <button type="submit" class="btn btn-success">Actualizar</button>
-                        <a href="<?php echo getUrl("Tanques","Tanque","list") ?>" class="btn btn-danger">Cancelar</a>
+                        <a href="<?php echo getUrl("Tanques","Tanque","lista") ?>" class="btn btn-danger">Cancelar</a>
                     </div>
                 </form>
 

@@ -2,29 +2,18 @@
     include_once '../model/Tanques/TanquesModel.php';
 
     class TanqueController{
-        public function list(){
+
+        public function lista(){
             $obj = new TanquesModel();
 
-            $nombre = $_GET['nombre'] ?? '';
-            $tipo   = $_GET['tipo'] ?? '';
-
-            $where = "WHERE 1=1";
-
-            if($nombre != ''){
-                $where .= " AND t.nombre ILIKE '%$nombre%'";
-            }
-
-            if($tipo != ''){
-                $where .= " AND t.id_tipo_tanque = $tipo";
-            }
 
             $sql = "SELECT t.id,t.nombre,t.medidas,t.cantidad_peces,t.id_estado AS estado,tt.nombre AS tipo_tanque
-            FROM tanques t INNER JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id $where ORDER BY t.id ASC";
+            FROM tanques t INNER JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id  ORDER BY t.id ASC";
 
             $tanques = $obj->select($sql);
 
             $tipos = $obj->select("SELECT id, nombre FROM tipo_tanque ORDER BY nombre ASC");
-
+            
             include_once '../view/tanques/list.php';
         }
                 

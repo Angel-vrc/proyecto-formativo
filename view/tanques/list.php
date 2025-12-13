@@ -16,26 +16,21 @@
                 </div>
                 <div class="card-body">
                     <!-- Filtros de búsqueda -->
-                    <form method="GET" action="<?php echo getUrl("Tanques","Tanque","list"); ?>">
+                    <form method="GET" action="">
                         <div class="row mb-3">
                             <div class="col-md-3">
-                                <input 
-                                    type="text"
-                                    name="nombre"
-                                    class="form-control"
-                                    placeholder="Buscar por nombre..."
-                                    value="<?php echo $_GET['nombre'] ?? ''; ?>">
                             </div>
 
                             <div class="col-md-3">
                                 <select name="tipo" class="form-control">
                                     <option value="">Tipos de Tanque</option>
-                                    <?php
-                                    while($tipo = pg_fetch_assoc($tipos)){
-                                        $selected = (($_GET['tipo'] ?? '') == $tipo['id']) ? 'selected' : '';
+                                <?php
+                                    while ($tipo = pg_fetch_assoc($tipos)) {
+                                        $valorTipo = isset($_GET['tipo']) ? $_GET['tipo'] : '';
+                                        $selected = ($valorTipo == $tipo['id']) ? 'selected' : '';
                                         echo "<option value='{$tipo['id']}' $selected>{$tipo['nombre']}</option>";
                                     }
-                                    ?>
+                                ?>
                                 </select>
                             </div>
 
@@ -43,7 +38,7 @@
                                 <button class="btn btn-primary">
                                     <i class="fas fa-search mx-1"></i> Filtrar
                                 </button>
-                                <a href="<?php echo getUrl("Tanques","Tanque","list"); ?>" class="btn btn-secondary">
+                                <a href="<?php echo getUrl("Tanques","Tanque","lista"); ?>" class="btn btn-secondary">
                                     Limpiar
                                 </a>
                             </div>

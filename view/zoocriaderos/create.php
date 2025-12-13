@@ -1,6 +1,6 @@
 <div class="page-inner">
 
-    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","list") ?>" class="btn btn-primary btn-round" >
+    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","lista") ?>" class="btn btn-primary btn-round" >
         <i class="fa fa-chevron-left mx-2"></i>Regresar
     </a>
     <div class="page-header mt-3">
@@ -17,13 +17,19 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
+                
+                                <div class="form-group">                                    
+                                    <input type="text" class="form-control" id="longitud" name="longitud" 
+                                           required
+                                           maxlength="150" hidden>
+                                </div>
+
                                 <!-- Nombre -->
                                 <div class="form-group">
                                     <label for="nombre">Nombre del Zoocriadero *</label>
                                     <input type="text" class="form-control" id="nombre" name="nombre" 
                                            placeholder="Ej: Zoocriadero Las Acacias" required
                                            maxlength="150">
-                                    <small class="form-text text-muted">Nombre completo del establecimiento</small>
                                 </div>
                                 
                                 <!-- Dirección -->
@@ -32,43 +38,53 @@
                                     <input type="text" class="form-control" id="direccion" name="direccion" 
                                            placeholder="Ej: Calle 123 #45-67" required
                                            maxlength="200">
+                                    <small class="form-text text-muted">Transversal, carrera, calle, diagonal</small>
                                 </div>
                                 
                                 <!-- Comuna -->
                                 <div class="form-group">
                                     <label for="comuna">Comuna *</label>
                                     <select class="form-control select2" id="comuna" name="comuna" required>
-                                        <option value="">Seleccione una comuna</option>
-                                        <option value="Comuna 1">Comuna 1</option>
-                                        <option value="Comuna 2">Comuna 2</option>
-                                        <option value="Comuna 3">Comuna 3</option>
-                                        <option value="Comuna 4">Comuna 4</option>
-                                        <option value="Comuna 5">Comuna 5</option>
-                                        <option value="Comuna 6">Comuna 6</option>
-                                        <option value="Comuna 7">Comuna 7</option>
-                                        <option value="Comuna 8">Comuna 8</option>
-                                        <option value="Comuna 9">Comuna 9</option>
-                                        <option value="Comuna 10">Comuna 10</option>
-                                        <!-- Agregar más comunas según necesidad -->
+                                        <option value="">Seleccione una comuna</option> 
+                                        <?php foreach ($comunas as $comuna): ?>
+                                            <option value="<?php echo $comuna; ?>">
+                                                <?php echo $comuna; ?>
+                                            </option>
+                                        <?php endforeach; ?>                                     
                                     </select>
                                 </div>
                                 
                                 <!-- Barrio -->
                                 <div class="form-group">
                                     <label for="barrio">Barrio *</label>
-                                    <input type="text" class="form-control" id="barrio" name="barrio" 
-                                           placeholder="Ej: El Poblado, San Antonio" required
-                                           maxlength="100">
+                                    <select class="form-control select2" id="barrio" name="barrio" required>                                             
+                                        <option value="">Seleccione un Barrio</option> 
+                                        <?php foreach ($barrios as $barrio): ?>
+                                            <option value="<?php echo $barrio; ?>">
+                                                <?php echo $barrio; ?>
+                                            </option>
+                                        <?php endforeach; ?>                                     
+                                    </select>
                                 </div>
                             </div>
                             
                             <div class="col-md-6">
+                                <div class="form-group">                                
+                                <input type="text" class="form-control" id="latitud" name="latitud" 
+                                        required
+                                        maxlength="150" hidden>
+                            </div>
+
                                 <!-- Responsable -->
                                 <div class="form-group">
                                     <label for="responsable">Responsable *</label>
-                                    <input type="text" class="form-control" id="responsable" name="responsable" 
-                                           placeholder="Nombre completo del responsable" required
-                                           maxlength="150">
+                                    <select class="form-control select2" id="responsable" name="responsable" required> 
+                                        <?php while($usuario = pg_fetch_assoc($usuarios)){ ?>
+                                            <option value="<?php echo $usuario['id']; ?>">
+                                                <?php echo $usuario['nombre']." ".$usuario['apellido']; ?>
+                                            </option>
+                                        <?php } ?>                                     
+                                    </select>
                                 </div>
                                 
                                 <!-- Teléfono -->
@@ -92,7 +108,7 @@
                     </div>
                     <div class="card-action">
                         <input type="submit" value="Registrar" class="btn btn-success">
-                        <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","list") ?>" class="btn btn-danger">
+                        <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","lista") ?>" class="btn btn-danger">
                             Cancelar
                         </a>
                     </div>
