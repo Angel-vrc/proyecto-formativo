@@ -35,13 +35,8 @@
                     <div class="row mb-3">                        
                         <div class="col-md-3">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="searchResponsable" placeholder="Buscar por nombre...">
+                                <input type="text" class="form-control" id="filtro" name="buscar" placeholder="Buscar por nombre o estado" data-url="<?php echo getUrl("Roles","Rol","filtro", false, "ajax"); ?>">
                             </div>
-                        </div>
-                        <div class="col-md-3 mt-2">
-                            <button class="btn btn-secondary" onclick="resetFilters()">
-                                <i class="fas fa-redo mx-1"></i> Limpiar filtros
-                            </button>
                         </div>
                     </div>
                     
@@ -111,7 +106,7 @@
         <div class="modal-content">
 
             <div class="modal-header" style="background-color:#1a5a5a; color:white;">
-                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalles del Seguimiento</h5>
+                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalles del Rol</h5>
                 <button type="button" class="close" onclick="cerrarModalDetalles()" style="color:white;">
                    
                 </button>
@@ -144,13 +139,7 @@
     </div>
 </div>
 
-<script src="../web/js/global.js"></script>
 <script>
-    function resetFilters() {
-        document.getElementById('searchNombre').value = '';
-        document.getElementById('searchNumeroTanque').value = '';
-        document.getElementById('searchFecha').value = '';
-    }
 
     function abrirModalDetalles(btn) {
 

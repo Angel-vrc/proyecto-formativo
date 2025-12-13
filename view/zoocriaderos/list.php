@@ -37,12 +37,13 @@
                     <div class="row mb-3">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="searchNombre" placeholder="Buscar por nombre...">
+                                <input type="text" class="form-control" id="filtro" name="buscar" placeholder="Buscar..." data-url="<?php echo getUrl("Zoocriaderos","Zoocriadero","filtro", false, "ajax"); ?>">
+                                <small class="form-text text-muted">Buscar por zoocriadero o responsable</small>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <select class="form-control select2" id="comuna" name="comuna" required>
+                                <select class="form-control select2" id="comuna" name="comuna" data-url="<?php echo getUrl('Zoocriaderos','Zoocriadero','filtro', false, 'ajax'); ?>">
                                     <option value="">Todas las comunas</option> 
                                     <?php foreach ($comunas as $comuna): ?>
                                         <option value="<?php echo $comuna; ?>">
@@ -52,15 +53,11 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="searchResponsable" placeholder="Buscar por responsable...">
-                            </div>
-                        </div>
+
                         <div class="col-md-3 mt-2">
-                            <button class="btn btn-secondary" onclick="resetFilters()">
+                            <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","lista") ?>" class="btn btn-secondary" onclick="resetFilters()">
                                 <i class="fas fa-redo mx-1"></i> Limpiar filtros
-                            </button>
+                            </a>
                         </div>
                     </div>
                     
@@ -89,6 +86,7 @@
                                             echo "<td>";
                                                 echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
                                                     data-nombre='".$zoo['nombre']."'
+                                                    data-comuna='".$zoo['comuna']."'
                                                     data-barrio='".$zoo['barrio']."'
                                                     data-direccion='".$zoo['direccion']."'
                                                     data-responsable='".$zoo['nombre_responsable']."'
@@ -140,7 +138,7 @@
         <div class="modal-content">
 
             <div class="modal-header" style="background-color:#1a5a5a; color:white;">
-                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalles del Seguimiento</h5>
+                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalles del Zoocriadero</h5>
                 <button type="button" class="close" onclick="cerrarModalDetalles()" style="color:white;">
                    
                 </button>
@@ -151,6 +149,7 @@
                 <!-- DATOS -->
                 <div class="row">
                     <div class="col-md-6"><strong>Nombre: </strong> <p id="detalle-nombre"></p></div>
+                    <div class="col-md-6"><strong>Comuna: </strong> <p id="detalle-comuna"></p></div>
                     <div class="col-md-6"><strong>Barrio: </strong> <p id="detalle-barrio"></p></div>
                     <div class="col-md-6"><strong>Direccion: </strong> <p id="detalle-direccion"></p></div>
                     <div class="col-md-6"><strong>Responsable: </strong> <p id="detalle-responsable"></p></div>
@@ -172,11 +171,11 @@
 </div>
 
 <script>
+
 function resetFilters() {
-    document.getElementById('searchNombre').value = '';
-    document.getElementById('searchNumeroTanque').value = '';
-    document.getElementById('searchFecha').value = '';
+    document.getElementById('comuna').value = '';
 }
+
 
 // Función para abrir la modal
 function abrirModalDetalles(btn) {
@@ -185,6 +184,7 @@ function abrirModalDetalles(btn) {
     var nombre = $(btn).data('nombre') || '0';
     var responsable = $(btn).data('responsable') || '0';
     var direccion = $(btn).data('direccion') || '0';
+    var comuna = $(btn).data('comuna') || '0';
     var barrio = $(btn).data('barrio') || '0';
     var responsable = $(btn).data('responsable') || '0';
     var telefono = $(btn).data('telefono') || '0';
@@ -194,6 +194,7 @@ function abrirModalDetalles(btn) {
     // Actualizar contenido
     $('#detalle-nombre').text(nombre);
     $('#detalle-responsable').text(responsable);
+    $('#detalle-comuna').text(comuna);
     $('#detalle-barrio').text(barrio);
     $('#detalle-direccion').text(direccion);
     $('#detalle-responsable').text(responsable);

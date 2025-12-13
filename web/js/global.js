@@ -18,9 +18,8 @@ $(document).ready(function() {
         })
 
     });
-
-
 });
+
 
 function cargarPermisosRol(idRol) {
 
@@ -77,4 +76,27 @@ function cargarPermisosRol(idRol) {
         }
     });
 
+}
+
+$('#buscar').on('keyup', function() { cargarTabla(); });
+$('#comuna').on('change', function() { cargarTabla(); });
+
+function cargarTabla() {
+    var buscar = $('#filtro').val();
+    var comuna = $('#comuna').val();
+
+    $.ajax({
+        url: 'ajax.php',
+        type: 'GET',
+        data: {
+            modulo: 'Zoocriaderos',
+            controlador: 'Zoocriadero',
+            funcion: 'filtro',
+            buscar: buscar,
+            comuna: comuna
+        },
+        success: function (html) {
+            $('tbody').html(html);
+        }
+    });
 }

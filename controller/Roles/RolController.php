@@ -231,6 +231,19 @@
             exit;
         }
 
+        public function filtro(){
+            $obj = new RolModel();
+
+            $id = $_SESSION['usuario_id'];
+            
+            $buscar = $_GET['buscar'];
+            $sql = "SELECT r.*, e.nombre estado_nombre FROM roles r, rol_estado e WHERE r.id_estado = e.id_estado AND (r.nombre ILIKE '%$buscar%' OR e.nombre ILIKE '%$buscar%') ORDER BY r.id ASC";
+
+            $roles = $obj->select($sql);
+
+            include_once '../view/roles/filtro.php';
+        }
+
     }
 
 ?>
