@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="assets/css/arregloTablas.css">
-
 <div class="page-inner">
     <div class="page-header">
         <h4 class="page-title">Gestión de Roles</h4>
@@ -132,7 +130,6 @@
                 <h5><i class="fas fa-lock"></i> Permisos del Rol</h5>
 
                 <div id="contenedorPermisos">
-                    <p class="text-muted">Cargando permisos...</p>
                 </div>
 
             </div>
@@ -155,18 +152,17 @@
         document.getElementById('searchFecha').value = '';
     }
 
-    // Función para abrir la modal
     function abrirModalDetalles(btn) {
 
         var idRol = $(btn).data('id');
         var nombre = $(btn).data('nombre');
         var estado = $(btn).data('estado');
 
-        // Actualizar contenido
         $('#detalle-nombre').text(nombre);
         $('#detalle-estado').text(estado);
 
         $('#modalDetalles').modal('show');
+
         cargarPermisosRol(idRol);
     }
 
