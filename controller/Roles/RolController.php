@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="assets/css/arregloTablas.css">
-
 <?php
 
     include_once '../model/Roles/RolModel.php';
@@ -183,27 +181,53 @@
 
         public function getPermisosRol(){
 
-            $obj = new RolModel();
+            //header('Content-Type: application/json');
+
+            if (empty($_GET['id_rol'])) {
+                echo json_encode(array(
+                    'success' => false,
+                    'message' => 'ID de rol no recibido'
+                ));
+                exit;
+            }
 
             $idRol = $_GET['id_rol'];
 
-            echo $idRol;
-
+            $obj = new RolModel();
 
             $sql = "SELECT p.*, m.nombre modulo, a.nombre accion FROM permisos p, modulos m, acciones a WHERE p.id_roles = $idRol AND p.id_modulos = m.id AND p.id_acciones = a.id ORDER BY modulo ASC";
 
-            $permisos = pg_fetch_assoc($obj->select($sql));
+            $result = $obj->select($sql);
 
-            // HTML
-            foreach ($permisos as $modulo => $acciones) {
-                echo "<h6 class='mt-3'>$modulo</h6>";
-                echo "<ul>";
-                foreach ($acciones as $accion) {
-                    echo "<li>$accion</li>";
+            $permisosAgrupados = array();
+
+            if ($result && pg_num_rows($result) > 0) {
+
+                while ($row = pg_fetch_assoc($result)) {
+                    $modulo = $row['modulo'];
+                    $accion = $row['accion'];
+
+                    if (!isset($permisosAgrupados[$modulo])) {
+                        $permisosAgrupados[$modulo] = array();
+                    }
+
+                    $permisosAgrupados[$modulo][] = $accion;
                 }
-                echo "</ul>";
             }
 
+            // Convertir a estructura amigable para JS
+            $response = array();
+            foreach ($permisosAgrupados as $modulo => $acciones) {
+                $response[] = array(
+                    'modulo' => $modulo,
+                    'acciones' => $acciones
+                );
+            }
+
+            echo json_encode(array(
+                'success' => true,
+                'permisos' => $response
+            ));
             exit;
         }
 
