@@ -7,13 +7,35 @@
 
         public function lista(){
             $obj = new ZoocriaderoModel();
+            $connect = $obj->getConnect();
 
-            $sql = "SELECT z.*, e.nombre AS nombre_estado, u.nombre AS nombre_responsable, u.apellido AS apellido_responsable FROM zoocriadero AS z
-            JOIN usuarios AS u ON z.responsable = u.id
-            JOIN zoocriadero_estado AS e ON z.id_estado = e.id_estado
-            ORDER BY id_zoocriadero ASC";
+            // Calcular parámetros de paginación (10 registros por página)
+            $paginacion = calcularPaginacion(10);
 
+            // Consulta SQL base (sin LIMIT)
+            $sqlBase = "SELECT z.*, e.nombre nombre_estado, u.nombre nombre_responsable, u.apellido apellido_responsable 
+                        FROM zoocriadero z, usuarios u, zoocriadero_estado e 
+                        WHERE z.responsable = u.id AND z.id_estado = e.id_estado
+                        ORDER BY z.id_zoocriadero ASC";
+
+            // Obtener total de registros
+            $totalRegistros = obtenerTotalRegistros($connect, $sqlBase);
+
+            // Aplicar paginación a la consulta
+            $sql = aplicarPaginacionSQL($sqlBase, $paginacion['limite'], $paginacion['offset']);
+
+            // Ejecutar consulta paginada
             $zoocriaderos = $obj->select($sql);
+
+            // Generar HTML de paginación
+            $parametros = array(
+                'modulo' => isset($_GET['modulo']) ? $_GET['modulo'] : 'Zoocriaderos',
+                'controlador' => isset($_GET['controlador']) ? $_GET['controlador'] : 'Zoocriadero',
+                'funcion' => isset($_GET['funcion']) ? $_GET['funcion'] : 'lista'
+            );
+
+            $htmlPaginacion = generarPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina'], $parametros);
+            $infoPaginacion = generarInfoPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina']);
 
             include_once '../lib/data/ubicacion.php';
             include_once '../view/zoocriaderos/list.php';
@@ -179,6 +201,56 @@
             }
         }
 
+        public function filtro() {
+            $obj = new ZoocriaderoModel();
+            $connect = $obj->getConnect();
+
+            // Obtener y validar filtros
+            $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
+            $comuna = isset($_GET['comuna']) ? trim($_GET['comuna']) : '';
+            $estado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
+
+            $where = array();
+
+            // Filtro por texto (nombre o responsable)
+            if ($buscar !== '') {
+                $buscar_escaped = pg_escape_string($connect, $buscar);
+                $where[] = "(z.nombre ILIKE '%$buscar_escaped%' 
+                            OR u.nombre ILIKE '%$buscar_escaped%' 
+                            OR u.apellido ILIKE '%$buscar_escaped%'
+                            OR e.nombre ILIKE '%$buscar_escaped%')";
+            }
+
+            // Filtro por comuna (igualdad exacta)
+            if ($comuna !== '') {
+                $comuna_escaped = pg_escape_string($connect, $comuna);
+                $where[] = "z.comuna = '$comuna_escaped'";
+            }
+
+            // Filtro por estado (1 = Activo, 2 = Inactivo)
+            if ($estado !== '' && ($estado == '1' || $estado == '2')) {
+                $estado_escaped = intval($estado);
+                $where[] = "z.id_estado = $estado_escaped";
+            }
+
+            // SQL base
+            $sql = "SELECT z.*, e.nombre nombre_estado, u.nombre nombre_responsable, u.apellido apellido_responsable
+                    FROM zoocriadero z
+                    JOIN usuarios u ON z.responsable = u.id
+                    JOIN zoocriadero_estado e ON z.id_estado = e.id_estado";
+
+            // Agregar WHERE dinámico si hay filtros
+            if (count($where) > 0) {
+                $sql .= " WHERE " . implode(" AND ", $where);
+            }
+
+            $sql .= " ORDER BY z.id_zoocriadero ASC";
+
+            $zoocriaderos = $obj->select($sql);
+
+            include_once '../view/zoocriaderos/filtro.php';
+        }
+        
     }
 
 

@@ -2,6 +2,7 @@
     <div class="page-header">
         <h4 class="page-title">Tipo de Actividad</h4>
     </div>
+
     <?php if(isset($_SESSION['success'])): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fas fa-check-circle"></i> <?php echo ($_SESSION['success']); unset($_SESSION['success']); ?>
@@ -45,7 +46,7 @@
                     </div>
                     <!-- Tabla de resultados -->
                     <div class="table-responsive">
-                        <table id="tableActividad" class="display table table-striped table-hover">
+                        <table id="tableZoocriaderos" class="display table table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -55,20 +56,24 @@
                             </thead>
                             <tbody id="tableBody">
                                <?php
-                                    while($tipo = pg_fetch_assoc($tipos)){
-                                        echo "<tr>";
-                                            echo "<td>".$tipo['id']."</td>";
-                                            echo "<td>".$tipo['nombre']."</td>";
-                                            echo "<td>";
-                                                echo "<a href='".getUrl("Actividad", "Activida", "getUpdate", array("id"=>$tipo['id']))."' class='btn btn-primary mx-2'>Editar</a>";
-                                                if ($tipo['estado'] == 1) {
-                                                    echo "<a href='".getUrl("Actividad", "Activida","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
+                                    if ($tipos && pg_num_rows($tipos) > 0) {
+                                        while($tipo = pg_fetch_assoc($tipos)){
+                                            echo "<tr>";
+                                                echo "<td>".$tipo['id']."</td>";
+                                                echo "<td>".$tipo['nombre']."</td>";
+                                                echo "<td>";
+                                                    echo "<a href='".getUrl("Actividad", "Activida", "getUpdate", array("id"=>$tipo['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    if ($tipo['estado'] == 1) {
+                                                        echo "<a href='".getUrl("Actividad", "Activida","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
 
-                                                } elseif ($tipo['estado'] == 2) {
-                                                    echo "<a href='".getUrl("Actividad", "Activida","updateStatus",array("id"=>$tipo['id']))."' class='btn btn-success'>Activar</a>";
-                                                }
-                                            echo "</td>";
-                                        echo "</tr>";
+                                                    } elseif ($tipo['estado'] == 2) {
+                                                        echo "<a href='".getUrl("Actividad", "Activida","updateStatus",array("id"=>$tipo['id']))."' class='btn btn-success'>Activar</a>";
+                                                    }
+                                                echo "</td>";
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='3' class='text-center'>No se encontraron registros</td></tr>";
                                     }
                                 ?>
                             </tbody>
@@ -79,12 +84,12 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="dataTables_info" id="info" role="status" aria-live="polite">
-                                Mostrando 0 registros
+                                <?php echo isset($infoPaginacion) ? $infoPaginacion : 'Mostrando 0 registros'; ?>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="dataTables_paginate paging_simple_numbers" id="pagination">
-                                <!-- Paginación se generará dinámicamente -->
+                                <?php echo isset($htmlPaginacion) ? $htmlPaginacion : ''; ?>
                             </div>
                         </div>
                     </div>

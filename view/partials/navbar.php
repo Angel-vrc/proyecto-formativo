@@ -56,7 +56,7 @@
                                             <span class="text">Mapa</span>
                                         </div>
                                     </a>
-                                    <a class="col-6 col-md-4 p-0" href="#">
+                                    <a class="col-6 col-md-4 p-0" href="<?php echo getUrl("Reportes","ReporteSeguimiento","listSeguimientos"); ?>">
                                         <div class="quick-actions-item">
                                             <div class="avatar-item bg-info rounded-circle">
                                                 <i class="fas fa-file-excel"></i>

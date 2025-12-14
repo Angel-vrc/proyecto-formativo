@@ -2,7 +2,7 @@
     <div class="page-header">
         <h4 class="page-title">Gestión de Tanques</h4>
     </div>
-    
+
     <?php if(isset($_SESSION['success'])): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fas fa-check-circle"></i> <?php echo ($_SESSION['success']); unset($_SESSION['success']); ?>
@@ -56,10 +56,10 @@
                             </button>
                         </div>
                     </div>
-               
+                    
                     <!-- Tabla de resultados -->
                     <div class="table-responsive">
-                        <table id="tableTanques" class="display table table-striped table-hover">
+                        <table id="tableZoocriaderos" class="display table table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -67,32 +67,34 @@
                                     <th>Tipo de Tanque</th>
                                     <th>Cantidad de peces</th>
                                     <th>Medidas del Tanque</th>
-                                    <!-- <th>Teléfono</th> -->
-                                    <!-- <th>Correo</th> -->
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
                                <?php
-                                    while($tanque = pg_fetch_assoc($tanques)){
-                                        echo "<tr>";
-                                            echo "<td>".$tanque['id']."</td>";
-                                            echo "<td>".$tanque['nombre']."</td>";
-                                            echo "<td>".$tanque['tipo_tanque']."</td>";
-                                            echo "<td>".$tanque['cantidad_peces']."</td>";
-                                            echo "<td>".$tanque['medidas']."</td>";
-                                            echo "<td>";
-                                                echo "<a href='".getUrl("Tanques", "Tanque", "getUpdate", array("id"=>$tanque['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                    if ($tanques && pg_num_rows($tanques) > 0) {
+                                        while($tanque = pg_fetch_assoc($tanques)){
+                                            echo "<tr>";
+                                                echo "<td>".$tanque['id']."</td>";
+                                                echo "<td>".$tanque['nombre']."</td>";
+                                                echo "<td>".$tanque['tipo_tanque']."</td>";
+                                                echo "<td>".$tanque['cantidad_peces']."</td>";
+                                                echo "<td>".$tanque['medidas']."</td>";
+                                                echo "<td>";
+                                                    echo "<a href='".getUrl("Tanques", "Tanque", "getUpdate", array("id"=>$tanque['id']))."' class='btn btn-primary mx-2'>Editar</a>";
 
-                                                if ($tanque['estado'] == 1) {
-                                                    echo "<a href='".getUrl("Tanques", "Tanque","getDelete",array("id"=>$tanque['id']))."' class='btn btn-danger'>Eliminar</a>";
+                                                    if ($tanque['estado'] == 1) {
+                                                        echo "<a href='".getUrl("Tanques", "Tanque","getDelete",array("id"=>$tanque['id']))."' class='btn btn-danger'>Eliminar</a>";
 
-                                                } elseif ($tanque['estado'] == 2) {
-                                                    echo "<a href='".getUrl("Tanques", "Tanque","updateStatus",array("id"=>$tanque['id']))."' class='btn btn-success'>Activar</a>";
-                                                }
-                                                
-                                            echo "</td>";
-                                        echo "</tr>";
+                                                    } elseif ($tanque['estado'] == 2) {
+                                                        echo "<a href='".getUrl("Tanques", "Tanque","updateStatus",array("id"=>$tanque['id']))."' class='btn btn-success'>Activar</a>";
+                                                    }
+                                                    
+                                                echo "</td>";
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='6' class='text-center'>No se encontraron registros</td></tr>";
                                     }
                                 ?>
                             </tbody>
@@ -103,12 +105,12 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="dataTables_info" id="info" role="status" aria-live="polite">
-                                Mostrando 0 registros
+                                <?php echo isset($infoPaginacion) ? $infoPaginacion : 'Mostrando 0 registros'; ?>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="dataTables_paginate paging_simple_numbers" id="pagination">
-                                <!-- Paginación se generará dinámicamente -->
+                                <?php echo isset($htmlPaginacion) ? $htmlPaginacion : ''; ?>
                             </div>
                         </div>
                     </div>

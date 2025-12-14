@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="assets/css/arregloTablas.css">
-
 <div class="page-inner">
     <div class="page-header">
         <h4 class="page-title">Gestión de Roles</h4>
@@ -37,13 +35,8 @@
                     <div class="row mb-3">                        
                         <div class="col-md-3">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="searchResponsable" placeholder="Buscar por nombre...">
+                                <input type="text" class="form-control" id="filtro" name="buscar" placeholder="Buscar por nombre o estado" data-url="<?php echo getUrl("Roles","Rol","filtro", false, "ajax"); ?>">
                             </div>
-                        </div>
-                        <div class="col-md-3 mt-2">
-                            <button class="btn btn-secondary" onclick="resetFilters()">
-                                <i class="fas fa-redo mx-1"></i> Limpiar filtros
-                            </button>
                         </div>
                     </div>
                     
@@ -59,30 +52,33 @@
                             </thead>
                             <tbody id="tableBody">
                                <?php
-                                    while($rol = pg_fetch_assoc($roles)){
-                                        echo "<tr>";
-                                            echo "<td>".$rol['id']."</td>";
-                                            echo "<td>".$rol['nombre']."</td>";
-                                            echo "<td>";
-                                                echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
-                                                    data-id='".$rol['id']."'
-                                                    data-nombre='".$rol['nombre']."'
-                                                    data-estado ='".$rol['estado_nombre']."'>
-                                                    Ver Detalles
-                                                </button>";
+                                    if ($roles && pg_num_rows($roles) > 0) {
+                                        while($rol = pg_fetch_assoc($roles)){
+                                            echo "<tr>";
+                                                echo "<td>".$rol['id']."</td>";
+                                                echo "<td>".$rol['nombre']."</td>";
+                                                echo "<td>";
+                                                    echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
+                                                        data-id='".$rol['id']."'
+                                                        data-nombre='".$rol['nombre']."'
+                                                        data-estado ='".$rol['estado_nombre']."'>
+                                                        Ver Detalles
+                                                    </button>";
 
-                                                echo "<a href='".getUrl("Roles", "Rol", "getUpdate", array("id"=>$rol['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    echo "<a href='".getUrl("Roles", "Rol", "getUpdate", array("id"=>$rol['id']))."' class='btn btn-primary mx-2'>Editar</a>";
 
-                                                if ($rol['id_estado'] == 1) {
-                                                    echo "<a href='".getUrl("Roles","Rol","getDelete",array("id"=>$rol['id']))."' class='btn btn-danger'>Eliminar</a>";
+                                                    if ($rol['id_estado'] == 1) {
+                                                        echo "<a href='".getUrl("Roles","Rol","getDelete",array("id"=>$rol['id']))."' class='btn btn-danger'>Eliminar</a>";
 
-                                                } elseif ($rol['id_estado'] == 2) {
-                                                    echo "<a href='".getUrl("Roles","Rol","updateStatus",array("id"=>$rol['id']))."' class='btn btn-success'>Activar</a>";
-                                                }                          
-                                            echo "</td>";
-                                        echo "</tr>";
-                                    }   
-                                    $c = pg_num_rows($roles);
+                                                    } elseif ($rol['id_estado'] == 2) {
+                                                        echo "<a href='".getUrl("Roles","Rol","updateStatus",array("id"=>$rol['id']))."' class='btn btn-success'>Activar</a>";
+                                                    }                          
+                                                echo "</td>";
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='3' class='text-center'>No se encontraron registros</td></tr>";
+                                    }
                                 ?>
                             </tbody>
                         </table>
@@ -92,12 +88,12 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="dataTables_info" id="info" role="status" aria-live="polite">
-                                Mostrando <?php echo $c?> registros
+                                <?php echo isset($infoPaginacion) ? $infoPaginacion : 'Mostrando 0 registros'; ?>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="dataTables_paginate paging_simple_numbers" id="pagination">
-                                <!-- Paginación se generará dinámicamente -->
+                                <?php echo isset($htmlPaginacion) ? $htmlPaginacion : ''; ?>
                             </div>
                         </div>
                     </div>
@@ -113,7 +109,7 @@
         <div class="modal-content">
 
             <div class="modal-header" style="background-color:#1a5a5a; color:white;">
-                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalles del Seguimiento</h5>
+                <h5 class="modal-title"><i class="fas fa-info-circle"></i> Detalles del Rol</h5>
                 <button type="button" class="close" onclick="cerrarModalDetalles()" style="color:white;">
                    
                 </button>
@@ -132,7 +128,6 @@
                 <h5><i class="fas fa-lock"></i> Permisos del Rol</h5>
 
                 <div id="contenedorPermisos">
-                    <p class="text-muted">Cargando permisos...</p>
                 </div>
 
             </div>
@@ -147,26 +142,19 @@
     </div>
 </div>
 
-<script src="../web/js/global.js"></script>
 <script>
-    function resetFilters() {
-        document.getElementById('searchNombre').value = '';
-        document.getElementById('searchNumeroTanque').value = '';
-        document.getElementById('searchFecha').value = '';
-    }
 
-    // Función para abrir la modal
     function abrirModalDetalles(btn) {
 
         var idRol = $(btn).data('id');
         var nombre = $(btn).data('nombre');
         var estado = $(btn).data('estado');
 
-        // Actualizar contenido
         $('#detalle-nombre').text(nombre);
         $('#detalle-estado').text(estado);
 
         $('#modalDetalles').modal('show');
+
         cargarPermisosRol(idRol);
     }
 

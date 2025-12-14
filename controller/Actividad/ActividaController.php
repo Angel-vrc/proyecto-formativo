@@ -2,11 +2,41 @@
     include_once '../model/Actividad/ActividadModel.php';
 
     class  ActividaController {
+        
         public function lista(){
             $obj = new ActividadModel();
-         
-            $sql = "SELECT id,nombre,id_estado AS estado FROM actividad ORDER BY id ASC";
+            $connect = $obj->getConnect();
+
+            // Calcular parámetros de paginación (10 registros por página)
+            $paginacion = calcularPaginacion(10);
+
+            // Consulta SQL base (sin LIMIT)
+            $sqlBase = "SELECT id, nombre, id_estado AS estado FROM actividad ORDER BY id ASC";
+
+            // Obtener total de registros usando COUNT directo
+            $sqlCount = "SELECT COUNT(*) as total FROM actividad";
+            $resultCount = pg_query($connect, $sqlCount);
+            $totalRegistros = 0;
+            if ($resultCount) {
+                $rowCount = pg_fetch_assoc($resultCount);
+                $totalRegistros = isset($rowCount['total']) ? intval($rowCount['total']) : 0;
+            }
+
+            // Aplicar paginación a la consulta
+            $sql = aplicarPaginacionSQL($sqlBase, $paginacion['limite'], $paginacion['offset']);
+
+            // Ejecutar consulta paginada
             $tipos = $obj->select($sql);
+
+            // Generar HTML de paginación
+            $parametros = array(
+                'modulo' => isset($_GET['modulo']) ? $_GET['modulo'] : 'Actividad',
+                'controlador' => isset($_GET['controlador']) ? $_GET['controlador'] : 'Activida',
+                'funcion' => isset($_GET['funcion']) ? $_GET['funcion'] : 'lista'
+            );
+
+            $htmlPaginacion = generarPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina'], $parametros);
+            $infoPaginacion = generarInfoPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina']);
 
             include_once '../view/actividad/list.php';
         }

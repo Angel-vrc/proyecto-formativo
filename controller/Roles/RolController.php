@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="assets/css/arregloTablas.css">
-
 <?php
 
     include_once '../model/Roles/RolModel.php';
@@ -8,10 +6,32 @@
 
         public function lista(){
             $obj = new RolModel();
+            $connect = $obj->getConnect();
 
-            $sql = "SELECT r.*, e.nombre estado_nombre FROM roles r, rol_estado e WHERE r.id_estado = e.id_estado ORDER BY r.id ASC";
+            // Calcular parámetros de paginación (10 registros por página)
+            $paginacion = calcularPaginacion(10);
 
+            // Consulta SQL base (sin LIMIT)
+            $sqlBase = "SELECT r.*, e.nombre estado_nombre FROM roles r, rol_estado e WHERE r.id_estado = e.id_estado ORDER BY r.id ASC";
+
+            // Obtener total de registros
+            $totalRegistros = obtenerTotalRegistros($connect, $sqlBase);
+
+            // Aplicar paginación a la consulta
+            $sql = aplicarPaginacionSQL($sqlBase, $paginacion['limite'], $paginacion['offset']);
+
+            // Ejecutar consulta paginada
             $roles = $obj->select($sql);
+
+            // Generar HTML de paginación
+            $parametros = array(
+                'modulo' => isset($_GET['modulo']) ? $_GET['modulo'] : 'Roles',
+                'controlador' => isset($_GET['controlador']) ? $_GET['controlador'] : 'Rol',
+                'funcion' => isset($_GET['funcion']) ? $_GET['funcion'] : 'lista'
+            );
+
+            $htmlPaginacion = generarPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina'], $parametros);
+            $infoPaginacion = generarInfoPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina']);
 
             include_once '../view/roles/list.php';
         }
@@ -183,28 +203,67 @@
 
         public function getPermisosRol(){
 
-            $obj = new RolModel();
+            //header('Content-Type: application/json');
+
+            if (empty($_GET['id_rol'])) {
+                echo json_encode(array(
+                    'success' => false,
+                    'message' => 'ID de rol no recibido'
+                ));
+                exit;
+            }
 
             $idRol = $_GET['id_rol'];
 
-            echo $idRol;
-
+            $obj = new RolModel();
 
             $sql = "SELECT p.*, m.nombre modulo, a.nombre accion FROM permisos p, modulos m, acciones a WHERE p.id_roles = $idRol AND p.id_modulos = m.id AND p.id_acciones = a.id ORDER BY modulo ASC";
 
-            $permisos = pg_fetch_assoc($obj->select($sql));
+            $result = $obj->select($sql);
 
-            // HTML
-            foreach ($permisos as $modulo => $acciones) {
-                echo "<h6 class='mt-3'>$modulo</h6>";
-                echo "<ul>";
-                foreach ($acciones as $accion) {
-                    echo "<li>$accion</li>";
+            $permisosAgrupados = array();
+
+            if ($result && pg_num_rows($result) > 0) {
+
+                while ($row = pg_fetch_assoc($result)) {
+                    $modulo = $row['modulo'];
+                    $accion = $row['accion'];
+
+                    if (!isset($permisosAgrupados[$modulo])) {
+                        $permisosAgrupados[$modulo] = array();
+                    }
+
+                    $permisosAgrupados[$modulo][] = $accion;
                 }
-                echo "</ul>";
             }
 
+            // Convertir a estructura amigable para JS
+            $response = array();
+            foreach ($permisosAgrupados as $modulo => $acciones) {
+                $response[] = array(
+                    'modulo' => $modulo,
+                    'acciones' => $acciones
+                );
+            }
+
+            echo json_encode(array(
+                'success' => true,
+                'permisos' => $response
+            ));
             exit;
+        }
+
+        public function filtro(){
+            $obj = new RolModel();
+
+            $id = $_SESSION['usuario_id'];
+            
+            $buscar = $_GET['buscar'];
+            $sql = "SELECT r.*, e.nombre estado_nombre FROM roles r, rol_estado e WHERE r.id_estado = e.id_estado AND (r.nombre ILIKE '%$buscar%' OR e.nombre ILIKE '%$buscar%') ORDER BY r.id ASC";
+
+            $roles = $obj->select($sql);
+
+            include_once '../view/roles/filtro.php';
         }
 
     }
