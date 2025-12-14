@@ -6,12 +6,37 @@
 
         public function lista(){
             $obj = new UsuarioModel();
+            $connect = $obj->getConnect();
 
             $id = $_SESSION['usuario_id'];
 
-            $sql = "SELECT u.*, r.nombre rol_nombre, e.nombre estado_nombre FROM usuarios u, roles r, usuario_estado e WHERE u.id_rol = r.id AND u.id_estado = e.id_estado AND u.id<>$id ORDER BY u.id ASC";
+            // Calcular parámetros de paginación (10 registros por página)
+            $paginacion = calcularPaginacion(10);
 
+            // Consulta SQL base (sin LIMIT)
+            $sqlBase = "SELECT u.*, r.nombre rol_nombre, e.nombre estado_nombre 
+                        FROM usuarios u, roles r, usuario_estado e 
+                        WHERE u.id_rol = r.id AND u.id_estado = e.id_estado AND u.id<>$id 
+                        ORDER BY u.id ASC";
+
+            // Obtener total de registros
+            $totalRegistros = obtenerTotalRegistros($connect, $sqlBase);
+
+            // Aplicar paginación a la consulta
+            $sql = aplicarPaginacionSQL($sqlBase, $paginacion['limite'], $paginacion['offset']);
+
+            // Ejecutar consulta paginada
             $usuarios = $obj->select($sql);
+
+            // Generar HTML de paginación
+            $parametros = array(
+                'modulo' => isset($_GET['modulo']) ? $_GET['modulo'] : 'Usuarios',
+                'controlador' => isset($_GET['controlador']) ? $_GET['controlador'] : 'Usuario',
+                'funcion' => isset($_GET['funcion']) ? $_GET['funcion'] : 'lista'
+            );
+
+            $htmlPaginacion = generarPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina'], $parametros);
+            $infoPaginacion = generarInfoPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina']);
 
             include_once '../view/usuarios/list.php';
         }

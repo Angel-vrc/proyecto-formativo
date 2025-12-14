@@ -6,10 +6,32 @@
 
         public function lista(){
             $obj = new RolModel();
+            $connect = $obj->getConnect();
 
-            $sql = "SELECT r.*, e.nombre estado_nombre FROM roles r, rol_estado e WHERE r.id_estado = e.id_estado ORDER BY r.id ASC";
+            // Calcular parámetros de paginación (10 registros por página)
+            $paginacion = calcularPaginacion(10);
 
+            // Consulta SQL base (sin LIMIT)
+            $sqlBase = "SELECT r.*, e.nombre estado_nombre FROM roles r, rol_estado e WHERE r.id_estado = e.id_estado ORDER BY r.id ASC";
+
+            // Obtener total de registros
+            $totalRegistros = obtenerTotalRegistros($connect, $sqlBase);
+
+            // Aplicar paginación a la consulta
+            $sql = aplicarPaginacionSQL($sqlBase, $paginacion['limite'], $paginacion['offset']);
+
+            // Ejecutar consulta paginada
             $roles = $obj->select($sql);
+
+            // Generar HTML de paginación
+            $parametros = array(
+                'modulo' => isset($_GET['modulo']) ? $_GET['modulo'] : 'Roles',
+                'controlador' => isset($_GET['controlador']) ? $_GET['controlador'] : 'Rol',
+                'funcion' => isset($_GET['funcion']) ? $_GET['funcion'] : 'lista'
+            );
+
+            $htmlPaginacion = generarPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina'], $parametros);
+            $infoPaginacion = generarInfoPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina']);
 
             include_once '../view/roles/list.php';
         }

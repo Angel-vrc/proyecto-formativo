@@ -4,9 +4,32 @@
     class TipotanqueController{
         public function lista(){
             $obj = new Tipo_tanquesModel();
-         
-            $sql = "SELECT id,nombre,id_estado AS estado FROM tipo_tanque ORDER BY id ASC";
+            $connect = $obj->getConnect();
+
+            // Calcular parámetros de paginación (10 registros por página)
+            $paginacion = calcularPaginacion(10);
+
+            // Consulta SQL base (sin LIMIT)
+            $sqlBase = "SELECT id,nombre,id_estado AS estado FROM tipo_tanque ORDER BY id ASC";
+
+            // Obtener total de registros
+            $totalRegistros = obtenerTotalRegistros($connect, $sqlBase);
+
+            // Aplicar paginación a la consulta
+            $sql = aplicarPaginacionSQL($sqlBase, $paginacion['limite'], $paginacion['offset']);
+
+            // Ejecutar consulta paginada
             $tipos = $obj->select($sql);
+
+            // Generar HTML de paginación
+            $parametros = array(
+                'modulo' => isset($_GET['modulo']) ? $_GET['modulo'] : 'Tipo_tanques',
+                'controlador' => isset($_GET['controlador']) ? $_GET['controlador'] : 'Tipotanque',
+                'funcion' => isset($_GET['funcion']) ? $_GET['funcion'] : 'lista'
+            );
+
+            $htmlPaginacion = generarPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina'], $parametros);
+            $infoPaginacion = generarInfoPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina']);
 
             include_once '../view/tipo_tanques/list.php';
         }

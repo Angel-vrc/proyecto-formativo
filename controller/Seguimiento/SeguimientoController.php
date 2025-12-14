@@ -5,8 +5,13 @@
 
         public function lista(){
             $obj = new SeguimientoModel();
+            $connect = $obj->getConnect();
 
-            $sql = "SELECT sd.*, 
+            // Calcular parámetros de paginación (10 registros por página)
+            $paginacion = calcularPaginacion(10);
+
+            // Consulta SQL base (sin LIMIT)
+            $sqlBase = "SELECT sd.*, 
                            a.nombre as nombre_actividad,
                            t.nombre as nombre_tanque,
                            tt.nombre as nombre_tipo_tanque,
@@ -20,7 +25,24 @@
                     WHERE NOT (sd.ph = 0 AND sd.temperatura = 0 AND sd.cloro = 0 AND sd.num_alevines = 0 AND sd.num_muertes = 0 AND sd.num_machos = 0 AND sd.num_hembras = 0 AND sd.total = 0)
                     ORDER BY sd.id ASC";
 
+            // Obtener total de registros
+            $totalRegistros = obtenerTotalRegistros($connect, $sqlBase);
+
+            // Aplicar paginación a la consulta
+            $sql = aplicarPaginacionSQL($sqlBase, $paginacion['limite'], $paginacion['offset']);
+
+            // Ejecutar consulta paginada
             $seguimientos = $obj->select($sql);
+
+            // Generar HTML de paginación
+            $parametros = array(
+                'modulo' => isset($_GET['modulo']) ? $_GET['modulo'] : 'Seguimiento',
+                'controlador' => isset($_GET['controlador']) ? $_GET['controlador'] : 'Seguimiento',
+                'funcion' => isset($_GET['funcion']) ? $_GET['funcion'] : 'lista'
+            );
+
+            $htmlPaginacion = generarPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina'], $parametros);
+            $infoPaginacion = generarInfoPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina']);
 
             include_once '../view/Seguimiento/list.php';
 
