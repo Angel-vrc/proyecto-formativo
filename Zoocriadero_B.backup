@@ -4,7 +4,7 @@
 
 -- Dumped from database version 9.2.9
 -- Dumped by pg_dump version 9.2.9
--- Started on 2025-12-13 05:22:33
+-- Started on 2025-12-13 23:03:32
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
@@ -1066,6 +1066,7 @@ COPY actividad (id, nombre, id_estado) FROM stdin;
 3	Ajuste nivel del agua	1
 4	No se requirio ninguna acción	1
 1	Lavado	1
+5	Mirar pecesss	2
 \.
 
 
@@ -1316,8 +1317,8 @@ COPY seguimiento (id, id_zoo, id_tanque, id_responsable, fecha) FROM stdin;
 --
 
 COPY seguimiento_detalle (id, id_seguimiento, id_actividad, ph, temperatura, num_alevines, num_muertes, num_machos, num_hembras, cloro, observaciones, total, estado_id) FROM stdin;
-1	3	3	7.50	25.00	3	4	20	9	0.50	ninguna	58	1
 2	4	2	8.50	98.20	5	5	20	10	0.50	nop	60	1
+1	3	3	7.50	25.00	3	4	20	9	0.50	ninguna	58	1
 \.
 
 
@@ -1493,8 +1494,19 @@ SELECT pg_catalog.setval('usuario_estado_id_estado_seq', 1, false);
 --
 
 COPY usuarios (id, nombre, apellido, documento, correo, telefono, contrasena, id_rol, id_estado) FROM stdin;
-1	Melany	Agredo	123456789	melany45@gmail.com	3115558899	81dc9bdb52d04dc20036dbd8313ed055	1	1
 2	Angelica 	Vargas	1107848947	ang@gmail.com	3145722525	e10adc3949ba59abbe56e057f20f883e	4	1
+3	Maicol	Copete Cardona	1111111	maicol@gmail.com	12345678	8b268a254d05c3b0ed22a27272da41d6	3	1
+4	Juan	Pérez	123456789	juan.perez@example.com	3101234567	Juan123456789	3	1
+5	María	Gómez	987654321	maria.gomez@example.com	3112345678	María987654321	3	2
+6	Carlos	Rodríguez	456789123	carlos.rodriguez@example.com	3123456789	Carlos456789123	3	1
+7	Ana	Martínez	321654987	ana.martinez@example.com	3134567890	Ana321654987	3	2
+8	Luis	Hernández	654987321	luis.hernandez@example.com	3145678901	Luis654987321	3	1
+9	Sofía	Ramírez	789123456	sofia.ramirez@example.com	3156789012	Sofía789123456	3	2
+10	Jorge	Torres	147258369	jorge.torres@example.com	3167890123	Jorge147258369	3	1
+11	Valentina	Cruz	963852741	valentina.cruz@example.com	3178901234	Valentina963852741	3	2
+12	Andrés	Moreno	258369147	andres.moreno@example.com	3189012345	Andrés258369147	3	1
+13	Isabella	Vargas	369147258	isabella.vargas@example.com	3190123456	Isabella369147258	3	2
+1	Melany	Agredo	123456789	melany45@gmail.com	3115558899	81dc9bdb52d04dc20036dbd8313ed055	1	1
 \.
 
 
@@ -1504,7 +1516,7 @@ COPY usuarios (id, nombre, apellido, documento, correo, telefono, contrasena, id
 -- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('usuarios_id_seq', 1, true);
+SELECT pg_catalog.setval('usuarios_id_seq', 13, true);
 
 
 --
@@ -1514,8 +1526,18 @@ SELECT pg_catalog.setval('usuarios_id_seq', 1, true);
 --
 
 COPY zoocriadero (id_zoocriadero, responsable, direccion, coordenadas, telefono, comuna, barrio, nombre, geom, id_estado, correo) FROM stdin;
-2	1	Calle 12 # 5-30	3.4512, -76.5321	3114567890	Comuna 9	José Manuel Marroquín Primera Etapa	Zoo La Esperanza	\N	1	responsable1@gmail.com
-3	1	calle 123 #2312		3114567890	Comuna 19	Alfonso López P. 3a. Etapa	Zoocriadero prueba	0101000020E610000014AE47E17AA052C0F7E6411DD4411140	1	prueba@gmail.com
+2	1	Calle 12 # 5-30	3.4512, -76.5321	3114567890	Comuna 10	José Manuel Marroquín Primera Etapa	Zoo La Esperanza	\N	1	responsable1@gmail.com
+3	1	calle 123 #2312		3114567890	Comuna 19	Alfonso López P. 3a. Etapa	Zoocriadero prueba	0101000020E610000014AE47E17AA052C0F7E6411DD4411140	2	prueba@gmail.com
+4	1	Calle 12 #34-56	3.45123,-76.53210	3204567890	Comuna 1	20 de Julio	Zoocriadero Los Pajaritos	0101000020E6100000E78C28ED0D2253C0EACA67791E9C0B40	1	contacto1@zoocriadero.com
+5	2	Carrera 45 #67-89	3.46234,-76.52123	3112345678	Comuna 2	3 de Julio	Zoocriadero El Bosque	0101000020E61000006CEC12D55B2153C0A60F5D50DFB20B40	1	contacto2@zoocriadero.com
+6	1	Avenida 5 #23-12	3.47890,-76.54012	3009876543	Comuna 3	Aguablanca	Zoocriadero Naturaleza Viva	0101000020E610000098FA7953912253C0696FF085C9D40B40	1	contacto3@zoocriadero.com
+7	2	Calle 76 #12-34	3.46789,-76.51123	3156789012	Comuna 4	Aguacatal	Zoocriadero El Paraíso	0101000020E6100000FBAE08FEB72053C0E700C11C3DBE0B40	1	contacto4@zoocriadero.com
+8	1	Carrera 34 #56-78	3.45678,-76.52234	3201234567	Comuna 5	Alameda	Zoocriadero Verde Vida	0101000020E61000002159C0046E2153C02CBCCB457CA70B40	1	contacto5@zoocriadero.com
+10	1	Calle 78 #90-12	3.47012,-76.51234	3109876543	Comuna 7	Alfonso Bonilla Aragón	Zoocriadero Animales del Valle	0101000020E6100000B01BB62DCA2053C06D904946CEC20B40	1	contacto7@zoocriadero.com
+11	2	Carrera 56 #23-45	3.46543,-76.52345	3132109876	Comuna 8	Alfonso López P. 1a. Etapa	Zoocriadero Amigos de la Naturaleza	0101000020E6100000D6C56D34802153C0459E245D33B90B40	1	contacto8@zoocriadero.com
+12	1	Avenida 34 #12-56	3.47812,-76.53678	3145678901	Comuna 9	Alférez Real	Zoocriadero Selva Viva	0101000020E61000006649809A5A2253C017821C9430D30B40	1	contacto9@zoocriadero.com
+13	2	Calle 23 #45-67	3.48123,-76.52901	3156789012	Comuna 10	Alirio Mora Beltrán	Zoocriadero Mundo Animal	0101000020E61000007250C24CDB2153C028D53E1D8FD90B40	2	contacto10@zoocriadero.com
+9	2	Avenida 12 #45-67	3.48901,-76.53456	3123456789	Comuna 6	Alfonso Barberena A.	Zoocriadero Fauna Feliz	0101000020E6100000FC6F253B362253C0EF552B137EE90B40	2	contacto6@zoocriadero.com
 \.
 
 
@@ -1546,7 +1568,7 @@ SELECT pg_catalog.setval('zoocriadero_estado_id_estado_seq', 1, false);
 -- Name: zoocriadero_id_zoocriadero_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('zoocriadero_id_zoocriadero_seq', 2, true);
+SELECT pg_catalog.setval('zoocriadero_id_zoocriadero_seq', 13, true);
 
 
 SET search_path = tiger, pg_catalog;
@@ -2009,7 +2031,7 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2025-12-13 05:22:33
+-- Completed on 2025-12-13 23:03:32
 
 --
 -- PostgreSQL database dump complete
