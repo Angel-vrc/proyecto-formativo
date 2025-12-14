@@ -34,7 +34,7 @@
         
         // Verificar que la sesión esté iniciada
         if (!isset($_SESSION['auth']) || $_SESSION['auth'] !== 'ok') {
-            $_SESSION['error'] = "Debe iniciar sesión para acceder al sistema";
+            $_SESSION['error_helpers'] = "Debe iniciar sesión para acceder al sistema";
             redirect('login.php');
             exit();
         }
@@ -45,7 +45,7 @@
 
         // Validar que los parámetros requeridos estén presentes
         if (empty($modulo) || empty($controlador) || empty($funcion)) {
-            $_SESSION['error'] = "Parámetros de acceso inválidos";
+            $_SESSION['error_helpers'] = "Parámetros de acceso inválidos";
             redirect('index.php');
             exit();
         }
@@ -56,7 +56,7 @@
 
         // Validar permisos antes de acceder al módulo
         if (!validarAccesoModulo($modulo)) {
-            $_SESSION['error'] = "No tiene permisos para acceder a este módulo";
+            $_SESSION['error_helpers'] = "No tiene permisos para acceder a ese módulo";
             redirect('index.php');
             exit();
         }
@@ -74,17 +74,17 @@
                 if(method_exists($objClase,$funcion)){
                     $objClase->$funcion();
                 }else{
-                    $_SESSION['error'] = "La función especificada no existe";
+                    $_SESSION['error_helpers'] = "La función especificada no existe";
                     redirect('index.php');
                     exit();
                 }
             }else{
-                $_SESSION['error'] = "El controlador especificado no existe";
+                $_SESSION['error_helpers'] = "El controlador especificado no existe";
                 redirect('index.php');
                 exit();
             }
         }else{
-            $_SESSION['error'] = "El módulo especificado no existe";
+            $_SESSION['error_helpers'] = "El módulo especificado no existe";
             redirect('index.php');
             exit();
         }

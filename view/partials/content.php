@@ -1,3 +1,20 @@
+
+<?php if(isset($_SESSION['success'])): ?>
+	<div class="alert alert-success alert-dismissible fade show" role="alert">
+		<i class="fas fa-check-circle"></i> <?php echo ($_SESSION['success']); unset($_SESSION['success']); ?>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		</button>
+	</div>
+<?php endif; ?>
+
+<?php if(isset($_SESSION['error_helpers'])): ?>
+	<div class="alert alert-danger alert-dismissible fade show" role="alert">
+		<i class="fas fa-exclamation-circle"></i> <?php echo ($_SESSION['error_helpers']); unset($_SESSION['error_helpers']); ?>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		</button>
+	</div>
+<?php endif; ?>
+	
 <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
 						<div>
 							<h3 class="fw-bold mb-3">Dashboard</h3>
