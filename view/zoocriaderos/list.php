@@ -41,7 +41,7 @@
                                 <small class="form-text text-muted">Buscar por zoocriadero o responsable</small>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div class="form-group">
                                 <select class="form-control select2" id="comuna" name="comuna" data-url="<?php echo getUrl('Zoocriaderos','Zoocriadero','filtro', false, 'ajax'); ?>">
                                     <option value="">Todas las comunas</option> 
@@ -50,6 +50,15 @@
                                             <?php echo $comuna; ?>
                                         </option>
                                     <?php endforeach; ?>                                     
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <select class="form-control select2" id="estado" name="estado" data-url="<?php echo getUrl('Zoocriaderos','Zoocriadero','filtro', false, 'ajax'); ?>">
+                                    <option value="">Todos los estados</option>
+                                    <option value="1">Activo</option>
+                                    <option value="2">Inactivo</option>
                                 </select>
                             </div>
                         </div>
@@ -76,38 +85,41 @@
                             </thead>
                             <tbody id="tableBody">
                                <?php
-                                    while($zoo = pg_fetch_assoc($zoocriaderos)){
-                                        echo "<tr>";
-                                            echo "<td>".$zoo['id_zoocriadero']."</td>";
-                                            echo "<td>".$zoo['nombre']."</td>";
-                                            echo "<td>".$zoo['direccion']."</td>";
-                                            echo "<td>".$zoo['barrio']."</td>";
-                                            echo "<td>".$zoo['nombre_responsable']." ".$zoo['apellido_responsable']."</td>";
-                                            echo "<td>";
-                                                echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
-                                                    data-nombre='".$zoo['nombre']."'
-                                                    data-comuna='".$zoo['comuna']."'
-                                                    data-barrio='".$zoo['barrio']."'
-                                                    data-direccion='".$zoo['direccion']."'
-                                                    data-responsable='".$zoo['nombre_responsable']."'
-                                                    data-telefono='".$zoo['telefono']."'
-                                                    data-correo='".$zoo['correo']."'
-                                                    data-estado='".$zoo['nombre_estado']."'>
-                                                    Ver Detalles
-                                                </button>";
+                                    if ($zoocriaderos && pg_num_rows($zoocriaderos) > 0) {
+                                        while($zoo = pg_fetch_assoc($zoocriaderos)){
+                                            echo "<tr>";
+                                                echo "<td>".$zoo['id_zoocriadero']."</td>";
+                                                echo "<td>".$zoo['nombre']."</td>";
+                                                echo "<td>".$zoo['direccion']."</td>";
+                                                echo "<td>".$zoo['barrio']."</td>";
+                                                echo "<td>".$zoo['nombre_responsable']." ".$zoo['apellido_responsable']."</td>";
+                                                echo "<td>";
+                                                    echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
+                                                        data-nombre='".$zoo['nombre']."'
+                                                        data-comuna='".$zoo['comuna']."'
+                                                        data-barrio='".$zoo['barrio']."'
+                                                        data-direccion='".$zoo['direccion']."'
+                                                        data-responsable='".$zoo['nombre_responsable']."'
+                                                        data-telefono='".$zoo['telefono']."'
+                                                        data-correo='".$zoo['correo']."'
+                                                        data-estado='".$zoo['nombre_estado']."'>
+                                                        Ver Detalles
+                                                    </button>";
 
-                                                echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getUpdate", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getUpdate", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-primary mx-2'>Editar</a>";
 
-                                                if ($zoo['id_estado'] == 1) {
-                                                    echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","getDelete",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-danger'>Eliminar</a>";
+                                                    if ($zoo['id_estado'] == 1) {
+                                                        echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","getDelete",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-danger'>Eliminar</a>";
 
-                                                } elseif ($zoo['id_estado'] == 2) {
-                                                    echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","updateStatus",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-success'>Activar</a>";
-                                                }                          
-                                            echo "</td>";
-                                        echo "</tr>";
+                                                    } elseif ($zoo['id_estado'] == 2) {
+                                                        echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","updateStatus",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-success'>Activar</a>";
+                                                    }                          
+                                                echo "</td>";
+                                            echo "</tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='6' class='text-center'>No se encontraron registros</td></tr>";
                                     }
-                                    $c = pg_num_rows($zoocriaderos);
                                 ?>
                             </tbody>
                         </table>
@@ -117,12 +129,12 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="dataTables_info" id="info" role="status" aria-live="polite">
-                                Mostrando <?php echo $c?> registros
+                                <?php echo isset($infoPaginacion) ? $infoPaginacion : 'Mostrando 0 registros'; ?>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="dataTables_paginate paging_simple_numbers" id="pagination">
-                                <!-- Paginación se generará dinámicamente -->
+                                <?php echo isset($htmlPaginacion) ? $htmlPaginacion : ''; ?>
                             </div>
                         </div>
                     </div>
@@ -174,6 +186,8 @@
 
 function resetFilters() {
     document.getElementById('comuna').value = '';
+    document.getElementById('estado').value = '';
+    document.getElementById('filtro').value = '';
 }
 
 

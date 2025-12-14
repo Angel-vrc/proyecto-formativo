@@ -1,29 +1,33 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
-    $(document).on("keyup","#filtro",function(){
-        
-        let data = $(this).val();
-        let url = $(this).data("url");
+    $(document).on("keyup", "#filtro", function () {
+        // Si existe el elemento #comuna, estamos en la página de zoocriaderos
+        // y debemos usar cargarTabla() para considerar todos los filtros
+        if ($('#comuna').length > 0) {
+            cargarTabla();
+        } else {
+            // Para otras páginas, mantener el comportamiento original
+            let data = $(this).val();
+            let url = $(this).data("url");
 
-
-        $.ajax({
-            url: url,
-            type: "GET",
-            data: {
-                buscar: data
-            },
-            success: function(data){
-                $("tbody").html(data);
-            }
-        })
-
+            $.ajax({
+                url: url,
+                type: "GET",
+                data: {
+                    buscar: data
+                },
+                success: function (data) {
+                    $("tbody").html(data);
+                }
+            });
+        }
     });
 });
 
 
 function cargarPermisosRol(idRol) {
 
-   $('#contenedorPermisos').html(
+    $('#contenedorPermisos').html(
         "<p class='text-muted'>Cargando permisos...</p>"
     );
 
@@ -71,19 +75,21 @@ function cargarPermisosRol(idRol) {
 
             $('#contenedorPermisos').html(html);
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
             console.error(xhr);
         }
     });
 
 }
 
-$('#buscar').on('keyup', function() { cargarTabla(); });
-$('#comuna').on('change', function() { cargarTabla(); });
+$('#buscar').on('keyup', function () { cargarTabla(); });
+$('#comuna').on('change', function () { cargarTabla(); });
+$('#estado').on('change', function () { cargarTabla(); });
 
 function cargarTabla() {
     var buscar = $('#filtro').val();
     var comuna = $('#comuna').val();
+    var estado = $('#estado').val();
 
     $.ajax({
         url: 'ajax.php',
@@ -93,7 +99,8 @@ function cargarTabla() {
             controlador: 'Zoocriadero',
             funcion: 'filtro',
             buscar: buscar,
-            comuna: comuna
+            comuna: comuna,
+            estado: estado
         },
         success: function (html) {
             $('tbody').html(html);
