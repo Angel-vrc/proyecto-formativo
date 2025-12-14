@@ -125,7 +125,7 @@
                         <div class="collapse" id="reportes">
                             <ul class="nav nav-collapse">
                                 <li>
-                                    <a href="<?php echo getUrl("Reportes","Reporte","listNacidos"); ?>">
+                                    <a href="<?php echo getUrl("Reportes","ReporteNacidosYMuertos","listNacidosYMuertos"); ?>">
                                         <span class="sub-item">Peces nacidos y muertos</span>
                                     </a>
                                 </li>
@@ -135,7 +135,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="<?php echo getUrl("Reportes","Reporte","listZoocriaderos"); ?>">
+                                    <a href="<?php echo getUrl("Reportes","ReporteZoocriadero","listZoocriadero"); ?>">
                                         <span class="sub-item">Reportes por zoocriadero</span>
                                     </a>
                                 </li>

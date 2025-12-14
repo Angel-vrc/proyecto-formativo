@@ -35,28 +35,26 @@
                 <div class="card-body">
 
                     <!-- FILTROS -->
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="searchNombre" placeholder="Buscar por nombre...">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="searchNumeroTanque" placeholder="Buscar por número de tanque...">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="searchFecha" placeholder="Buscar por fecha...">
-                            </div>
-                        </div>
-                        <div class="col-md-3 mt-2">
-                            <button class="btn btn-secondary" onclick="resetFilters()">
-                                <i class="fas fa-redo mx-1"></i> Limpiar filtros
-                            </button>
-                        </div>
-                    </div>
+                    <!-- FILTRO -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="form-group">
+            <input type="text"
+                   class="form-control"
+                   id="filtro"
+                   name="buscar"
+                   placeholder="Buscar por tanque, actividad o fecha"
+                   data-url="<?php echo getUrl("Seguimiento","Seguimiento","filtro", false, "ajax"); ?>">
+        </div>
+    </div>
+
+    <div class="col-md-3 mt-2">
+        <button class="btn btn-secondary" onclick="resetFilters()">
+            <i class="fas fa-redo mx-1"></i> Limpiar filtro
+        </button>
+    </div>
+</div>
+
                     
                     <!-- TABLA -->
                     <div class="table-responsive">
@@ -188,7 +186,6 @@ function resetFilters() {
 
 // Función para abrir la modal
 function abrirModalDetalles(btn) {
-
     //datos usando query
     var ph = $(btn).data('ph') || '0';
     var temperatura = $(btn).data('temperatura') || '0';

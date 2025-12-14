@@ -45,7 +45,7 @@
             include_once '../view/Reportes/listSeguimientos.php';
         }
 
-        public function exportarExcel() {
+    public function exportarExcel() {
 
     if (ob_get_length()) {
         ob_end_clean();
@@ -79,10 +79,10 @@
 
     $seguimientos = $obj->select($sql);
 
-    header("Content-Type: application/vnd.ms-excel; charset=utf-8");
-    header("Content-Disposition: attachment; filename=reporte_seguimientos_" . date('Y-m-d') . ".xls");
-    header("Pragma: no-cache");
-    header("Expires: 0");
+    //header("Content-Type: application/vnd.ms-excel; charset=utf-8");
+    //header("Content-Disposition: attachment; filename=reporte_seguimientos_" . date('Y-m-d') . ".xls");
+    //header("Pragma: no-cache");
+    //header("Expires: 0");
 
     echo "<table border='1'>";
     echo "<tr>
@@ -138,6 +138,7 @@
     }
 
 ?>
+
 
 
 

@@ -351,4 +351,48 @@
             }
         }
 
+          public function filtro(){
+    $obj = new SeguimientoModel();
+
+    $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
+
+    $where = array();
+
+    if ($buscar !== '') {
+        $buscar = pg_escape_string($buscar);
+        $where[] = "(
+            t.nombre ILIKE '%$buscar%'
+            OR tt.nombre ILIKE '%$buscar%'
+            OR a.nombre ILIKE '%$buscar%'
+            OR sd.observaciones ILIKE '%$buscar%'
+            OR s.fecha::TEXT ILIKE '%$buscar%'
+        )";
+    }
+
+    $sql = "
+        SELECT sd.*,
+               a.nombre AS nombre_actividad,
+               t.nombre AS nombre_tanque,
+               tt.nombre AS nombre_tipo_tanque,
+               s.fecha AS fecha_seguimiento
+        FROM seguimiento_detalle sd
+        JOIN seguimiento s ON sd.id_seguimiento = s.id
+        JOIN actividad a ON sd.id_actividad = a.id
+        JOIN tanques t ON s.id_tanque = t.id
+        LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id
+    ";
+
+    if (count($where) > 0) {
+        $sql .= " WHERE " . implode(" AND ", $where);
+    }
+
+    $sql .= " ORDER BY sd.id DESC";
+
+    $seguimientos = $obj->select($sql);
+
+    include_once '../view/seguimiento/filtro.php';
+}
+
+
+
     }
