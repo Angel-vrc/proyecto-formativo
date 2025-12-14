@@ -4,9 +4,38 @@
     class  ActividaController {
         public function lista(){
             $obj = new ActividadModel();
-         
-            $sql = "SELECT id,nombre,id_estado AS estado FROM actividad ORDER BY id ASC";
+            $connect = $obj->getConnect();
+
+            // Calcular parámetros de paginación (10 registros por página)
+            $paginacion = calcularPaginacion(10);
+
+            // Consulta SQL base (sin LIMIT)
+            $sqlBase = "SELECT id, nombre, id_estado AS estado FROM actividad ORDER BY id ASC";
+
+            // Obtener total de registros usando COUNT directo
+            $sqlCount = "SELECT COUNT(*) as total FROM actividad";
+            $resultCount = pg_query($connect, $sqlCount);
+            $totalRegistros = 0;
+            if ($resultCount) {
+                $rowCount = pg_fetch_assoc($resultCount);
+                $totalRegistros = isset($rowCount['total']) ? intval($rowCount['total']) : 0;
+            }
+
+            // Aplicar paginación a la consulta
+            $sql = aplicarPaginacionSQL($sqlBase, $paginacion['limite'], $paginacion['offset']);
+
+            // Ejecutar consulta paginada
             $tipos = $obj->select($sql);
+
+            // Generar HTML de paginación
+            $parametros = array(
+                'modulo' => isset($_GET['modulo']) ? $_GET['modulo'] : 'Actividad',
+                'controlador' => isset($_GET['controlador']) ? $_GET['controlador'] : 'Activida',
+                'funcion' => isset($_GET['funcion']) ? $_GET['funcion'] : 'lista'
+            );
+
+            $htmlPaginacion = generarPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina'], $parametros);
+            $infoPaginacion = generarInfoPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina']);
 
             include_once '../view/actividad/list.php';
         }
@@ -33,8 +62,7 @@
                 redirect(getUrl("Actividad","Activida","lista"));
             }
         }
-//        falta la tabla de estado por ahora se queda como referencia el de tanque
-         public function getDelete(){
+        public function getDelete(){
             $obj = new ActividadModel();
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -42,22 +70,41 @@
                 redirect(getUrl("Actividad","Activida","lista"));
                 return;
             }
+
+            $sql = "SELECT *, 
+                           CASE WHEN id_estado = 1 THEN 'Activo' WHEN id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
+                    FROM actividad 
+                    WHERE id = $id";
+
+            $actividad = $obj->select($sql);
+
+            if(!$actividad || pg_num_rows($actividad) == 0){
+                redirect(getUrl("Actividad","Activida","lista"));
+                return;
+            }
+
             include_once '../view/actividad/delete.php';
         }
 
         public function postDelete(){
             $obj = new ActividadModel();
+            $id = intval($_POST['id']);
 
-            $id = ($_POST['id']);
+            if($id <= 0){
+                redirect(getUrl("Actividad","Activida","lista"));
+                return;
+            }
 
             $sql = "UPDATE actividad SET id_estado = 2 WHERE id = $id";
 
-            $ejecutar = $obj->update($sql);
+            $resultado = $obj->update($sql);
             
-            if($ejecutar){
+            if($resultado){
                 redirect(getUrl("Actividad","Activida","lista"));
+                exit();
             }else{
-                echo "No se pudo eliminar la actividad";
+                redirect(getUrl("Actividad","Activida","lista"));
+                exit();
             }
         }
         //para el activar

@@ -35,28 +35,26 @@
                 <div class="card-body">
 
                     <!-- FILTROS -->
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="searchNombre" placeholder="Buscar por nombre...">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="searchNumeroTanque" placeholder="Buscar por número de tanque...">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="searchFecha" placeholder="Buscar por fecha...">
-                            </div>
-                        </div>
-                        <div class="col-md-3 mt-2">
-                            <button class="btn btn-secondary" onclick="resetFilters()">
-                                <i class="fas fa-redo mx-1"></i> Limpiar filtros
-                            </button>
-                        </div>
-                    </div>
+                    <!-- FILTRO -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="form-group">
+            <input type="text"
+                   class="form-control"
+                   id="filtro"
+                   name="buscar"
+                   placeholder="Buscar por tanque, actividad o fecha"
+                   data-url="<?php echo getUrl("Seguimiento","Seguimiento","filtro", false, "ajax"); ?>">
+        </div>
+    </div>
+
+    <div class="col-md-3 mt-2">
+        <button class="btn btn-secondary" onclick="resetFilters()">
+            <i class="fas fa-redo mx-1"></i> Limpiar filtro
+        </button>
+    </div>
+</div>
+
                     
                     <!-- TABLA -->
                     <div class="table-responsive">
@@ -66,7 +64,6 @@
                                     <th>ID</th>
                                     <th>Fecha</th>
                                     <th>Tanque</th>
-                                    <th>Tipo Tanque</th>
                                     <th>Actividad</th>
                                     <th>Observaciones</th>
                                     <th>Acciones</th>
@@ -75,46 +72,51 @@
 
                             <tbody id="tableBody">
                             <?php
-                                while($seg = pg_fetch_assoc($seguimientos)){    
-                                    $fecha_formato = isset($seg['fecha_seguimiento']) && $seg['fecha_seguimiento'] ? date('d/m/Y', strtotime($seg['fecha_seguimiento'])) : 'N/A';
-                                    $nombre_tanque = $seg['nombre_tanque'] ? $seg['nombre_tanque'] : 'N/A';
-                                    $nombre_tipo_tanque = $seg['nombre_tipo_tanque'] ? $seg['nombre_tipo_tanque'] : 'N/A';
+                                if ($seguimientos && pg_num_rows($seguimientos) > 0) {
+                                    while($seg = pg_fetch_assoc($seguimientos)){    
+                                        $fecha_formato = ($seg['fecha_seguimiento']) && $seg['fecha_seguimiento'] ? date('d/m/Y', strtotime($seg['fecha_seguimiento'])) : 'N/A';
+                                        $nombre_tanque = $seg['nombre_tanque'] ? $seg['nombre_tanque'] : 'N/A';
+                                        // Mostrar tanque con su tipo si existe
+                                        if(!empty($seg['nombre_tipo_tanque'])){
+                                            $nombre_tanque .= ' - ' . $seg['nombre_tipo_tanque'];
+                                        }
 
-                                    echo "<tr>";
-                                        echo "<td>".$seg['id']."</td>";
-                                        echo "<td>".$fecha_formato."</td>";
-                                        echo "<td>".$nombre_tanque."</td>";
-                                        echo "<td>".$nombre_tipo_tanque."</td>";
-                                        echo "<td>".($seg['nombre_actividad'] ? $seg['nombre_actividad'] : 'N/A')."</td>";
-                                        echo "<td>".substr($seg['observaciones'], 0, 30).(strlen($seg['observaciones']) > 30 ? '...' : '')."</td>";
-                                        
-                                        echo "<td>";
+                                        echo "<tr>";
+                                            echo "<td>".$seg['id']."</td>";
+                                            echo "<td>".$fecha_formato."</td>";
+                                            echo "<td>".$nombre_tanque."</td>";
+                                            echo "<td>".($seg['nombre_actividad'] ? $seg['nombre_actividad'] : 'N/A')."</td>";
+                                            echo "<td>".substr($seg['observaciones'], 0, 30).(($seg['observaciones']) > 30 ? '...' : '')."</td>";
+                                            
+                                            echo "<td>";
 
-                                            echo "<a href='".getUrl("Seguimiento","Seguimiento","getUpdate",array("id"=>$seg['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                echo "<a href='".getUrl("Seguimiento","Seguimiento","getUpdate",array("id"=>$seg['id']))."' class='btn btn-primary mx-2'>Editar</a>";
 
-                                            if (isset($seg['estado_id']) && $seg['estado_id'] == 1) {
-                                                echo "<a href='".getUrl("Seguimiento","Seguimiento","getDelete",array("id"=>$seg['id']))."' class='btn btn-danger mx-2'>Eliminar</a>";
+                                                if (isset($seg['estado_id']) && $seg['estado_id'] == 1) {
+                                                    echo "<a href='".getUrl("Seguimiento","Seguimiento","getDelete",array("id"=>$seg['id']))."' class='btn btn-danger mx-2'>Eliminar</a>";
 
-                                            } elseif ($seg['estado_id'] == 2) {
-                                                echo "<a href='".getUrl("Seguimiento","Seguimiento","updateStatus",array("id"=>$seg['id']))."' class='btn btn-success mx-2'>Activar</a>";
-                                            }
+                                                } elseif ($seg['estado_id'] == 2) {
+                                                    echo "<a href='".getUrl("Seguimiento","Seguimiento","updateStatus",array("id"=>$seg['id']))."' class='btn btn-success mx-2'>Activar</a>";
+                                                }
 
-                                            // ---- Ver Detalles ----
-                                            echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
-                                                data-ph='".$seg['ph']."'
-                                                data-temperatura='".$seg['temperatura']."'
-                                                data-cloro='".$seg['cloro']."'
-                                                data-alevines='".$seg['num_alevines']."'
-                                                data-muertes='".$seg['num_muertes']."'
-                                                data-machos='".$seg['num_machos']."'
-                                                data-hembras='".$seg['num_hembras']."'
-                                                data-total='".$seg['total']."'>
-                                                Ver Detalles
-                                            </button>";
-                                        echo "</td>";
-                                    echo "</tr>";
+                                                // ---- Ver Detalles ----
+                                                echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
+                                                    data-ph='".$seg['ph']."'
+                                                    data-temperatura='".$seg['temperatura']."'
+                                                    data-cloro='".$seg['cloro']."'
+                                                    data-alevines='".$seg['num_alevines']."'
+                                                    data-muertes='".$seg['num_muertes']."'
+                                                    data-machos='".$seg['num_machos']."'
+                                                    data-hembras='".$seg['num_hembras']."'
+                                                    data-total='".$seg['total']."'>
+                                                    Ver Detalles
+                                                </button>";
+                                            echo "</td>";
+                                        echo "</tr>";
+                                    }
+                                } else {
+                                    echo "<tr><td colspan='6' class='text-center'>No se encontraron registros</td></tr>";
                                 }
-                                $c = pg_num_rows($seguimientos);
                             ?>
                             </tbody>
                         </table>
@@ -125,12 +127,14 @@
                 <div class="card-footer">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="dataTables_info">
-                                Mostrando <?php echo $c?> registros
+                            <div class="dataTables_info" id="info" role="status" aria-live="polite">
+                                <?php echo isset($infoPaginacion) ? $infoPaginacion : 'Mostrando 0 registros'; ?>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div id="pagination" class="dataTables_paginate paging_simple_numbers"></div>
+                            <div class="dataTables_paginate paging_simple_numbers" id="pagination">
+                                <?php echo isset($htmlPaginacion) ? $htmlPaginacion : ''; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -187,7 +191,6 @@ function resetFilters() {
 
 // Función para abrir la modal
 function abrirModalDetalles(btn) {
-
     //datos usando query
     var ph = $(btn).data('ph') || '0';
     var temperatura = $(btn).data('temperatura') || '0';

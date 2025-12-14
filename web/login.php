@@ -108,4 +108,3 @@ include_once '../view/partials/header.php';
     <script src="js/validaciones_login.js"></script>
 </body>
 </html>
-

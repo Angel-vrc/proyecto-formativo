@@ -33,31 +33,49 @@
                 redirect(getUrl("Tipo_actividad","Tipoactivida","list"));
             }
         }
-//        falta la tabla de estado por ahora se queda como referencia el de tanque
-         public function getDelete(){
+        public function getDelete(){
             $obj = new Tipo_actividadModel();
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
             if($id <= 0){
-                redirect(getUrl("Tanques","Tanque","list"));
+                redirect(getUrl("Tipo_actividad","Tipoactivida","list"));
                 return;
             }
-            include_once '../view/tanques/delete.php';
+
+            $sql = "SELECT *, 
+                           CASE WHEN id_estado = 1 THEN 'Activo' WHEN id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
+                    FROM tipo_actividad 
+                    WHERE id = $id";
+
+            $tipo_actividad = $obj->select($sql);
+
+            if(!$tipo_actividad || pg_num_rows($tipo_actividad) == 0){
+                redirect(getUrl("Tipo_actividad","Tipoactivida","list"));
+                return;
+            }
+
+            include_once '../view/tipo_actividad/delete.php';
         }
 
         public function postDelete(){
             $obj = new Tipo_actividadModel();
+            $id = intval($_POST['id']);
 
-            $id = ($_POST['id']);
+            if($id <= 0){
+                redirect(getUrl("Tipo_actividad","Tipoactivida","list"));
+                return;
+            }
 
-            $sql = "UPDATE Tanques SET estado = 2 WHERE id = $id";
+            $sql = "UPDATE tipo_actividad SET id_estado = 2 WHERE id = $id";
 
-            $ejecutar = $obj->update($sql);
+            $resultado = $obj->update($sql);
             
-            if($ejecutar){
-                redirect(getUrl("Tanques","Tanque","list"));
+            if($resultado){
+                redirect(getUrl("Tipo_actividad","Tipoactivida","list"));
+                exit();
             }else{
-                echo "No se pudo actualizar el tanque";
+                redirect(getUrl("Tipo_actividad","Tipoactivida","list"));
+                exit();
             }
         }
 //      esta hecho pero pues falta "eliminar"

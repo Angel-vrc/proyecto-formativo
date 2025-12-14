@@ -303,7 +303,7 @@ var statisticsChart = new Chart(ctx, {
 			fill: true,
 			borderWidth: 2,
 			data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610, 700, 900]
-		}]
+		},]
 	},
 	options : {
 		responsive: true, 

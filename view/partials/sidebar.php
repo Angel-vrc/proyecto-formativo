@@ -61,7 +61,7 @@
                 <?php if (validacionPermisos('tipo_tanques')): ?>
                     <li class="nav-item <?php echo isActiveModule('Tipo_tanques'); ?>">
                         <a href="<?php echo getUrl("Tipo_tanques","Tipotanque","lista"); ?>">
-                            <i class="fas fa-tasks"></i>
+                            <i class="fas fa-box"></i>
                             <p>Tipo de Tanque</p>
                         </a>
                     </li>
@@ -70,7 +70,7 @@
                 <?php if (validacionPermisos('tipo_actividad')): ?>
                     <li class="nav-item <?php echo isActiveModule('Actividad'); ?>">
                         <a href="<?php echo getUrl("Actividad","Activida","lista"); ?>">
-                            <i class="fas fa-tint"></i>
+                            <i class="fas fa-th"></i>
                             <p>Tipo de Actividad</p>
                         </a>
                     </li>
@@ -102,7 +102,6 @@
                                     </a>
                                 </li>
                                 <?php endif; ?>
-
                                 <?php if (validacionPermisos('roles')): ?>
                                 <li>
                                     <a href="<?php echo getUrl("Roles","Rol","lista"); ?>">
@@ -126,17 +125,17 @@
                         <div class="collapse" id="reportes">
                             <ul class="nav nav-collapse">
                                 <li>
-                                    <a href="<?php echo getUrl("Reportes","Reporte","listNacidos"); ?>">
+                                    <a href="<?php echo getUrl("Reportes","ReporteNacidosYMuertos","listNacidosYMuertos"); ?>">
                                         <span class="sub-item">Peces nacidos y muertos</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="<?php echo getUrl("Reportes","Reporte","listSeguimientos"); ?>">
+                                    <a href="<?php echo getUrl("Reportes","ReporteSeguimiento","listSeguimientos"); ?>">
                                         <span class="sub-item">Reporte de seguimientos</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="<?php echo getUrl("Reportes","Reporte","listZoocriaderos"); ?>">
+                                    <a href="<?php echo getUrl("Reportes","ReporteZoocriadero","listZoocriadero"); ?>">
                                         <span class="sub-item">Reportes por zoocriadero</span>
                                     </a>
                                 </li>

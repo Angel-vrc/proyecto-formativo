@@ -5,14 +5,36 @@
 
         public function lista(){
             $obj = new TanquesModel();
+            $connect = $obj->getConnect();
 
+            // Calcular parámetros de paginación (10 registros por página)
+            $paginacion = calcularPaginacion(10);
 
-            $sql = "SELECT t.id,t.nombre,t.medidas,t.cantidad_peces,t.id_estado AS estado,tt.nombre AS tipo_tanque
-            FROM tanques t INNER JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id  ORDER BY t.id ASC";
+            // Consulta SQL base (sin LIMIT)
+            $sqlBase = "SELECT t.id,t.nombre,t.medidas,t.cantidad_peces,t.id_estado AS estado,tt.nombre AS tipo_tanque
+                        FROM tanques t INNER JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id  
+                        ORDER BY t.id ASC";
 
+            // Obtener total de registros
+            $totalRegistros = obtenerTotalRegistros($connect, $sqlBase);
+
+            // Aplicar paginación a la consulta
+            $sql = aplicarPaginacionSQL($sqlBase, $paginacion['limite'], $paginacion['offset']);
+
+            // Ejecutar consulta paginada
             $tanques = $obj->select($sql);
 
             $tipos = $obj->select("SELECT id, nombre FROM tipo_tanque ORDER BY nombre ASC");
+
+            // Generar HTML de paginación
+            $parametros = array(
+                'modulo' => isset($_GET['modulo']) ? $_GET['modulo'] : 'Tanques',
+                'controlador' => isset($_GET['controlador']) ? $_GET['controlador'] : 'Tanque',
+                'funcion' => isset($_GET['funcion']) ? $_GET['funcion'] : 'lista'
+            );
+
+            $htmlPaginacion = generarPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina'], $parametros);
+            $infoPaginacion = generarInfoPaginacion($totalRegistros, $paginacion['pagina'], $paginacion['registrosPorPagina']);
             
             include_once '../view/tanques/list.php';
         }
@@ -47,8 +69,7 @@
                 redirect(getUrl("Tanques","Tanque","lista"));
             }
         }
-//        falta la tabla de estado
-         public function getDelete(){
+        public function getDelete(){
             $obj = new TanquesModel();
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -56,6 +77,20 @@
                 redirect(getUrl("Tanques","Tanque","lista"));
                 return;
             }
+
+            $sql = "SELECT t.*, tt.nombre AS tipo_tanque_nombre, 
+                           CASE WHEN t.id_estado = 1 THEN 'Activo' WHEN t.id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
+                    FROM tanques t 
+                    LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id 
+                    WHERE t.id = $id";
+
+            $tanque = $obj->select($sql);
+
+            if(!$tanque || pg_num_rows($tanque) == 0){
+                redirect(getUrl("Tanques","Tanque","lista"));
+                return;
+            }
+
             include_once '../view/tanques/delete.php';
         }
 
@@ -63,14 +98,24 @@
             $obj = new TanquesModel();
             $id = intval($_POST['id']);
 
+            if($id <= 0){
+                redirect(getUrl("Tanques","Tanque","lista"));
+                return;
+            }
+
             $sql = "UPDATE tanques SET id_estado = 2 WHERE id = $id";
 
-            if($obj->update($sql)){
+            $resultado = $obj->update($sql);            
+
+            if($resultado){
                 redirect(getUrl("Tanques","Tanque","lista"));
-            } else {
-                echo "No se pudo actualizar el estado del tanque";
+                exit();
+            }else{
+                redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
             }
         }
+
         //para el activar
         public function updateStatus(){
             $obj = new TanquesModel();
