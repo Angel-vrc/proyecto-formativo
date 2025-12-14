@@ -2,6 +2,22 @@
     <div class="page-header">
         <h4 class="page-title">Tipo de tanque</h4>
     </div>
+
+    <?php if(isset($_SESSION['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <?php echo ($_SESSION['success']); unset($_SESSION['success']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
+    
+    <?php if(isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <?php echo ($_SESSION['error']); unset($_SESSION['error']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
     
     <div class="row">
         <div class="col-md-12">
@@ -17,7 +33,7 @@
                 <div class="card-body">
                     <!-- Tabla de resultados -->
                     <div class="table-responsive">
-                        <table id="tableZoocriaderos" class="display table table-striped table-hover">
+                        <table id="tableTipoTanques" class="display table table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -32,7 +48,7 @@
                                             echo "<td>".$tipo['id']."</td>";
                                             echo "<td>".$tipo['nombre']."</td>";
                                             echo "<td>";
-                                                echo "<a href='".getUrl("Tipo_tanques","Tipotanque","getUpdate",array("id"=>$tipo['id']))."' class='btn btn-primary mx-2'><i class='fa fa-edit'></i></a>";
+                                                echo "<a href='".getUrl("Tipo_tanques", "Tipotanque", "getUpdate", array("id"=>$tipo['id']))."' class='btn btn-primary mx-2'>Editar</a>";
                                                 if ($tipo['estado'] == 1) {
                                                     echo "<a href='".getUrl("Tipo_tanques", "Tipotanque","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
 

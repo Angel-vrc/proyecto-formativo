@@ -27,14 +27,18 @@
 
             $resultado = $obj->insert($sql);
 
-            if(!$resultado){
-                echo "Error en la insercion de datos";
-            }else{
+            if($resultado){
+                $_SESSION['success'] = "Actividad creada correctamente";
                 redirect(getUrl("Actividad","Activida","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al crear la actividad";
+                redirect(getUrl("Actividad","Activida","lista"));
+                exit();
             }
         }
-//        falta la tabla de estado por ahora se queda como referencia el de tanque
-         public function getDelete(){
+
+        public function getDelete(){
             $obj = new ActividadModel();
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -42,6 +46,12 @@
                 redirect(getUrl("Actividad","Activida","lista"));
                 return;
             }
+             $sql = "SELECT ac.id,ac.nombre, aes.nombre AS estado FROM actividad AS ac 
+             INNER JOIN actividad_estado AS aes ON ac.id_estado = aes.id WHERE ac.id = $id";
+
+            $desactivo = $obj->select($sql);
+
+
             include_once '../view/actividad/delete.php';
         }
 
@@ -55,9 +65,13 @@
             $ejecutar = $obj->update($sql);
             
             if($ejecutar){
+                $_SESSION['success'] = "actividad deshabilitada correctamente";
                 redirect(getUrl("Actividad","Activida","lista"));
+                exit();
             }else{
-                echo "No se pudo eliminar la actividad";
+                $_SESSION['error'] = "Error al deshabilitar la actividad";
+                redirect(getUrl("Actividad","Activida","lista"));
+                exit();
             }
         }
         //para el activar
@@ -65,11 +79,19 @@
             $obj = new ActividadModel();
             $id = intval($_GET['id']);
 
-            if($id > 0){
-                $obj->update("UPDATE actividad SET id_estado = 1 WHERE id = $id");
-            }
+            $sql = "UPDATE actividad SET id_estado=1 WHERE id=$id";
 
-            redirect(getUrl("Actividad","Activida","lista"));
+            $resultado = $obj->update($sql);
+
+            if($resultado){
+                $_SESSION['success'] = "Actividad habilitada correctamente";
+                redirect(getUrl("Actividad","Activida","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al habilitar la actividad";
+                redirect(getUrl("Actividad","Activida","lista"));
+                exit();
+            }
         }
 
         public function getUpdate(){
@@ -102,10 +124,14 @@
 
             $resultado = $obj->update($sql);
 
-            if(!$resultado){
-                echo "Error al actualizar el tipo de actividad";
-            } else {
+            if($resultado){
+                $_SESSION['success'] = "Actividad actualizada correctamente";
                 redirect(getUrl("Actividad","Activida","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al actualizar la actividad";
+                redirect(getUrl("Actividad","Activida","lista"));
+                exit();
             }
         }
     }

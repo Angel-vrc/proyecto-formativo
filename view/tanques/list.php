@@ -3,6 +3,22 @@
         <h4 class="page-title">Gestión de Tanques</h4>
     </div>
     
+    <?php if(isset($_SESSION['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <?php echo ($_SESSION['success']); unset($_SESSION['success']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
+    
+    <?php if(isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <?php echo ($_SESSION['error']); unset($_SESSION['error']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
+    
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -16,38 +32,34 @@
                 </div>
                 <div class="card-body">
                     <!-- Filtros de búsqueda -->
-                    <form method="GET" action="">
-                        <div class="row mb-3">
-                            <div class="col-md-3">
-                            </div>
-
-                            <div class="col-md-3">
-                                <select name="tipo" class="form-control">
-                                    <option value="">Tipos de Tanque</option>
-                                <?php
-                                    while ($tipo = pg_fetch_assoc($tipos)) {
-                                        $valorTipo = isset($_GET['tipo']) ? $_GET['tipo'] : '';
-                                        $selected = ($valorTipo == $tipo['id']) ? 'selected' : '';
-                                        echo "<option value='{$tipo['id']}' $selected>{$tipo['nombre']}</option>";
-                                    }
-                                ?>
-                                </select>
-                            </div>
-
-                            <div class="col-md-3 mt-2">
-                                <button class="btn btn-primary">
-                                    <i class="fas fa-search mx-1"></i> Filtrar
-                                </button>
-                                <a href="<?php echo getUrl("Tanques","Tanque","lista"); ?>" class="btn btn-secondary">
-                                    Limpiar
-                                </a>
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="searchNombre" placeholder="Buscar por nombre...">
                             </div>
                         </div>
-                    </form>
-                    
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select class="form-control select2" id="comuna" name="comuna" required>
+                                    <option value="">Todos los tanques</option> 
+                                    <?php foreach ($comunas as $comuna): ?>
+                                        <option value="<?php echo $comuna; ?>">
+                                            <?php echo $comuna; ?>
+                                        </option>
+                                    <?php endforeach; ?>                                     
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 offset-md-3 mt-2">
+                            <button class="btn btn-secondary" onclick="resetFilters()">
+                                <i class="fas fa-redo mx-1"></i> Limpiar filtros
+                            </button>
+                        </div>
+                    </div>
+               
                     <!-- Tabla de resultados -->
                     <div class="table-responsive">
-                        <table id="tableZoocriaderos" class="display table table-striped table-hover">
+                        <table id="tableTanques" class="display table table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th>ID</th>

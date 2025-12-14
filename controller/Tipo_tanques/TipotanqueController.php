@@ -27,13 +27,17 @@
 
             $resultado = $obj->insert($sql);
 
-            if(!$resultado){
-                echo "Error en la insercion de datos";
-            }else{
+            if($resultado){
+                $_SESSION['success'] = "tipo de tanque creado correctamento";
                 redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al crear el tipo de tanque";
+                redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                exit();
             }
         }
-//        falta la tabla de estado por ahora se queda como referencia el de tanque
+
          public function getDelete(){
             $obj = new Tipo_tanquesModel();
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -42,6 +46,12 @@
                 redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
                 return;
             }
+
+            $sql = "SELECT tpt.id, tpt.nombre, tpts.nombre AS estado
+            FROM tipo_tanque tpt INNER JOIN tipo_tanque_estado tpts ON tpt.id_estado = tpts.id
+            WHERE tpt.id = $id;";
+
+            $tipoestados = $obj->select($sql);
             include_once '../view/tipo_tanques/delete.php';
         }
 
@@ -55,9 +65,13 @@
             $ejecutar = $obj->update($sql);
             
             if($ejecutar){
+                $_SESSION['success'] = "tipo de tanque deshabilitado correctamente";
                 redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                exit();
             }else{
-                echo "No se pudo actualizar el  tipo de tanque";
+                $_SESSION['error'] = "Error al deshabilitar el tipo de tanque";
+                redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                exit();
             }
         }
 
@@ -65,11 +79,23 @@
             $obj = new Tipo_tanquesModel();
             $id = intval($_GET['id']);
 
+            $sql = "UPDATE tipo_tanque SET id_estado=1 WHERE id=$id";
+
+            $resultado = $obj->update($sql);
+            
             if($id > 0){
                 $obj->update("UPDATE tipo_tanque SET id_estado = 1 WHERE id = $id");
             }
 
-            redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+            if($resultado){
+                $_SESSION['success'] = "tipo de tanque habilitado correctamente";
+                redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al habilitar el tipo de tanque";
+                redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                exit();
+            }
         }
 
         public function getUpdate(){
@@ -102,10 +128,14 @@
 
             $resultado = $obj->update($sql);
 
-            if(!$resultado){
-                echo "Error al actualizar el tipo de tanque";
-            } else {
+            if($resultado){
+                $_SESSION['success'] = "tipo de tanque actualizado correctamente";
                 redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al actualizar el tipo de tanque";
+                redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                exit();
             }
         }
     }

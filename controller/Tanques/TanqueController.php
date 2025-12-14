@@ -12,7 +12,6 @@
 
             $tanques = $obj->select($sql);
 
-            $tipos = $obj->select("SELECT id, nombre FROM tipo_tanque ORDER BY nombre ASC");
             
             include_once '../view/tanques/list.php';
         }
@@ -41,10 +40,14 @@
 
             $resultado = $obj->insert($sql);
 
-            if(!$resultado){
-                echo "Error en la insercion de datos";
-            }else{
+            if($resultado){
+                $_SESSION['success'] = "Tanque creado correctamente";
                 redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al crear el tanque";
+                redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
             }
         }
 //        falta la tabla de estado
@@ -56,6 +59,15 @@
                 redirect(getUrl("Tanques","Tanque","lista"));
                 return;
             }
+
+
+            $sql = "SELECT t.id,t.nombre,t.medidas,t.cantidad_peces,tt.nombre AS tipo_tanque, ts.nombre AS estado
+            FROM tanques t INNER JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id  
+            JOIN tanque_estado ts ON t.id_estado = ts.id
+            WHERE t.id = $id;";
+
+            $tanques = $obj->select($sql);
+
             include_once '../view/tanques/delete.php';
         }
 
@@ -65,10 +77,16 @@
 
             $sql = "UPDATE tanques SET id_estado = 2 WHERE id = $id";
 
-            if($obj->update($sql)){
+            $resultado = $obj->update($sql);
+
+            if($resultado){
+                $_SESSION['success'] = "tanque deshabilitado correctamente";
                 redirect(getUrl("Tanques","Tanque","lista"));
-            } else {
-                echo "No se pudo actualizar el estado del tanque";
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al deshabilitar el tanque";
+                redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
             }
         }
         //para el activar
@@ -76,11 +94,19 @@
             $obj = new TanquesModel();
             $id = intval($_GET['id']);
 
-            if($id > 0){
-                $obj->update("UPDATE tanques SET id_estado = 1 WHERE id = $id");
-            }
+            $sql = "UPDATE tanques SET id_estado=1 WHERE id=$id";
 
-            redirect(getUrl("Tanques","Tanque","lista"));
+            $resultado = $obj->update($sql);
+
+            if($resultado){
+                $_SESSION['success'] = "Tanque habilitado correctamente";
+                redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al habilitar el tanque";
+                redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
+            }
         }
 
         public function getUpdate(){
@@ -119,10 +145,14 @@
 
             $resultado = $obj->update($sql);
 
-            if(!$resultado){
-                echo "Error al actualizar el tanque";
-            } else {
+            if($resultado){
+                $_SESSION['success'] = "tanque actualizado correctamente";
                 redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al actualizar el tanque";
+                redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
             }
         }
     }

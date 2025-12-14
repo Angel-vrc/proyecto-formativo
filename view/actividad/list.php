@@ -2,6 +2,21 @@
     <div class="page-header">
         <h4 class="page-title">Tipo de Actividad</h4>
     </div>
+    <?php if(isset($_SESSION['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <?php echo ($_SESSION['success']); unset($_SESSION['success']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
+    
+    <?php if(isset($_SESSION['error'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> <?php echo ($_SESSION['error']); unset($_SESSION['error']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
     
     <div class="row">
         <div class="col-md-12">
@@ -15,9 +30,22 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- Filtros de búsqueda -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="searchNombre" placeholder="Buscar por nombre...">
+                            </div>
+                        </div>
+                        <div class="col-md-3 offset-md-5 mt-2">
+                            <button class="btn btn-secondary" onclick="resetFilters()">
+                                <i class="fas fa-redo mx-1"></i> Limpiar filtros
+                            </button>
+                        </div>
+                    </div>
                     <!-- Tabla de resultados -->
                     <div class="table-responsive">
-                        <table id="tableZoocriaderos" class="display table table-striped table-hover">
+                        <table id="tableActividad" class="display table table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th>ID</th>
