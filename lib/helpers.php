@@ -32,9 +32,34 @@
 
     function resolve(){
         
-        $modulo = ucwords($_GET['modulo']); // modulo-> carpeta dentro del controlador
-        $controlador = ucwords($_GET['controlador']); // controlador -> archivo controller dentro del modulo
-        $funcion = $_GET['funcion']; // funcion -> metodo dentro de la clase del controlador
+        // Verificar que la sesión esté iniciada
+        if (!isset($_SESSION['auth']) || $_SESSION['auth'] !== 'ok') {
+            $_SESSION['error'] = "Debe iniciar sesión para acceder al sistema";
+            redirect('login.php');
+            exit();
+        }
+
+        $modulo = isset($_GET['modulo']) ? $_GET['modulo'] : '';
+        $controlador = isset($_GET['controlador']) ? $_GET['controlador'] : '';
+        $funcion = isset($_GET['funcion']) ? $_GET['funcion'] : '';
+
+        // Validar que los parámetros requeridos estén presentes
+        if (empty($modulo) || empty($controlador) || empty($funcion)) {
+            $_SESSION['error'] = "Parámetros de acceso inválidos";
+            redirect('index.php');
+            exit();
+        }
+
+        // Normalizar nombres (capitalizar primera letra de cada palabra)
+        $modulo = ucwords($modulo);
+        $controlador = ucwords($controlador);
+
+        // Validar permisos antes de acceder al módulo
+        if (!validarAccesoModulo($modulo)) {
+            $_SESSION['error'] = "No tiene permisos para acceder a este módulo";
+            redirect('index.php');
+            exit();
+        }
 
         if(is_dir("../controller/".$modulo)){
             if(is_file("../controller/".$modulo."/".$controlador."Controller.php")){
@@ -49,13 +74,19 @@
                 if(method_exists($objClase,$funcion)){
                     $objClase->$funcion();
                 }else{
-                    echo "La funcion especificada no existe";
+                    $_SESSION['error'] = "La función especificada no existe";
+                    redirect('index.php');
+                    exit();
                 }
             }else{
-                echo "El controlador especificado no existe";
+                $_SESSION['error'] = "El controlador especificado no existe";
+                redirect('index.php');
+                exit();
             }
         }else{
-            echo "El modulo especificado no existe";
+            $_SESSION['error'] = "El módulo especificado no existe";
+            redirect('index.php');
+            exit();
         }
 
 
@@ -96,14 +127,97 @@
         include_once '../lib/conf/connection.php';
 
         $obj = new Connection();
+        $connect = $obj->getConnect();
 
-        $idRol = $_SESSION['id_rol'];
+        // Validar que la sesión tenga id_rol
+        if (!isset($_SESSION['id_rol']) || empty($_SESSION['id_rol'])) {
+            return false;
+        }
 
-        $sql = "SELECT 1 FROM permisos p, modulos m WHERE (p.id_modulos = m.id OR p.id_modulos = m.id_modulo_padre) AND m.slug = '$slugModulo' AND p.id_roles = $idRol";
+        $idRol = intval($_SESSION['id_rol']); // Asegurar que sea un entero
+        
+        // Escapar el slug para prevenir SQL injection
+        $slugModulo = pg_escape_string($connect, $slugModulo);
 
+        $sql = "SELECT 1 FROM permisos p, modulos m 
+                WHERE (p.id_modulos = m.id OR p.id_modulos = m.id_modulo_padre) 
+                AND m.slug = '$slugModulo' 
+                AND p.id_roles = $idRol
+                LIMIT 1";
 
-        $res = pg_query($obj->getConnect(), $sql);
+        $res = pg_query($connect, $sql);
+        
+        if ($res === false) {
+            return false;
+        }
+        
         return pg_num_rows($res) > 0;
+    }
+
+    /**
+     * Mapea el nombre del módulo (como viene en la URL) al slug del módulo en la base de datos
+     * @param string $nombreModulo Nombre del módulo desde $_GET['modulo']
+     * @return string Slug del módulo para validación de permisos
+     */
+    function obtenerSlugModulo($nombreModulo) {
+        // Normalizar el nombre del módulo (capitalizar primera letra de cada palabra)
+        $nombreModulo = ucwords($nombreModulo);
+        
+        // Mapeo de nombres de módulos a slugs (basado en la tabla modulos de la BD)
+        $mapeoModulos = array(
+            'Zoocriaderos' => 'zoocriaderos',
+            'Tanques' => 'tanques',
+            'Tipo_tanques' => 'tipo_tanques',
+            'Tipo Tanques' => 'tipo_tanques', // Variante con espacio
+            'Tipo_actividad' => 'tipo_actividad',
+            'Tipo Actividad' => 'tipo_actividad', // Variante con espacio
+            'Actividad' => 'tipo_actividad', // Alias: el módulo Actividad usa el slug tipo_actividad
+            'Seguimiento' => 'seguimiento',
+            'Usuarios' => 'usuarios',
+            'Roles' => 'roles',
+            'Reportes' => 'reportes',
+            'Configuracion' => 'configuracion',
+            'Mapa' => 'mapa',
+            'Login' => '', // Login no requiere validación de permisos (ya está protegido por helpersLogin)
+            'Perfil' => '' // Perfil no requiere validación de permisos (acceso propio del usuario)
+        );
+        
+        if (isset($mapeoModulos[$nombreModulo])) {
+            return $mapeoModulos[$nombreModulo];
+        }
+
+        // Si no está en el mapeo, por seguridad retornar vacío (negar acceso)
+        return '';
+    }
+
+    /**
+     * Valida si el usuario tiene permisos para acceder a un módulo
+     * @param string $nombreModulo Nombre del módulo
+     * @return bool True si tiene permisos, False si no
+     */
+    function validarAccesoModulo($nombreModulo) {
+        // Verificar si la sesión está iniciada
+        if (!isset($_SESSION['auth']) || $_SESSION['auth'] !== 'ok') {
+            return false;
+        }
+
+        // Módulos que no requieren validación de permisos
+        $modulosPublicos = array('Login', 'Perfil');
+        
+        if (in_array($nombreModulo, $modulosPublicos)) {
+            return true;
+        }
+
+        // Obtener el slug del módulo
+        $slugModulo = obtenerSlugModulo($nombreModulo);
+        
+        // Si no hay slug, no se puede validar (por seguridad, denegar acceso)
+        if (empty($slugModulo)) {
+            return false;
+        }
+
+        // Validar permisos
+        return validacionPermisos($slugModulo);
     }
 
 
