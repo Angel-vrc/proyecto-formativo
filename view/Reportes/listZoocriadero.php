@@ -9,7 +9,7 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="card-title">Reporte de Zoocriaderos</div>
-                        <a href="export_excel.php?modulo=Reportes&controlador=ReporteZoocriadero&funcion=exportarExcel" 
+                        <a href="#" onclick="exportarZoocriaderoExcel(); return false;" 
                            class="btn btn-success btn-sm">
                             <i class="fas fa-file-excel"></i> Exportar a Excel
                         </a>
@@ -39,33 +39,27 @@
                              aria-labelledby="pills-lista-tab">
 
                             <!-- Filtros -->
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Filtros</h5>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="filtro_comuna">Comuna</label>
-                                                <select class="form-control" id="filtro_comuna"
-                                                        name="filtro_comuna" data-url="<?php echo getUrl('Reportes','ReporteZoocriadero','filtro', false, 'ajax'); ?>">
-                                                    <option value="">Todas</option>
-                                                    <?php if(isset($comunas)): ?>
-                                                        <?php foreach ($comunas as $comuna): ?>
-                                                            <option value="<?php echo $comuna; ?>">
-                                                                <?php echo $comuna; ?>
-                                                            </option>
-                                                        <?php endforeach; ?>
-                                                    <?php endif; ?>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <a href="<?php echo getUrl("Reportes","ReporteZoocriadero","listZoocriadero") ?>" class="btn btn-secondary">
-                                        <i class="fas fa-redo"></i> Limpiar
-                                    </a>
-                                </div>
+                            <div class="row mb-3">
+                        <div class="col-md-3">
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <select class="form-control select2" id="comuna2" name="comuna" data-url="<?php echo getUrl('Reportes','ReporteZoocriadero','filtro', false, 'ajax'); ?>">
+                                    <option value="">Todas las comunas</option> 
+                                    <?php foreach ($comunas as $comuna): ?>
+                                        <option value="<?php echo $comuna; ?>">
+                                            <?php echo $comuna; ?>
+                                        </option>
+                                    <?php endforeach; ?>                                     
+                                </select>
                             </div>
+                        </div>
+                        <div class="col-md-3 mt-2">
+                            <a href="<?php echo getUrl("Reportes","ReporteZoocriadero","listZoocriadero") ?>" class="btn btn-secondary" onclick="resetFilters()">
+                                <i class="fas fa-redo mx-1"></i> Limpiar filtros
+                            </a>
+                        </div>
+                    </div>
 
                             <!-- Tabla de zoocriaderos -->
                             <div class="table-responsive">
@@ -80,7 +74,6 @@
                                             <th>Responsable</th>
                                             <th>Teléfono</th>
                                             <th>Correo</th>
-                                            <th>Estado</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tableBody">
@@ -97,16 +90,31 @@
                                                     <td><?php echo $zoo['nombre_responsable'] . ' ' . $zoo['apellido_responsable']; ?></td>
                                                     <td><?php echo $zoo['telefono']; ?></td>
                                                     <td><?php echo $zoo['correo']; ?></td>
-                                                    <td><?php echo $zoo['nombre_estado']; ?></td>
                                                 </tr>
                                         <?php
                                             }
                                         } else {
-                                            echo "<tr><td colspan='9' class='text-center'>No hay registros de zoocriaderos</td></tr>";
+                                            echo "<tr><td colspan='8' class='text-center'>No hay registros de zoocriaderos</td></tr>";
                                         }
                                         ?>
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <!-- Paginación -->
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="dataTables_info" id="info" role="status" aria-live="polite">
+                                            <?php echo isset($infoPaginacion) ? $infoPaginacion : 'Mostrando 0 registros'; ?>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="dataTables_paginate paging_simple_numbers" id="pagination">
+                                            <?php echo isset($htmlPaginacion) ? $htmlPaginacion : ''; ?>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -140,9 +148,9 @@
     var estadisticasData = {
         labels: [
             <?php
-            if ($estadisticas && pg_num_rows($estadisticas) > 0) {
+            if ($estadisticas && is_array($estadisticas) && count($estadisticas) > 0) {
                 $labels = array();
-                while ($est = pg_fetch_assoc($estadisticas)) {
+                foreach ($estadisticas as $est) {
                     $labels[] = "'" . addslashes(trim($est['comuna'])) . "'";
                 }
                 echo implode(', ', $labels);
@@ -156,11 +164,10 @@
                 label: 'Zoocriaderos por Comuna',
                 data: [
                     <?php
-                    if ($estadisticas && pg_num_rows($estadisticas) > 0) {
-                        pg_result_seek($estadisticas, 0);
+                    if ($estadisticas && is_array($estadisticas) && count($estadisticas) > 0) {
                         $data = array();
-                        while ($est = pg_fetch_assoc($estadisticas)) {
-                            $data[] = isset($est['total_zoocriaderos']) ? $est['total_zoocriaderos'] : 0;
+                        foreach ($estadisticas as $est) {
+                            $data[] = isset($est['total_zoocriaderos']) ? intval($est['total_zoocriaderos']) : 0;
                         }
                         echo implode(', ', $data);
                     }
@@ -207,7 +214,22 @@
 
     // Exportar Excel
     function exportarGrafico() {
-        window.location.href = 'export_excel.php?modulo=Reportes&controlador=ReporteZoocriadero&funcion=exportarExcel';
+        exportarZoocriaderoExcel();
+    }
+
+    // Función para exportar a Excel con filtros
+    function exportarZoocriaderoExcel() {
+        var url = 'export_excel.php?modulo=Reportes&controlador=ReporteZoocriadero&funcion=exportarExcel';
+        
+        // Obtener valores de los campos o de la URL actual
+        var urlParams = new URLSearchParams(window.location.search);
+        var comuna = document.getElementById('comuna2') ? document.getElementById('comuna2').value : (urlParams.get('comuna') || '');
+        
+        if (comuna) {
+            url += '&comuna=' + encodeURIComponent(comuna);
+        }
+        
+        window.location.href = url;
     }
 </script>
 
