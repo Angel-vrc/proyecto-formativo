@@ -83,25 +83,18 @@
                 return;
             }
 
-            // $sql = "SELECT t.*, tt.nombre AS tipo_tanque_nombre, 
-            //                CASE WHEN t.id_estado = 1 THEN 'Activo' WHEN t.id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
-            //         FROM tanques t 
-            //         LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id 
-            //         WHERE t.id = $id";
+            $sql = "SELECT t.*, tt.nombre AS tipo_tanque_nombre, 
+                           CASE WHEN t.id_estado = 1 THEN 'Activo' WHEN t.id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
+                    FROM tanques t 
+                    LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id 
+                    WHERE t.id = $id";
 
-            // $tanque = $obj->select($sql);
+            $tanque = $obj->select($sql);
 
-            // if(!$tanque || pg_num_rows($tanque) == 0){
-            //     redirect(getUrl("Tanques","Tanque","lista"));
-            //     return;
-            // }
-
-            $sql = "SELECT t.id,t.nombre,t.medidas,t.cantidad_peces,tt.nombre AS tipo_tanque, ts.nombre AS estado
-            FROM tanques t INNER JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id  
-            JOIN tanque_estado ts ON t.id_estado = ts.id
-            WHERE t.id = $id;";
-
-            $tanques = $obj->select($sql);
+            if(!$tanque || pg_num_rows($tanque) == 0){
+                redirect(getUrl("Tanques","Tanque","lista"));
+                return;
+            }
 
             include_once '../view/tanques/delete.php';
         }
