@@ -26,7 +26,9 @@
                         if(isset($_GET['modulo'])){
                             resolve();
                         }else{
-                            include_once '../view/partials/dashboard.php';
+                            include_once '../controller/Dashboard/DashboardController.php';
+                            $dashboardController = new DashboardController();
+                            $dashboardController->index();
                         }
                     echo "</div>";
                 echo "</div>";

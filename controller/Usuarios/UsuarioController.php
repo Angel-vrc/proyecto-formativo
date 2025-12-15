@@ -69,6 +69,7 @@
 
             if($resultado){
                 $_SESSION['success'] = "Usuario creado correctamente";
+                $_SESSION['pass'] = "La contraseña del nuevo usuario es: ".$password;
                 redirect(getUrl("Usuarios","Usuario","lista"));
                 exit();
             }else{

@@ -26,18 +26,27 @@
         <div class="sidebar-wrapper scrollbar scrollbar-inner">
        <div class="sidebar-content">
             <ul class="nav nav-secondary">
+
                 <li class="nav-item <?php echo (!isset($_GET['modulo'])) ? 'active' : ''; ?>">    
                     <a href="index.php">
-                        <i class="fas fa-map"></i>
-                        <p>Visualización de Mapa</p>
+                        <i class="fas fa-home"></i>
+                        <p>Inicio</p>
                     </a>
                 </li>
+
 
                 <li class="nav-section">
                     <span class="sidebar-mini-icon">
                         <i class="fa fa-ellipsis-h"></i>
                     </span>
                     <h4 class="text-section">Gestión del Sistema</h4>
+                </li>
+
+                <li class="nav-item">    
+                    <a href="#">
+                        <i class="fas fa-map"></i>
+                        <p>Visualización de Mapa</p>
+                    </a>
                 </li>
 
                 <?php if (validacionPermisos('zoocriaderos')): ?>

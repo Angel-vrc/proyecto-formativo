@@ -7,6 +7,7 @@ if ($tanques && pg_num_rows($tanques) > 0) {
             echo "<td>{$tanque['tipo_tanque']}</td>";
             echo "<td>{$tanque['cantidad_peces']}</td>";
             echo "<td>{$tanque['medidas']}</td>";
+            echo "<td>{$tanque['zoocriadero']}</td>";
             echo "<td>";
 
                 echo "<a href='".getUrl("Tanques","Tanque","getUpdate",array("id"=>$tanque['id']))."' class='btn btn-primary mx-2'>Editar</a>";
