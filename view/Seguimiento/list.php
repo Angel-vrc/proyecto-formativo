@@ -100,7 +100,7 @@
                                                         echo "<a href='".getUrl("Seguimiento","Seguimiento","getDelete",array("id"=>$seg['id']))."' class='btn btn-danger mx-2'>Eliminar</a>";
                                                     }
                                                 } elseif ($seg['estado_id'] == 2) {
-                                                    if (tienePermiso('seguimiento', 'Activar')) {
+                                                    if (tienePermiso('seguimiento', 'Eliminar')) {
                                                         echo "<a href='".getUrl("Seguimiento","Seguimiento","updateStatus",array("id"=>$seg['id']))."' class='btn btn-success mx-2'>Activar</a>";
                                                     }
                                                 }

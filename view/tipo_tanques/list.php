@@ -43,7 +43,7 @@
                                                             echo "<a href='".getUrl("Tipo_tanques", "Tipotanque","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
                                                         }
                                                     } elseif ($tipo['estado'] == 2) {
-                                                        if (tienePermiso('tipo_tanques', 'Activar')) {
+                                                        if (tienePermiso('tipo_tanques', 'Eliminar')) {
                                                             echo "<a href='".getUrl("Tipo_tanques", "Tipotanque","updateStatus",array("id"=>$tipo['id']))."' class='btn btn-success'>Activar</a>";
                                                         }
                                                     }

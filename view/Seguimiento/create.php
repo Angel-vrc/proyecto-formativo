@@ -16,7 +16,7 @@
         </button>
     </div>
     <?php unset($_SESSION['success']); ?>
-    <?php endif; ?>
+<?php endif; ?>
 
 
     <a href="<?php echo getUrl("Seguimiento","Seguimiento","lista") ?>" class="btn btn-primary btn-round" >

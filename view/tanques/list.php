@@ -82,7 +82,7 @@
                                                             echo "<a href='".getUrl("Tanques", "Tanque","getDelete",array("id"=>$tanque['id']))."' class='btn btn-danger'>Eliminar</a>";
                                                         }
                                                     } elseif ($tanque['estado'] == 2) {
-                                                        if (tienePermiso('tanques', 'Activar')) {
+                                                        if (tienePermiso('tanques', 'Eliminar')) {
                                                             echo "<a href='".getUrl("Tanques", "Tanque","updateStatus",array("id"=>$tanque['id']))."' class='btn btn-success'>Activar</a>";
                                                         }
                                                     }

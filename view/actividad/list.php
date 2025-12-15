@@ -43,7 +43,7 @@
                                                             echo "<a href='".getUrl("Actividad", "Activida","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
                                                         }
                                                     } elseif ($tipo['estado'] == 2) {
-                                                        if (tienePermiso('tipo_actividad', 'Activar')) {
+                                                        if (tienePermiso('tipo_actividad', 'Eliminar')) {
                                                             echo "<a href='".getUrl("Actividad", "Activida","updateStatus",array("id"=>$tipo['id']))."' class='btn btn-success'>Activar</a>";
                                                         }
                                                     }

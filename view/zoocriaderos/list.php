@@ -119,7 +119,7 @@
                                                             echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","getDelete",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-danger'>Eliminar</a>";
                                                         }
                                                     } elseif ($zoo['id_estado'] == 2) {
-                                                        if (tienePermiso('zoocriaderos', 'Activar')) {
+                                                        if (tienePermiso('zoocriaderos', 'Eliminar')) {
                                                             echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","updateStatus",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-success'>Activar</a>";
                                                         }
                                                     }                          

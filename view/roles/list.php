@@ -78,7 +78,7 @@
                                                             echo "<a href='".getUrl("Roles","Rol","getDelete",array("id"=>$rol['id']))."' class='btn btn-danger'>Eliminar</a>";
                                                         }
                                                     } elseif ($rol['id_estado'] == 2) {
-                                                        if (tienePermiso('roles', 'Activar')) {
+                                                        if (tienePermiso('roles', 'Eliminar')) {
                                                             echo "<a href='".getUrl("Roles","Rol","updateStatus",array("id"=>$rol['id']))."' class='btn btn-success'>Activar</a>";
                                                         }
                                                     }                          
