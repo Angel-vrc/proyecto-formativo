@@ -4,52 +4,52 @@
 
     class ReporteNacidosYMuertosController{
 
-    public function listNacidosYMuertos(){
+        public function listNacidosYMuertos(){
 
-    $obj = new ReporteNacidosYMuertosModel();
-
-
-    $fechaDesde = isset($_GET['fecha_desde']) ? $_GET['fecha_desde'] : null;
-    $fechaHasta = isset($_GET['fecha_hasta']) ? $_GET['fecha_hasta'] : null;
-
-    $where = "WHERE (sd.num_alevines > 0 OR sd.num_muertes > 0)";
+            $obj = new ReporteNacidosYMuertosModel();
 
 
-    if (!empty($fechaDesde)) {
-        $where .= " AND s.fecha >= '$fechaDesde'";
-    }
+            $fechaDesde = isset($_GET['fecha_desde']) ? $_GET['fecha_desde'] : null;
+            $fechaHasta = isset($_GET['fecha_hasta']) ? $_GET['fecha_hasta'] : null;
 
-    if (!empty($fechaHasta)) {
-        $where .= " AND s.fecha <= '$fechaHasta'";
-    }
+            $where = "WHERE (sd.num_alevines > 0 OR sd.num_muertes > 0)";
 
-    $sql = "SELECT sd.*, 
-                   s.fecha as fecha_seguimiento,
-                   COALESCE(sd.num_alevines, 0) as nacidos,
-                   COALESCE(sd.num_muertes, 0) as muertos
-            FROM seguimiento_detalle sd
-            LEFT JOIN seguimiento s ON sd.id_seguimiento = s.id
-            $where
-            ORDER BY s.fecha ASC, sd.id ASC";
 
-    $nacidosYMuertos = $obj->select($sql);
+            if (!empty($fechaDesde)) {
+                $where .= " AND s.fecha >= '$fechaDesde'";
+            }
 
-    $sql_estadisticas = "SELECT 
-                            TO_CHAR(s.fecha, 'YYYY-MM') as mes,
-                            TO_CHAR(s.fecha, 'Month YYYY') as mes_nombre,
-                            SUM(COALESCE(sd.num_alevines, 0)) as total_nacidos,
-                            SUM(COALESCE(sd.num_muertes, 0)) as total_muertos
-                        FROM seguimiento_detalle sd
-                        LEFT JOIN seguimiento s ON sd.id_seguimiento = s.id
-                        $where
-                        GROUP BY TO_CHAR(s.fecha, 'YYYY-MM'),
-                                 TO_CHAR(s.fecha, 'Month YYYY')
-                        ORDER BY TO_CHAR(s.fecha, 'YYYY-MM') ASC";
+            if (!empty($fechaHasta)) {
+                $where .= " AND s.fecha <= '$fechaHasta'";
+            }
 
-    $estadisticas = $obj->select($sql_estadisticas);
+            $sql = "SELECT sd.*, 
+                        s.fecha as fecha_seguimiento,
+                        COALESCE(sd.num_alevines, 0) as nacidos,
+                        COALESCE(sd.num_muertes, 0) as muertos
+                    FROM seguimiento_detalle sd
+                    LEFT JOIN seguimiento s ON sd.id_seguimiento = s.id
+                    $where
+                    ORDER BY s.fecha ASC, sd.id ASC";
 
-    include_once '../view/Reportes/listNacidosYMuertos.php';
-}
+            $nacidosYMuertos = $obj->select($sql);
+
+            $sql_estadisticas = "SELECT 
+                                    TO_CHAR(s.fecha, 'YYYY-MM') as mes,
+                                    TO_CHAR(s.fecha, 'Month YYYY') as mes_nombre,
+                                    SUM(COALESCE(sd.num_alevines, 0)) as total_nacidos,
+                                    SUM(COALESCE(sd.num_muertes, 0)) as total_muertos
+                                FROM seguimiento_detalle sd
+                                LEFT JOIN seguimiento s ON sd.id_seguimiento = s.id
+                                $where
+                                GROUP BY TO_CHAR(s.fecha, 'YYYY-MM'),
+                                        TO_CHAR(s.fecha, 'Month YYYY')
+                                ORDER BY TO_CHAR(s.fecha, 'YYYY-MM') ASC";
+
+            $estadisticas = $obj->select($sql_estadisticas);
+
+            include_once '../view/Reportes/listNacidosYMuertos.php';
+        }
 
 
 
