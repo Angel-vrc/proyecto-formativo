@@ -61,6 +61,21 @@
             exit();
         }
 
+        // Obtener el slug del módulo para validación de acciones
+        $slugModulo = obtenerSlugModulo($modulo);
+        
+        // Obtener la acción correspondiente a la función
+        $accion = obtenerAccionPorFuncion($funcion);
+        
+        // Si se puede determinar la acción, validar el permiso específico
+        if ($accion !== null && !empty($slugModulo)) {
+            if (!validarAccionModulo($slugModulo, $accion)) {
+                $_SESSION['error_helpers'] = "No tiene permisos para realizar la acción '$accion' en este módulo";
+                redirect('index.php');
+                exit();
+            }
+        }
+
         if(is_dir("../controller/".$modulo)){
             if(is_file("../controller/".$modulo."/".$controlador."Controller.php")){
 
@@ -143,6 +158,7 @@
                 WHERE (p.id_modulos = m.id OR p.id_modulos = m.id_modulo_padre) 
                 AND m.slug = '$slugModulo' 
                 AND p.id_roles = $idRol
+                AND p.id_acciones = 2
                 LIMIT 1";
 
         $res = pg_query($connect, $sql);
@@ -218,6 +234,90 @@
 
         // Validar permisos
         return validacionPermisos($slugModulo);
+    }
+
+    /**
+     * Valida si el usuario tiene permiso para una acción específica en un módulo
+     * @param string $slugModulo Slug del módulo
+     * @param string $nombreAccion Nombre de la acción (Registrar, Consultar, Actualizar, Eliminar)
+     * @return bool True si tiene permiso, False si no
+     */
+    function validarAccionModulo($slugModulo, $nombreAccion) {
+        include_once '../lib/conf/connection.php';
+
+        $obj = new Connection();
+        $connect = $obj->getConnect();
+
+        // Validar que la sesión tenga id_rol
+        if (!isset($_SESSION['id_rol']) || empty($_SESSION['id_rol'])) {
+            return false;
+        }
+
+        $idRol = intval($_SESSION['id_rol']); // Asegurar que sea un entero
+        
+        // Escapar valores para prevenir SQL injection
+        $slugModulo = pg_escape_string($connect, $slugModulo);
+        $nombreAccion = pg_escape_string($connect, $nombreAccion);
+
+        $sql = "SELECT 1 FROM permisos p, modulos m, acciones a 
+                WHERE (p.id_modulos = m.id OR p.id_modulos = m.id_modulo_padre) 
+                AND m.slug = '$slugModulo' 
+                AND p.id_roles = $idRol
+                AND p.id_acciones = a.id
+                AND a.nombre = '$nombreAccion'
+                LIMIT 1";
+
+        $res = pg_query($connect, $sql);
+        
+        if ($res === false) {
+            return false;
+        }
+        
+        return pg_num_rows($res) > 0;
+    }
+
+    /**
+     * Helper para usar en vistas: verifica si el usuario tiene permiso para una acción
+     * @param string $slugModulo Slug del módulo
+     * @param string $nombreAccion Nombre de la acción (Registrar, Consultar, Actualizar, Eliminar)
+     * @return bool True si tiene permiso, False si no
+     */
+    function tienePermiso($slugModulo, $nombreAccion) {
+        return validarAccionModulo($slugModulo, $nombreAccion);
+    }
+
+    /**
+     * Obtiene la acción correspondiente según la función del controlador
+     * @param string $funcion Nombre de la función del controlador
+     * @return string Nombre de la acción o null si no se puede determinar
+     */
+    function obtenerAccionPorFuncion($funcion) {
+        // Mapeo de funciones a acciones
+        $mapeoFunciones = array(
+            // Consultar
+            'lista' => 'Consultar',
+            'list' => 'Consultar',
+            'filtro' => 'Consultar',
+            // Registrar
+            'getCreate' => 'Registrar',
+            'postCreate' => 'Registrar',
+            // Actualizar
+            'getUpdate' => 'Actualizar',
+            'postUpdate' => 'Actualizar',
+            'updateStatus' => 'Activar',
+            // Eliminar
+            'getDelete' => 'Eliminar',
+            'postDelete' => 'Eliminar',
+            'delete' => 'Eliminar',
+            'eliminar' => 'Eliminar'
+        );
+
+        if (isset($mapeoFunciones[$funcion])) {
+            return $mapeoFunciones[$funcion];
+        }
+
+        // Por defecto, si no se puede determinar, retornar null
+        return null;
     }
 
 

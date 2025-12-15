@@ -9,9 +9,11 @@
                 <div class="card-header">
                     <div class="" style="display:flex; justify-content: space-between;">
                         <h4 class="card-title">Listado de Tipos de Tanque</h4>
+                        <?php if (tienePermiso('tipo_tanques', 'Registrar')): ?>
                         <a href="<?php echo getUrl("Tipo_tanques","Tipotanque","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right">
                             <i class="fa fa-plus mx-2"></i> Nuevo tipo de Tanque
                         </a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="card-body">
@@ -33,12 +35,17 @@
                                                 echo "<td>".$tipo['id']."</td>";
                                                 echo "<td>".$tipo['nombre']."</td>";
                                                 echo "<td>";
-                                                    echo "<a href='".getUrl("Tipo_tanques","Tipotanque","getUpdate",array("id"=>$tipo['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    if (tienePermiso('tipo_tanques', 'Actualizar')) {
+                                                        echo "<a href='".getUrl("Tipo_tanques","Tipotanque","getUpdate",array("id"=>$tipo['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    }
                                                     if ($tipo['estado'] == 1) {
-                                                        echo "<a href='".getUrl("Tipo_tanques", "Tipotanque","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
-
+                                                        if (tienePermiso('tipo_tanques', 'Eliminar')) {
+                                                            echo "<a href='".getUrl("Tipo_tanques", "Tipotanque","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
+                                                        }
                                                     } elseif ($tipo['estado'] == 2) {
-                                                        echo "<a href='".getUrl("Tipo_tanques", "Tipotanque","updateStatus",array("id"=>$tipo['id']))."' class='btn btn-success'>Activar</a>";
+                                                        if (tienePermiso('tipo_tanques', 'Activar')) {
+                                                            echo "<a href='".getUrl("Tipo_tanques", "Tipotanque","updateStatus",array("id"=>$tipo['id']))."' class='btn btn-success'>Activar</a>";
+                                                        }
                                                     }
                                                 echo "</td>";
                                             echo "</tr>";

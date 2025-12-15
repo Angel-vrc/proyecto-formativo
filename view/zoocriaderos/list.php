@@ -27,9 +27,11 @@
                 <div class="card-header">
                     <div class="" style="display:flex; justify-content: space-between;">
                         <h4 class="card-title">Listado de Zoocriaderos</h4>
+                        <?php if (tienePermiso('zoocriaderos', 'Registrar')): ?>
                         <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
                             <i class="fa fa-plus mx-2"></i> Nuevo Zoocriadero
                         </a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="card-body">
@@ -94,25 +96,32 @@
                                                 echo "<td>".$zoo['barrio']."</td>";
                                                 echo "<td>".$zoo['nombre_responsable']." ".$zoo['apellido_responsable']."</td>";
                                                 echo "<td>";
-                                                    echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
-                                                        data-nombre='".$zoo['nombre']."'
-                                                        data-comuna='".$zoo['comuna']."'
-                                                        data-barrio='".$zoo['barrio']."'
-                                                        data-direccion='".$zoo['direccion']."'
-                                                        data-responsable='".$zoo['nombre_responsable']."'
-                                                        data-telefono='".$zoo['telefono']."'
-                                                        data-correo='".$zoo['correo']."'
-                                                        data-estado='".$zoo['nombre_estado']."'>
-                                                        Ver Detalles
-                                                    </button>";
+                                                    if (tienePermiso('zoocriaderos', 'Consultar')) {
+                                                        echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
+                                                            data-nombre='".$zoo['nombre']."'
+                                                            data-comuna='".$zoo['comuna']."'
+                                                            data-barrio='".$zoo['barrio']."'
+                                                            data-direccion='".$zoo['direccion']."'
+                                                            data-responsable='".$zoo['nombre_responsable']."'
+                                                            data-telefono='".$zoo['telefono']."'
+                                                            data-correo='".$zoo['correo']."'
+                                                            data-estado='".$zoo['nombre_estado']."'>
+                                                            Ver Detalles
+                                                        </button>";
+                                                    }
 
-                                                    echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getUpdate", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    if (tienePermiso('zoocriaderos', 'Actualizar')) {
+                                                        echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getUpdate", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    }
 
                                                     if ($zoo['id_estado'] == 1) {
-                                                        echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","getDelete",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-danger'>Eliminar</a>";
-
+                                                        if (tienePermiso('zoocriaderos', 'Eliminar')) {
+                                                            echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","getDelete",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-danger'>Eliminar</a>";
+                                                        }
                                                     } elseif ($zoo['id_estado'] == 2) {
-                                                        echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","updateStatus",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-success'>Activar</a>";
+                                                        if (tienePermiso('zoocriaderos', 'Activar')) {
+                                                            echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","updateStatus",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-success'>Activar</a>";
+                                                        }
                                                     }                          
                                                 echo "</td>";
                                             echo "</tr>";

@@ -9,9 +9,11 @@
                 <div class="card-header">
                     <div class="" style="display:flex; justify-content: space-between;">
                         <h4 class="card-title">Listado de Tipos de Actividad</h4>
+                        <?php if (tienePermiso('tipo_actividad', 'Registrar')): ?>
                         <a href="<?php echo getUrl("Actividad","Activida","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
                             <i class="fa fa-plus mx-2"></i> Nuevo tipo de actividad
                         </a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="card-body">
@@ -33,12 +35,17 @@
                                                 echo "<td>".$tipo['id']."</td>";
                                                 echo "<td>".$tipo['nombre']."</td>";
                                                 echo "<td>";
-                                                    echo "<a href='".getUrl("Actividad", "Activida", "getUpdate", array("id"=>$tipo['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    if (tienePermiso('tipo_actividad', 'Actualizar')) {
+                                                        echo "<a href='".getUrl("Actividad", "Activida", "getUpdate", array("id"=>$tipo['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    }
                                                     if ($tipo['estado'] == 1) {
-                                                        echo "<a href='".getUrl("Actividad", "Activida","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
-
+                                                        if (tienePermiso('tipo_actividad', 'Eliminar')) {
+                                                            echo "<a href='".getUrl("Actividad", "Activida","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
+                                                        }
                                                     } elseif ($tipo['estado'] == 2) {
-                                                        echo "<a href='".getUrl("Actividad", "Activida","updateStatus",array("id"=>$tipo['id']))."' class='btn btn-success'>Activar</a>";
+                                                        if (tienePermiso('tipo_actividad', 'Activar')) {
+                                                            echo "<a href='".getUrl("Actividad", "Activida","updateStatus",array("id"=>$tipo['id']))."' class='btn btn-success'>Activar</a>";
+                                                        }
                                                     }
                                                 echo "</td>";
                                             echo "</tr>";
