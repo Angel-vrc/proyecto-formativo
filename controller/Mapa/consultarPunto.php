@@ -26,13 +26,17 @@ while ($resultado = pg_fetch_array($queryConsult)) {
     ) {
         $id = $resultado['id_zoocriadero'];
 
-        $sql1 = "SELECT direccion, astext(geom) AS astext FROM zoocriadero WHERE id_zoocriadero = $id";
+        $sql1 = "SELECT * FROM zoocriadero WHERE id_zoocriadero = $id";
         $query1 = pg_query($conn, $sql1);
         $array1 = ($query1 !== false) ? pg_fetch_assoc($query1) : false;
         if ($query1 && $array1) {
-            echo "Punto encontrado\n";
-            echo "Nombre: " . htmlspecialchars($array1['direccion']);
-            echo "<br>";
+            echo json_encode(array(
+                "codigo" => $array1['id_zoo'],
+                "nombre" => $array1['nombre'],
+                "geom" => $array1['geom']
+            ));  
+            echo "Nombre: " . htmlspecialchars($array1['nombre']) . "<br>";
+            echo "";
             echo "Coordenadas: " . htmlspecialchars($array1['astext']);
         } else {
             echo  "<script>alert('No se encontraron datos para el zoocriadero seleccionado');</script>";
