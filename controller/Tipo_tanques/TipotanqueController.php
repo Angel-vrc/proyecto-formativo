@@ -71,23 +71,18 @@
                 return;
             }
 
-            // $sql = "SELECT *, 
-            //                CASE WHEN id_estado = 1 THEN 'Activo' WHEN id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
-            //         FROM tipo_tanque 
-            //         WHERE id = $id";
+            $sql = "SELECT *, 
+                           CASE WHEN id_estado = 1 THEN 'Activo' WHEN id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
+                    FROM tipo_tanque 
+                    WHERE id = $id";
 
-            // $tipo_tanque = $obj->select($sql);
+            $tipo_tanque = $obj->select($sql);
 
-            // if(!$tipo_tanque || pg_num_rows($tipo_tanque) == 0){
-            //     redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
-            //     return;
-            // }
+            if(!$tipo_tanque || pg_num_rows($tipo_tanque) == 0){
+                redirect(getUrl("Tipo_tanques","Tipotanque","lista"));
+                return;
+            }
 
-            $sql = "SELECT tpt.id, tpt.nombre, tpts.nombre AS estado
-            FROM tipo_tanque tpt INNER JOIN tipo_tanque_estado tpts ON tpt.id_estado = tpts.id
-            WHERE tpt.id = $id;";
-
-            $tipoestados = $obj->select($sql);
             include_once '../view/tipo_tanques/delete.php';
         }
 
