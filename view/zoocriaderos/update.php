@@ -99,6 +99,13 @@
                                             placeholder="ejemplo@dominio.com" required
                                             maxlength="100" value="<?php echo $zoo['correo']?>">
                                     </div>
+
+                                    <div class="form-group">
+                                    <label for="nombre">Coordenadas *</label>
+                                    <input type="text" class="form-control" id="coordenadas" name="coordenadas" 
+                                           placeholder="Ej: 4.4512,-79.5321" required readonly
+                                           maxlength="150" value="<?php echo $zoo['coordenadas'] ?>">
+                                    </div>
                                 </div>
                             </div>
                         </div>

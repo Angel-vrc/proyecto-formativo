@@ -102,6 +102,7 @@
                                                             data-comuna='".$zoo['comuna']."'
                                                             data-barrio='".$zoo['barrio']."'
                                                             data-direccion='".$zoo['direccion']."'
+                                                            data-coordenadas='".$zoo['coordenadas']."'
                                                             data-responsable='".$zoo['nombre_responsable']."'
                                                             data-telefono='".$zoo['telefono']."'
                                                             data-correo='".$zoo['correo']."'
@@ -173,6 +174,7 @@
                     <div class="col-md-6"><strong>Comuna: </strong> <p id="detalle-comuna"></p></div>
                     <div class="col-md-6"><strong>Barrio: </strong> <p id="detalle-barrio"></p></div>
                     <div class="col-md-6"><strong>Direccion: </strong> <p id="detalle-direccion"></p></div>
+                    <div class="col-md-6"><strong>Coordenadas: </strong> <p id="detalle-coordenadas"></p></div>
                     <div class="col-md-6"><strong>Responsable: </strong> <p id="detalle-responsable"></p></div>
                     <div class="col-md-6"><strong>Telefono: </strong> <p id="detalle-telefono"></p></div>
                     <div class="col-md-6"><strong>Correo: </strong> <p id="detalle-correo"></p></div>
@@ -207,6 +209,7 @@ function abrirModalDetalles(btn) {
     var nombre = $(btn).data('nombre') || '0';
     var responsable = $(btn).data('responsable') || '0';
     var direccion = $(btn).data('direccion') || '0';
+    var coordenadas = $(btn).data('coordenadas') || '0';
     var comuna = $(btn).data('comuna') || '0';
     var barrio = $(btn).data('barrio') || '0';
     var responsable = $(btn).data('responsable') || '0';
@@ -220,6 +223,7 @@ function abrirModalDetalles(btn) {
     $('#detalle-comuna').text(comuna);
     $('#detalle-barrio').text(barrio);
     $('#detalle-direccion').text(direccion);
+    $('#detalle-coordenadas').text(coordenadas);
     $('#detalle-responsable').text(responsable);
     $('#detalle-telefono').text(telefono);
     $('#detalle-correo').text(correo);
