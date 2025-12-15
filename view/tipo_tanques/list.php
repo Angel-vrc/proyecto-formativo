@@ -19,7 +19,7 @@
                     <div class="row mb-3">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="searchNombre" placeholder="Buscar por nombre...">
+                                <input type="text" class="form-control" id="filtro" name="buscar" placeholder="Buscar por nombre..." data-url="<?php echo getUrl("Tipo_tanques","Tipotanque","filtro", false, "ajax"); ?>">
                             </div>
                         </div>
                         <div class="col-md-3 offset-md-5 mt-2">
@@ -82,3 +82,8 @@
         </div>
     </div>
 </div>
+<script>
+    function resetFilters() {
+        document.getElementById('filtro').value = '';
+    }
+</script>

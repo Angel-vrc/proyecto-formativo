@@ -183,5 +183,46 @@
                 exit();
             }
         }
+
+        public function filtro() {
+            $obj = new TanquesModel();
+            $connect = $obj->getConnect();
+
+            // Obtener filtro
+            $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
+
+            $where = array();
+
+            // Filtro por nombre de tanque o tipo de tanque
+            if ($buscar !== '') {
+                $buscar_escaped = pg_escape_string($connect, $buscar);
+                $where[] = "(
+                    t.nombre ILIKE '%$buscar_escaped%' 
+                    OR tt.nombre ILIKE '%$buscar_escaped%'
+                )";
+            }
+
+            // SQL base
+            $sql = "SELECT 
+                        t.id,
+                        t.nombre,
+                        t.medidas,
+                        t.cantidad_peces,
+                        t.id_estado AS estado,
+                        tt.nombre AS tipo_tanque
+                    FROM tanques t
+                    INNER JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id";
+
+            // Agregar WHERE dinámico
+            if (count($where) > 0) {
+                $sql .= " WHERE " . implode(" AND ", $where);
+            }
+
+            $sql .= " ORDER BY t.id ASC";
+
+            $tanques = $obj->select($sql);
+
+            include_once '../view/tanques/filtro.php';
+        }
     }
 ?>

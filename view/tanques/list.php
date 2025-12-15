@@ -35,24 +35,16 @@
                     <div class="row mb-3">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="searchNombre" placeholder="Buscar por nombre...">
+                                <input type="text" class="form-control" id="filtro" name="buscar" placeholder="Buscar por nombre..." data-url="<?php echo getUrl("Tanques","Tanque","filtro", false, "ajax"); ?>">
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <select class="form-control select2" id="comuna" name="comuna" required>
-                                    <option value="">Todos los tanques</option> 
-                                    <?php foreach ($comunas as $comuna): ?>
-                                        <option value="<?php echo $comuna; ?>">
-                                            <?php echo $comuna; ?>
-                                        </option>
-                                    <?php endforeach; ?>                                     
-                                </select>
                             </div>
                         </div>
                         <div class="col-md-3 offset-md-3 mt-2">
                             <button class="btn btn-secondary" onclick="resetFilters()">
-                                <i class="fas fa-redo mx-1"></i> Limpiar filtros
+                                <i class="fas fa-redo mx-1"></i> Limpiar filtro
                             </button>
                         </div>
                     </div>
@@ -119,3 +111,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    function resetFilters() {
+        document.getElementById('filtro').value = '';
+    }
+</script>

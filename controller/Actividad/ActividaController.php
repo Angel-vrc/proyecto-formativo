@@ -164,5 +164,35 @@
                 exit();
             }
         }
+        public function filtro(){
+            $obj = new ActividadModel();
+            $connect = $obj->getConnect();
+
+            // Obtener filtro
+            $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
+
+            $where = array();
+
+            // Filtro SOLO por nombre
+            if ($buscar !== '') {
+                $buscar_escaped = pg_escape_string($connect, $buscar);
+                $where[] = "nombre ILIKE '%$buscar_escaped%'";
+            }
+
+            // SQL base
+            $sql = "SELECT id, nombre, id_estado AS estado
+                    FROM actividad";
+
+            // WHERE dinámico
+            if (count($where) > 0) {
+                $sql .= " WHERE " . implode(" AND ", $where);
+            }
+
+            $sql .= " ORDER BY id ASC";
+
+            $tipos = $obj->select($sql);
+
+            include_once '../view/actividad/filtro.php';
+        }
     }
 ?>
