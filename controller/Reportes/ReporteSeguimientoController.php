@@ -1,4 +1,4 @@
-r<?php
+<?php
 
     include_once '../model/Reportes/ReporteSeguimientoModel.php';
 
