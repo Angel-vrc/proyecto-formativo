@@ -43,7 +43,7 @@
                 </li>
 
                 <li class="nav-item">    
-                    <a href="#">
+                    <a href="<?php echo getUrl("Mapa","Mapa","visualizarZoo"); ?>">
                         <i class="fas fa-map"></i>
                         <p>Visualización de Mapa</p>
                     </a>
