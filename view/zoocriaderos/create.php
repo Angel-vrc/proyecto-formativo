@@ -18,10 +18,11 @@
                         <div class="row">
                             <div class="col-md-6">
                 
-                                <div class="form-group">                                    
+                                <div class="form-group">
+                                    <label for="nombre">Longitud *</label>
                                     <input type="text" class="form-control" id="longitud" name="longitud" 
-                                           required
-                                           maxlength="150" hidden>
+                                           placeholder="Ej: 3.4512" required readonly
+                                           maxlength="150" value="<?php echo $longitud ?>">
                                 </div>
 
                                 <!-- Nombre -->
@@ -69,11 +70,12 @@
                             </div>
                             
                             <div class="col-md-6">
-                                <div class="form-group">                                
-                                <input type="text" class="form-control" id="latitud" name="latitud" 
-                                        required
-                                        maxlength="150" hidden>
-                            </div>
+                                <div class="form-group">   
+                                    <label for="nombre">Longitud *</label>                             
+                                    <input type="text" class="form-control" id="latitud" name="latitud" 
+                                        placeholder="Ej: -76.5321" required readonly
+                                        maxlength="150" value="<?php echo $latitud ?>">
+                                </div>
 
                                 <!-- Responsable -->
                                 <div class="form-group">
