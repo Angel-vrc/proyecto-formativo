@@ -9,7 +9,12 @@
         exit();
     }
     
-    // Verificar que sea una exportación de seguimientos
+    // Limpiar cualquier output anterior
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+    
+    // seguimientos
     if(isset($_GET['modulo']) && $_GET['modulo'] == 'Reportes' && 
        isset($_GET['controlador']) && $_GET['controlador'] == 'ReporteSeguimiento' && 
        isset($_GET['funcion']) && $_GET['funcion'] == 'exportarExcel'){
@@ -27,7 +32,7 @@
         exit();
     }
 
-    // Verificar que sea una exportación de zoocriaderos
+    // Zoocriadero
     if(isset($_GET['modulo']) && $_GET['modulo'] == 'Reportes' && 
        isset($_GET['controlador']) && $_GET['controlador'] == 'ReporteZoocriadero' && 
        isset($_GET['funcion']) && $_GET['funcion'] == 'exportarExcel'){
@@ -45,7 +50,7 @@
         exit();
     }
 
-    // Verificar que sea una exportación de nacidos y muertos
+    // nacidos y muertos
     if(isset($_GET['modulo']) && $_GET['modulo'] == 'Reportes' && 
        isset($_GET['controlador']) && $_GET['controlador'] == 'ReporteNacidosYMuertos' && 
        isset($_GET['funcion']) && $_GET['funcion'] == 'exportarExcel'){
@@ -66,9 +71,4 @@
 
     redirect('index.php');
     exit();
-
-?>
-
-
-
 

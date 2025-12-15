@@ -408,7 +408,7 @@
         $sql .= " WHERE " . implode(" AND ", $where);
     }
 
-    $sql .= " ORDER BY sd.id DESC";
+    $sql .= " ORDER BY sd.id ASC";
 
     $seguimientos = $obj->select($sql);
 
