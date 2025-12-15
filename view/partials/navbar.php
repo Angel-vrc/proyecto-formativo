@@ -40,12 +40,12 @@
                         <div class="quick-actions-scroll scrollbar-outer">
                             <div class="quick-actions-items">
                                 <div class="row m-0">
-                                    <a class="col-6 col-md-4 p-0" href="#">
+                                    <a class="col-6 col-md-4 p-0" href="<?php echo getUrl("Seguimiento","Seguimiento","getCreate"); ?>">
                                         <div class="quick-actions-item">
                                             <div class="avatar-item bg-danger rounded-circle">
                                                 <i class="fa fa-plus"></i>
                                             </div>
-                                            <span class="text">Nueva Actividad</span>
+                                            <span class="text">Nuevo Seguimiento</span>
                                         </div>
                                     </a>
                                     <a class="col-6 col-md-4 p-0" href="#">
@@ -56,7 +56,7 @@
                                             <span class="text">Mapa</span>
                                         </div>
                                     </a>
-                                    <a class="col-6 col-md-4 p-0" href="#">
+                                    <a class="col-6 col-md-4 p-0" href="<?php echo getUrl("Reportes","ReporteSeguimiento","listSeguimientos"); ?>">
                                         <div class="quick-actions-item">
                                             <div class="avatar-item bg-info rounded-circle">
                                                 <i class="fas fa-file-excel"></i>
@@ -96,7 +96,7 @@
                                     <div class="u-text">
                                         <h4><?php
                                         echo isset($_SESSION['nombre']) ? htmlspecialchars($_SESSION['nombre']) : htmlspecialchars($_SESSION['usuario']); ?></h4>
-                                        <p class="text-muted">hello@example.com</p><a href="profile.html" class="btn btn-xs btn-secondary btn-sm">Ver Perfil</a>
+                                        <p class="text-muted"><?php echo isset($_SESSION['usuario_rol_nombre']) ? htmlspecialchars($_SESSION['usuario_rol_nombre']) : 'Usuario'; ?></p><a href="<?php echo getUrl('Perfil', 'Perfil', 'view'); ?>" class="btn btn-xs btn-secondary btn-sm">Ver Perfil</a>
                                     </div>
                                 </div>
                             </li>

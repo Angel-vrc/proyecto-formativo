@@ -183,6 +183,106 @@ body {
     border-radius: 50%;
 }
 
+/* Estilos para Google reCAPTCHA */
+.g-recaptcha {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.robot-message {
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 15px 0;
+    padding-left: 5px;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Estilos para alertas personalizadas */
+#alertContainer {
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 3;
+}
+
+.custom-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-weight: 500;
+    animation: slideInDown 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.custom-alert::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: currentColor;
+}
+
+.custom-alert i {
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.custom-alert span {
+    flex: 1;
+    line-height: 1.5;
+}
+
+.alert-danger.custom-alert {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+    color: #c53030;
+    border-left: 4px solid #c53030;
+}
+
+.alert-danger.custom-alert i {
+    color: #c53030;
+}
+
+.alert-warning.custom-alert {
+    background: linear-gradient(135deg, #fffbf0 0%, #fff4e6 100%);
+    color: #d69e2e;
+    border-left: 4px solid #d69e2e;
+}
+
+.alert-warning.custom-alert i {
+    color: #d69e2e;
+}
+
+.alert-success.custom-alert {
+    background: linear-gradient(135deg, #f0fff4 0%, #e6ffed 100%);
+    color: #2f855a;
+    border-left: 4px solid #2f855a;
+}
+
+.alert-success.custom-alert i {
+    color: #2f855a;
+}
+
+.alert-info.custom-alert {
+    background: linear-gradient(135deg, #ebf8ff 0%, #e6f3ff 100%);
+    color: #2c5282;
+    border-left: 4px solid #2c5282;
+}
+
+.alert-info.custom-alert i {
+    color: #2c5282;
+}
+
+
+
 @media (max-width: 576px) {
     .login-container {
         padding: 40px 30px;

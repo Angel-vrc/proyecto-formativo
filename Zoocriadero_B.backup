@@ -1,0 +1,5415 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.2.9
+-- Dumped by pg_dump version 9.2.9
+-- Started on 2025-12-15 02:36:08
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 6 (class 2615 OID 27657)
+-- Name: tiger; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA tiger;
+
+
+ALTER SCHEMA tiger OWNER TO postgres;
+
+--
+-- TOC entry 287 (class 3079 OID 27658)
+-- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public;
+
+
+--
+-- TOC entry 4158 (class 0 OID 0)
+-- Dependencies: 287
+-- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
+
+
+--
+-- TOC entry 286 (class 3079 OID 27669)
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
+
+
+--
+-- TOC entry 4159 (class 0 OID 0)
+-- Dependencies: 286
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
+
+
+--
+-- TOC entry 282 (class 3079 OID 28955)
+-- Name: postgis_tiger_geocoder; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder WITH SCHEMA tiger;
+
+
+--
+-- TOC entry 4160 (class 0 OID 0)
+-- Dependencies: 282
+-- Name: EXTENSION postgis_tiger_geocoder; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis_tiger_geocoder IS 'PostGIS tiger geocoder and reverse geocoder';
+
+
+--
+-- TOC entry 8 (class 2615 OID 29375)
+-- Name: topology; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA topology;
+
+
+ALTER SCHEMA topology OWNER TO postgres;
+
+--
+-- TOC entry 281 (class 3079 OID 11727)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 4161 (class 0 OID 0)
+-- Dependencies: 281
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- TOC entry 285 (class 3079 OID 29376)
+-- Name: address_standardizer; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS address_standardizer WITH SCHEMA public;
+
+
+--
+-- TOC entry 284 (class 3079 OID 29383)
+-- Name: pgrouting; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS pgrouting WITH SCHEMA public;
+
+
+--
+-- TOC entry 4162 (class 0 OID 0)
+-- Dependencies: 284
+-- Name: EXTENSION pgrouting; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION pgrouting IS 'pgRouting Extension';
+
+
+--
+-- TOC entry 283 (class 3079 OID 29430)
+-- Name: postgis_topology; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis_topology WITH SCHEMA topology;
+
+
+--
+-- TOC entry 4163 (class 0 OID 0)
+-- Dependencies: 283
+-- Name: EXTENSION postgis_topology; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis_topology IS 'PostGIS topology spatial types and functions';
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 1547 (class 1255 OID 29580)
+-- Name: addbbox(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION addbbox(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_addBBOX';
+
+
+ALTER FUNCTION public.addbbox(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1548 (class 1255 OID 29581)
+-- Name: addpoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION addpoint(geometry, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_addpoint';
+
+
+ALTER FUNCTION public.addpoint(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1549 (class 1255 OID 29582)
+-- Name: addpoint(geometry, geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION addpoint(geometry, geometry, integer) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_addpoint';
+
+
+ALTER FUNCTION public.addpoint(geometry, geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1550 (class 1255 OID 29583)
+-- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT st_affine($1,  $2, $3, 0,  $4, $5, 0,  0, 0, 1,  $6, $7, 0)$_$;
+
+
+ALTER FUNCTION public.affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1551 (class 1255 OID 29584)
+-- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_affine';
+
+
+ALTER FUNCTION public.affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1552 (class 1255 OID 29585)
+-- Name: area(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION area(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_area_polygon';
+
+
+ALTER FUNCTION public.area(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1553 (class 1255 OID 29586)
+-- Name: area2d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION area2d(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_area_polygon';
+
+
+ALTER FUNCTION public.area2d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1554 (class 1255 OID 29587)
+-- Name: asbinary(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION asbinary(geometry) RETURNS bytea
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_asBinary';
+
+
+ALTER FUNCTION public.asbinary(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1555 (class 1255 OID 29588)
+-- Name: asbinary(geometry, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION asbinary(geometry, text) RETURNS bytea
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_asBinary';
+
+
+ALTER FUNCTION public.asbinary(geometry, text) OWNER TO postgres;
+
+--
+-- TOC entry 1556 (class 1255 OID 29589)
+-- Name: asewkb(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION asewkb(geometry) RETURNS bytea
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'WKBFromLWGEOM';
+
+
+ALTER FUNCTION public.asewkb(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1557 (class 1255 OID 29590)
+-- Name: asewkb(geometry, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION asewkb(geometry, text) RETURNS bytea
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'WKBFromLWGEOM';
+
+
+ALTER FUNCTION public.asewkb(geometry, text) OWNER TO postgres;
+
+--
+-- TOC entry 1558 (class 1255 OID 29591)
+-- Name: asewkt(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION asewkt(geometry) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_asEWKT';
+
+
+ALTER FUNCTION public.asewkt(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1559 (class 1255 OID 29592)
+-- Name: asgml(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION asgml(geometry) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGML(2, $1, 15, 0, null, null)$_$;
+
+
+ALTER FUNCTION public.asgml(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1560 (class 1255 OID 29593)
+-- Name: asgml(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION asgml(geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGML(2, $1, $2, 0, null, null)$_$;
+
+
+ALTER FUNCTION public.asgml(geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1561 (class 1255 OID 29594)
+-- Name: ashexewkb(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION ashexewkb(geometry) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_asHEXEWKB';
+
+
+ALTER FUNCTION public.ashexewkb(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1562 (class 1255 OID 29595)
+-- Name: ashexewkb(geometry, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION ashexewkb(geometry, text) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_asHEXEWKB';
+
+
+ALTER FUNCTION public.ashexewkb(geometry, text) OWNER TO postgres;
+
+--
+-- TOC entry 1563 (class 1255 OID 29596)
+-- Name: askml(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION askml(geometry) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsKML(2, ST_Transform($1,4326), 15, null)$_$;
+
+
+ALTER FUNCTION public.askml(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1564 (class 1255 OID 29597)
+-- Name: askml(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION askml(geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsKML(2, ST_transform($1,4326), $2, null)$_$;
+
+
+ALTER FUNCTION public.askml(geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1565 (class 1255 OID 29598)
+-- Name: askml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION askml(integer, geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsKML($1, ST_Transform($2,4326), $3, null)$_$;
+
+
+ALTER FUNCTION public.askml(integer, geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1566 (class 1255 OID 29599)
+-- Name: assvg(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION assvg(geometry) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_asSVG';
+
+
+ALTER FUNCTION public.assvg(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1567 (class 1255 OID 29600)
+-- Name: assvg(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION assvg(geometry, integer) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_asSVG';
+
+
+ALTER FUNCTION public.assvg(geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1506 (class 1255 OID 29601)
+-- Name: assvg(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION assvg(geometry, integer, integer) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_asSVG';
+
+
+ALTER FUNCTION public.assvg(geometry, integer, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1507 (class 1255 OID 29602)
+-- Name: astext(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION astext(geometry) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_asText';
+
+
+ALTER FUNCTION public.astext(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1508 (class 1255 OID 29603)
+-- Name: azimuth(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION azimuth(geometry, geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_azimuth';
+
+
+ALTER FUNCTION public.azimuth(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1534 (class 1255 OID 29604)
+-- Name: bdmpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION bdmpolyfromtext(text, integer) RETURNS geometry
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $_$
+DECLARE
+	geomtext alias for $1;
+	srid alias for $2;
+	mline geometry;
+	geom geometry;
+BEGIN
+	mline := ST_MultiLineStringFromText(geomtext, srid);
+
+	IF mline IS NULL
+	THEN
+		RAISE EXCEPTION 'Input is not a MultiLinestring';
+	END IF;
+
+	geom := ST_Multi(ST_BuildArea(mline));
+
+	RETURN geom;
+END;
+$_$;
+
+
+ALTER FUNCTION public.bdmpolyfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1470 (class 1255 OID 29605)
+-- Name: bdpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION bdpolyfromtext(text, integer) RETURNS geometry
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $_$
+DECLARE
+	geomtext alias for $1;
+	srid alias for $2;
+	mline geometry;
+	geom geometry;
+BEGIN
+	mline := ST_MultiLineStringFromText(geomtext, srid);
+
+	IF mline IS NULL
+	THEN
+		RAISE EXCEPTION 'Input is not a MultiLinestring';
+	END IF;
+
+	geom := ST_BuildArea(mline);
+
+	IF GeometryType(geom) != 'POLYGON'
+	THEN
+		RAISE EXCEPTION 'Input returns more then a single polygon, try using BdMPolyFromText instead';
+	END IF;
+
+	RETURN geom;
+END;
+$_$;
+
+
+ALTER FUNCTION public.bdpolyfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1471 (class 1255 OID 29606)
+-- Name: boundary(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION boundary(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'boundary';
+
+
+ALTER FUNCTION public.boundary(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1509 (class 1255 OID 29607)
+-- Name: buffer(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION buffer(geometry, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'buffer';
+
+
+ALTER FUNCTION public.buffer(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1301 (class 1255 OID 29608)
+-- Name: buffer(geometry, double precision, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION buffer(geometry, double precision, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_Buffer($1, $2, $3)$_$;
+
+
+ALTER FUNCTION public.buffer(geometry, double precision, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1325 (class 1255 OID 29609)
+-- Name: buildarea(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION buildarea(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'ST_BuildArea';
+
+
+ALTER FUNCTION public.buildarea(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1384 (class 1255 OID 29610)
+-- Name: centroid(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION centroid(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'centroid';
+
+
+ALTER FUNCTION public.centroid(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1402 (class 1255 OID 29611)
+-- Name: collect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION collect(geometry, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE
+    AS '$libdir/postgis-2.1', 'LWGEOM_collect';
+
+
+ALTER FUNCTION public.collect(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1441 (class 1255 OID 29612)
+-- Name: combine_bbox(box2d, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION combine_bbox(box2d, geometry) RETURNS box2d
+    LANGUAGE c IMMUTABLE
+    AS '$libdir/postgis-2.1', 'BOX2D_combine';
+
+
+ALTER FUNCTION public.combine_bbox(box2d, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1459 (class 1255 OID 29613)
+-- Name: combine_bbox(box3d, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION combine_bbox(box3d, geometry) RETURNS box3d
+    LANGUAGE c IMMUTABLE
+    AS '$libdir/postgis-2.1', 'BOX3D_combine';
+
+
+ALTER FUNCTION public.combine_bbox(box3d, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1568 (class 1255 OID 29614)
+-- Name: contains(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION contains(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'contains';
+
+
+ALTER FUNCTION public.contains(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1569 (class 1255 OID 29615)
+-- Name: convexhull(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION convexhull(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'convexhull';
+
+
+ALTER FUNCTION public.convexhull(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1570 (class 1255 OID 29616)
+-- Name: crosses(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION crosses(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'crosses';
+
+
+ALTER FUNCTION public.crosses(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1571 (class 1255 OID 29617)
+-- Name: difference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION difference(geometry, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'difference';
+
+
+ALTER FUNCTION public.difference(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1572 (class 1255 OID 29618)
+-- Name: dimension(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION dimension(geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_dimension';
+
+
+ALTER FUNCTION public.dimension(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1573 (class 1255 OID 29619)
+-- Name: disjoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION disjoint(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'disjoint';
+
+
+ALTER FUNCTION public.disjoint(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1574 (class 1255 OID 29620)
+-- Name: distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION distance(geometry, geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'LWGEOM_mindistance2d';
+
+
+ALTER FUNCTION public.distance(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1575 (class 1255 OID 29621)
+-- Name: distance_sphere(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION distance_sphere(geometry, geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'LWGEOM_distance_sphere';
+
+
+ALTER FUNCTION public.distance_sphere(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1576 (class 1255 OID 29622)
+-- Name: distance_spheroid(geometry, geometry, spheroid); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION distance_spheroid(geometry, geometry, spheroid) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'LWGEOM_distance_ellipsoid';
+
+
+ALTER FUNCTION public.distance_spheroid(geometry, geometry, spheroid) OWNER TO postgres;
+
+--
+-- TOC entry 1577 (class 1255 OID 29623)
+-- Name: dropbbox(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION dropbbox(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_dropBBOX';
+
+
+ALTER FUNCTION public.dropbbox(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1578 (class 1255 OID 29624)
+-- Name: dump(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION dump(geometry) RETURNS SETOF geometry_dump
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_dump';
+
+
+ALTER FUNCTION public.dump(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1579 (class 1255 OID 29625)
+-- Name: dumprings(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION dumprings(geometry) RETURNS SETOF geometry_dump
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_dump_rings';
+
+
+ALTER FUNCTION public.dumprings(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1580 (class 1255 OID 29626)
+-- Name: endpoint(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION endpoint(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_endpoint_linestring';
+
+
+ALTER FUNCTION public.endpoint(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1581 (class 1255 OID 29627)
+-- Name: envelope(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION envelope(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_envelope';
+
+
+ALTER FUNCTION public.envelope(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1582 (class 1255 OID 29628)
+-- Name: estimated_extent(text, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION estimated_extent(text, text) RETURNS box2d
+    LANGUAGE c IMMUTABLE STRICT SECURITY DEFINER
+    AS '$libdir/postgis-2.1', 'geometry_estimated_extent';
+
+
+ALTER FUNCTION public.estimated_extent(text, text) OWNER TO postgres;
+
+--
+-- TOC entry 1583 (class 1255 OID 29629)
+-- Name: estimated_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION estimated_extent(text, text, text) RETURNS box2d
+    LANGUAGE c IMMUTABLE STRICT SECURITY DEFINER
+    AS '$libdir/postgis-2.1', 'geometry_estimated_extent';
+
+
+ALTER FUNCTION public.estimated_extent(text, text, text) OWNER TO postgres;
+
+--
+-- TOC entry 1584 (class 1255 OID 29630)
+-- Name: expand(box2d, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION expand(box2d, double precision) RETURNS box2d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX2D_expand';
+
+
+ALTER FUNCTION public.expand(box2d, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1585 (class 1255 OID 29631)
+-- Name: expand(box3d, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION expand(box3d, double precision) RETURNS box3d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_expand';
+
+
+ALTER FUNCTION public.expand(box3d, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1586 (class 1255 OID 29632)
+-- Name: expand(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION expand(geometry, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_expand';
+
+
+ALTER FUNCTION public.expand(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1587 (class 1255 OID 29633)
+-- Name: exteriorring(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION exteriorring(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_exteriorring_polygon';
+
+
+ALTER FUNCTION public.exteriorring(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1588 (class 1255 OID 29634)
+-- Name: find_extent(text, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION find_extent(text, text) RETURNS box2d
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $_$
+DECLARE
+	tablename alias for $1;
+	columnname alias for $2;
+	myrec RECORD;
+
+BEGIN
+	FOR myrec IN EXECUTE 'SELECT ST_Extent("' || columnname || '") As extent FROM "' || tablename || '"' LOOP
+		return myrec.extent;
+	END LOOP;
+END;
+$_$;
+
+
+ALTER FUNCTION public.find_extent(text, text) OWNER TO postgres;
+
+--
+-- TOC entry 1589 (class 1255 OID 29635)
+-- Name: find_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION find_extent(text, text, text) RETURNS box2d
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $_$
+DECLARE
+	schemaname alias for $1;
+	tablename alias for $2;
+	columnname alias for $3;
+	myrec RECORD;
+
+BEGIN
+	FOR myrec IN EXECUTE 'SELECT ST_Extent("' || columnname || '") FROM "' || schemaname || '"."' || tablename || '" As extent ' LOOP
+		return myrec.extent;
+	END LOOP;
+END;
+$_$;
+
+
+ALTER FUNCTION public.find_extent(text, text, text) OWNER TO postgres;
+
+--
+-- TOC entry 1590 (class 1255 OID 29636)
+-- Name: fix_geometry_columns(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION fix_geometry_columns() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+	mislinked record;
+	result text;
+	linked integer;
+	deleted integer;
+	foundschema integer;
+BEGIN
+
+	-- Since 7.3 schema support has been added.
+	-- Previous postgis versions used to put the database name in
+	-- the schema column. This needs to be fixed, so we try to
+	-- set the correct schema for each geometry_colums record
+	-- looking at table, column, type and srid.
+	
+	return 'This function is obsolete now that geometry_columns is a view';
+
+END;
+$$;
+
+
+ALTER FUNCTION public.fix_geometry_columns() OWNER TO postgres;
+
+--
+-- TOC entry 1591 (class 1255 OID 29637)
+-- Name: force_2d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION force_2d(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_force_2d';
+
+
+ALTER FUNCTION public.force_2d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1592 (class 1255 OID 29638)
+-- Name: force_3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION force_3d(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_force_3dz';
+
+
+ALTER FUNCTION public.force_3d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1593 (class 1255 OID 29639)
+-- Name: force_3dm(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION force_3dm(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_force_3dm';
+
+
+ALTER FUNCTION public.force_3dm(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1594 (class 1255 OID 29640)
+-- Name: force_3dz(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION force_3dz(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_force_3dz';
+
+
+ALTER FUNCTION public.force_3dz(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1595 (class 1255 OID 29641)
+-- Name: force_4d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION force_4d(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_force_4d';
+
+
+ALTER FUNCTION public.force_4d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1596 (class 1255 OID 29642)
+-- Name: force_collection(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION force_collection(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_force_collection';
+
+
+ALTER FUNCTION public.force_collection(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1597 (class 1255 OID 29643)
+-- Name: forcerhr(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION forcerhr(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_force_clockwise_poly';
+
+
+ALTER FUNCTION public.forcerhr(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1598 (class 1255 OID 29644)
+-- Name: geomcollfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geomcollfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE
+	WHEN geometrytype(GeomFromText($1)) = 'GEOMETRYCOLLECTION'
+	THEN GeomFromText($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.geomcollfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1599 (class 1255 OID 29645)
+-- Name: geomcollfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geomcollfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE
+	WHEN geometrytype(GeomFromText($1, $2)) = 'GEOMETRYCOLLECTION'
+	THEN GeomFromText($1,$2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.geomcollfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1601 (class 1255 OID 29646)
+-- Name: geomcollfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geomcollfromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE
+	WHEN geometrytype(GeomFromWKB($1)) = 'GEOMETRYCOLLECTION'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.geomcollfromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1602 (class 1255 OID 29647)
+-- Name: geomcollfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geomcollfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE
+	WHEN geometrytype(GeomFromWKB($1, $2)) = 'GEOMETRYCOLLECTION'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.geomcollfromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1603 (class 1255 OID 29648)
+-- Name: geometryfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geometryfromtext(text) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_from_text';
+
+
+ALTER FUNCTION public.geometryfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1604 (class 1255 OID 29649)
+-- Name: geometryfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geometryfromtext(text, integer) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_from_text';
+
+
+ALTER FUNCTION public.geometryfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1605 (class 1255 OID 29650)
+-- Name: geometryn(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geometryn(geometry, integer) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_geometryn_collection';
+
+
+ALTER FUNCTION public.geometryn(geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1606 (class 1255 OID 29651)
+-- Name: geomfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geomfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_GeomFromText($1)$_$;
+
+
+ALTER FUNCTION public.geomfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1607 (class 1255 OID 29652)
+-- Name: geomfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geomfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_GeomFromText($1, $2)$_$;
+
+
+ALTER FUNCTION public.geomfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1608 (class 1255 OID 29653)
+-- Name: geomfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geomfromwkb(bytea) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_from_WKB';
+
+
+ALTER FUNCTION public.geomfromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1609 (class 1255 OID 29654)
+-- Name: geomfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geomfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_SetSRID(ST_GeomFromWKB($1), $2)$_$;
+
+
+ALTER FUNCTION public.geomfromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1610 (class 1255 OID 29655)
+-- Name: geomunion(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION geomunion(geometry, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'geomunion';
+
+
+ALTER FUNCTION public.geomunion(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1611 (class 1255 OID 29656)
+-- Name: getbbox(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION getbbox(geometry) RETURNS box2d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_to_BOX2D';
+
+
+ALTER FUNCTION public.getbbox(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1612 (class 1255 OID 29657)
+-- Name: getsrid(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION getsrid(geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_get_srid';
+
+
+ALTER FUNCTION public.getsrid(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1613 (class 1255 OID 29658)
+-- Name: hasbbox(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION hasbbox(geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_hasBBOX';
+
+
+ALTER FUNCTION public.hasbbox(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1614 (class 1255 OID 29659)
+-- Name: interiorringn(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION interiorringn(geometry, integer) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_interiorringn_polygon';
+
+
+ALTER FUNCTION public.interiorringn(geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1615 (class 1255 OID 29660)
+-- Name: intersection(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION intersection(geometry, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'intersection';
+
+
+ALTER FUNCTION public.intersection(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1616 (class 1255 OID 29661)
+-- Name: intersects(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION intersects(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'intersects';
+
+
+ALTER FUNCTION public.intersects(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1617 (class 1255 OID 29662)
+-- Name: isclosed(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION isclosed(geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_isclosed';
+
+
+ALTER FUNCTION public.isclosed(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1618 (class 1255 OID 29663)
+-- Name: isempty(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION isempty(geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_isempty';
+
+
+ALTER FUNCTION public.isempty(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1619 (class 1255 OID 29664)
+-- Name: isring(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION isring(geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'isring';
+
+
+ALTER FUNCTION public.isring(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1620 (class 1255 OID 29665)
+-- Name: issimple(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION issimple(geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'issimple';
+
+
+ALTER FUNCTION public.issimple(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1621 (class 1255 OID 29666)
+-- Name: isvalid(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION isvalid(geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'isvalid';
+
+
+ALTER FUNCTION public.isvalid(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1622 (class 1255 OID 29667)
+-- Name: length(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION length(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_length_linestring';
+
+
+ALTER FUNCTION public.length(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1623 (class 1255 OID 29668)
+-- Name: length2d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION length2d(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_length2d_linestring';
+
+
+ALTER FUNCTION public.length2d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1624 (class 1255 OID 29669)
+-- Name: length2d_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION length2d_spheroid(geometry, spheroid) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'LWGEOM_length2d_ellipsoid';
+
+
+ALTER FUNCTION public.length2d_spheroid(geometry, spheroid) OWNER TO postgres;
+
+--
+-- TOC entry 1625 (class 1255 OID 29670)
+-- Name: length3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION length3d(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_length_linestring';
+
+
+ALTER FUNCTION public.length3d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1626 (class 1255 OID 29671)
+-- Name: length3d_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION length3d_spheroid(geometry, spheroid) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_length_ellipsoid_linestring';
+
+
+ALTER FUNCTION public.length3d_spheroid(geometry, spheroid) OWNER TO postgres;
+
+--
+-- TOC entry 1627 (class 1255 OID 29672)
+-- Name: length_spheroid(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION length_spheroid(geometry, spheroid) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'LWGEOM_length_ellipsoid_linestring';
+
+
+ALTER FUNCTION public.length_spheroid(geometry, spheroid) OWNER TO postgres;
+
+--
+-- TOC entry 1628 (class 1255 OID 29673)
+-- Name: line_interpolate_point(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION line_interpolate_point(geometry, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_line_interpolate_point';
+
+
+ALTER FUNCTION public.line_interpolate_point(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1629 (class 1255 OID 29674)
+-- Name: line_locate_point(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION line_locate_point(geometry, geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_line_locate_point';
+
+
+ALTER FUNCTION public.line_locate_point(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1630 (class 1255 OID 29675)
+-- Name: line_substring(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION line_substring(geometry, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_line_substring';
+
+
+ALTER FUNCTION public.line_substring(geometry, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1631 (class 1255 OID 29676)
+-- Name: linefrommultipoint(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION linefrommultipoint(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_line_from_mpoint';
+
+
+ALTER FUNCTION public.linefrommultipoint(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1632 (class 1255 OID 29677)
+-- Name: linefromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION linefromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1)) = 'LINESTRING'
+	THEN GeomFromText($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.linefromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1633 (class 1255 OID 29678)
+-- Name: linefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION linefromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1, $2)) = 'LINESTRING'
+	THEN GeomFromText($1,$2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.linefromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1634 (class 1255 OID 29679)
+-- Name: linefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION linefromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'LINESTRING'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.linefromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1635 (class 1255 OID 29680)
+-- Name: linefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION linefromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'LINESTRING'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.linefromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1600 (class 1255 OID 29681)
+-- Name: linemerge(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION linemerge(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'linemerge';
+
+
+ALTER FUNCTION public.linemerge(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 423 (class 1255 OID 29682)
+-- Name: linestringfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION linestringfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT LineFromText($1)$_$;
+
+
+ALTER FUNCTION public.linestringfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1636 (class 1255 OID 29683)
+-- Name: linestringfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION linestringfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT LineFromText($1, $2)$_$;
+
+
+ALTER FUNCTION public.linestringfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1637 (class 1255 OID 29684)
+-- Name: linestringfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION linestringfromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'LINESTRING'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.linestringfromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1638 (class 1255 OID 29685)
+-- Name: linestringfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION linestringfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'LINESTRING'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.linestringfromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1639 (class 1255 OID 29686)
+-- Name: locate_along_measure(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION locate_along_measure(geometry, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$ SELECT ST_locate_between_measures($1, $2, $2) $_$;
+
+
+ALTER FUNCTION public.locate_along_measure(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1640 (class 1255 OID 29687)
+-- Name: locate_between_measures(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION locate_between_measures(geometry, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_locate_between_m';
+
+
+ALTER FUNCTION public.locate_between_measures(geometry, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1641 (class 1255 OID 29688)
+-- Name: m(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION m(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_m_point';
+
+
+ALTER FUNCTION public.m(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1642 (class 1255 OID 29689)
+-- Name: makebox2d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION makebox2d(geometry, geometry) RETURNS box2d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX2D_construct';
+
+
+ALTER FUNCTION public.makebox2d(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1643 (class 1255 OID 29690)
+-- Name: makebox3d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION makebox3d(geometry, geometry) RETURNS box3d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_construct';
+
+
+ALTER FUNCTION public.makebox3d(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1644 (class 1255 OID 29691)
+-- Name: makeline(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION makeline(geometry, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_makeline';
+
+
+ALTER FUNCTION public.makeline(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1645 (class 1255 OID 29692)
+-- Name: makeline_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION makeline_garray(geometry[]) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_makeline_garray';
+
+
+ALTER FUNCTION public.makeline_garray(geometry[]) OWNER TO postgres;
+
+--
+-- TOC entry 1646 (class 1255 OID 29693)
+-- Name: makepoint(double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION makepoint(double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_makepoint';
+
+
+ALTER FUNCTION public.makepoint(double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1647 (class 1255 OID 29694)
+-- Name: makepoint(double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION makepoint(double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_makepoint';
+
+
+ALTER FUNCTION public.makepoint(double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1648 (class 1255 OID 29695)
+-- Name: makepoint(double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION makepoint(double precision, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_makepoint';
+
+
+ALTER FUNCTION public.makepoint(double precision, double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1649 (class 1255 OID 29696)
+-- Name: makepointm(double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION makepointm(double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_makepoint3dm';
+
+
+ALTER FUNCTION public.makepointm(double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1650 (class 1255 OID 29697)
+-- Name: makepolygon(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION makepolygon(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_makepoly';
+
+
+ALTER FUNCTION public.makepolygon(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1651 (class 1255 OID 29698)
+-- Name: makepolygon(geometry, geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION makepolygon(geometry, geometry[]) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_makepoly';
+
+
+ALTER FUNCTION public.makepolygon(geometry, geometry[]) OWNER TO postgres;
+
+--
+-- TOC entry 1652 (class 1255 OID 29699)
+-- Name: max_distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION max_distance(geometry, geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_maxdistance2d_linestring';
+
+
+ALTER FUNCTION public.max_distance(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1653 (class 1255 OID 29700)
+-- Name: mem_size(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mem_size(geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_mem_size';
+
+
+ALTER FUNCTION public.mem_size(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1654 (class 1255 OID 29701)
+-- Name: mlinefromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mlinefromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1)) = 'MULTILINESTRING'
+	THEN GeomFromText($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mlinefromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1655 (class 1255 OID 29702)
+-- Name: mlinefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mlinefromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE
+	WHEN geometrytype(GeomFromText($1, $2)) = 'MULTILINESTRING'
+	THEN GeomFromText($1,$2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mlinefromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1656 (class 1255 OID 29703)
+-- Name: mlinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mlinefromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'MULTILINESTRING'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mlinefromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1657 (class 1255 OID 29704)
+-- Name: mlinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mlinefromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTILINESTRING'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mlinefromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1658 (class 1255 OID 29705)
+-- Name: mpointfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mpointfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1)) = 'MULTIPOINT'
+	THEN GeomFromText($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mpointfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1659 (class 1255 OID 29706)
+-- Name: mpointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mpointfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1,$2)) = 'MULTIPOINT'
+	THEN GeomFromText($1,$2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mpointfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1660 (class 1255 OID 29707)
+-- Name: mpointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mpointfromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'MULTIPOINT'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mpointfromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1661 (class 1255 OID 29708)
+-- Name: mpointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mpointfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1,$2)) = 'MULTIPOINT'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mpointfromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1662 (class 1255 OID 29709)
+-- Name: mpolyfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mpolyfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1)) = 'MULTIPOLYGON'
+	THEN GeomFromText($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mpolyfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1663 (class 1255 OID 29710)
+-- Name: mpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mpolyfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1, $2)) = 'MULTIPOLYGON'
+	THEN GeomFromText($1,$2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mpolyfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1664 (class 1255 OID 29711)
+-- Name: mpolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mpolyfromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'MULTIPOLYGON'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mpolyfromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1665 (class 1255 OID 29712)
+-- Name: mpolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION mpolyfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTIPOLYGON'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mpolyfromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1666 (class 1255 OID 29713)
+-- Name: multi(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multi(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_force_multi';
+
+
+ALTER FUNCTION public.multi(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1667 (class 1255 OID 29714)
+-- Name: multilinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multilinefromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'MULTILINESTRING'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.multilinefromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1668 (class 1255 OID 29715)
+-- Name: multilinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multilinefromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTILINESTRING'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.multilinefromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1669 (class 1255 OID 29716)
+-- Name: multilinestringfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multilinestringfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_MLineFromText($1)$_$;
+
+
+ALTER FUNCTION public.multilinestringfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1670 (class 1255 OID 29717)
+-- Name: multilinestringfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multilinestringfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT MLineFromText($1, $2)$_$;
+
+
+ALTER FUNCTION public.multilinestringfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1671 (class 1255 OID 29718)
+-- Name: multipointfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multipointfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT MPointFromText($1)$_$;
+
+
+ALTER FUNCTION public.multipointfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1672 (class 1255 OID 29719)
+-- Name: multipointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multipointfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT MPointFromText($1, $2)$_$;
+
+
+ALTER FUNCTION public.multipointfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1673 (class 1255 OID 29720)
+-- Name: multipointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multipointfromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'MULTIPOINT'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.multipointfromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1674 (class 1255 OID 29721)
+-- Name: multipointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multipointfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1,$2)) = 'MULTIPOINT'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.multipointfromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1675 (class 1255 OID 29722)
+-- Name: multipolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multipolyfromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'MULTIPOLYGON'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.multipolyfromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1676 (class 1255 OID 29723)
+-- Name: multipolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multipolyfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTIPOLYGON'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.multipolyfromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1677 (class 1255 OID 29724)
+-- Name: multipolygonfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multipolygonfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT MPolyFromText($1)$_$;
+
+
+ALTER FUNCTION public.multipolygonfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1678 (class 1255 OID 29725)
+-- Name: multipolygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION multipolygonfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT MPolyFromText($1, $2)$_$;
+
+
+ALTER FUNCTION public.multipolygonfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1679 (class 1255 OID 29726)
+-- Name: ndims(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION ndims(geometry) RETURNS smallint
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_ndims';
+
+
+ALTER FUNCTION public.ndims(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1680 (class 1255 OID 29727)
+-- Name: noop(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION noop(geometry) RETURNS geometry
+    LANGUAGE c STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_noop';
+
+
+ALTER FUNCTION public.noop(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1681 (class 1255 OID 29728)
+-- Name: npoints(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION npoints(geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_npoints';
+
+
+ALTER FUNCTION public.npoints(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1682 (class 1255 OID 29729)
+-- Name: nrings(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION nrings(geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_nrings';
+
+
+ALTER FUNCTION public.nrings(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1683 (class 1255 OID 29730)
+-- Name: numgeometries(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION numgeometries(geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_numgeometries_collection';
+
+
+ALTER FUNCTION public.numgeometries(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1684 (class 1255 OID 29731)
+-- Name: numinteriorring(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION numinteriorring(geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_numinteriorrings_polygon';
+
+
+ALTER FUNCTION public.numinteriorring(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1685 (class 1255 OID 29732)
+-- Name: numinteriorrings(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION numinteriorrings(geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_numinteriorrings_polygon';
+
+
+ALTER FUNCTION public.numinteriorrings(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1686 (class 1255 OID 29733)
+-- Name: numpoints(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION numpoints(geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_numpoints_linestring';
+
+
+ALTER FUNCTION public.numpoints(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1687 (class 1255 OID 29734)
+-- Name: overlaps(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION "overlaps"(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'overlaps';
+
+
+ALTER FUNCTION public."overlaps"(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1688 (class 1255 OID 29735)
+-- Name: perimeter2d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION perimeter2d(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_perimeter2d_poly';
+
+
+ALTER FUNCTION public.perimeter2d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1689 (class 1255 OID 29736)
+-- Name: perimeter3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION perimeter3d(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_perimeter_poly';
+
+
+ALTER FUNCTION public.perimeter3d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1690 (class 1255 OID 29737)
+-- Name: point_inside_circle(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION point_inside_circle(geometry, double precision, double precision, double precision) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_inside_circle_point';
+
+
+ALTER FUNCTION public.point_inside_circle(geometry, double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1691 (class 1255 OID 29738)
+-- Name: pointfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION pointfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1)) = 'POINT'
+	THEN GeomFromText($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.pointfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1692 (class 1255 OID 29739)
+-- Name: pointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION pointfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1, $2)) = 'POINT'
+	THEN GeomFromText($1,$2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.pointfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1693 (class 1255 OID 29740)
+-- Name: pointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION pointfromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'POINT'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.pointfromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1694 (class 1255 OID 29741)
+-- Name: pointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION pointfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'POINT'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.pointfromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1695 (class 1255 OID 29742)
+-- Name: pointn(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION pointn(geometry, integer) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_pointn_linestring';
+
+
+ALTER FUNCTION public.pointn(geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1696 (class 1255 OID 29743)
+-- Name: pointonsurface(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION pointonsurface(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'pointonsurface';
+
+
+ALTER FUNCTION public.pointonsurface(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1697 (class 1255 OID 29744)
+-- Name: polyfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION polyfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1)) = 'POLYGON'
+	THEN GeomFromText($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.polyfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1698 (class 1255 OID 29745)
+-- Name: polyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION polyfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromText($1, $2)) = 'POLYGON'
+	THEN GeomFromText($1,$2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.polyfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1699 (class 1255 OID 29746)
+-- Name: polyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION polyfromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'POLYGON'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.polyfromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1700 (class 1255 OID 29747)
+-- Name: polyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION polyfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'POLYGON'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.polyfromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 494 (class 1255 OID 29748)
+-- Name: polygonfromtext(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION polygonfromtext(text) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT PolyFromText($1)$_$;
+
+
+ALTER FUNCTION public.polygonfromtext(text) OWNER TO postgres;
+
+--
+-- TOC entry 1701 (class 1255 OID 29749)
+-- Name: polygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION polygonfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT PolyFromText($1, $2)$_$;
+
+
+ALTER FUNCTION public.polygonfromtext(text, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1702 (class 1255 OID 29750)
+-- Name: polygonfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION polygonfromwkb(bytea) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1)) = 'POLYGON'
+	THEN GeomFromWKB($1)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.polygonfromwkb(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1703 (class 1255 OID 29751)
+-- Name: polygonfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION polygonfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1,$2)) = 'POLYGON'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.polygonfromwkb(bytea, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1704 (class 1255 OID 29752)
+-- Name: polygonize_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION polygonize_garray(geometry[]) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'polygonize_garray';
+
+
+ALTER FUNCTION public.polygonize_garray(geometry[]) OWNER TO postgres;
+
+--
+-- TOC entry 1705 (class 1255 OID 29753)
+-- Name: probe_geometry_columns(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION probe_geometry_columns() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+	inserted integer;
+	oldcount integer;
+	probed integer;
+	stale integer;
+BEGIN
+
+
+
+
+	RETURN 'This function is obsolete now that geometry_columns is a view';
+END
+
+$$;
+
+
+ALTER FUNCTION public.probe_geometry_columns() OWNER TO postgres;
+
+--
+-- TOC entry 1706 (class 1255 OID 29754)
+-- Name: relate(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION relate(geometry, geometry) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'relate_full';
+
+
+ALTER FUNCTION public.relate(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1707 (class 1255 OID 29755)
+-- Name: relate(geometry, geometry, text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION relate(geometry, geometry, text) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'relate_pattern';
+
+
+ALTER FUNCTION public.relate(geometry, geometry, text) OWNER TO postgres;
+
+--
+-- TOC entry 1708 (class 1255 OID 29756)
+-- Name: removepoint(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION removepoint(geometry, integer) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_removepoint';
+
+
+ALTER FUNCTION public.removepoint(geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1709 (class 1255 OID 29757)
+-- Name: rename_geometry_table_constraints(); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION rename_geometry_table_constraints() RETURNS text
+    LANGUAGE sql IMMUTABLE
+    AS $$
+SELECT 'rename_geometry_table_constraint() is obsoleted'::text
+$$;
+
+
+ALTER FUNCTION public.rename_geometry_table_constraints() OWNER TO postgres;
+
+--
+-- TOC entry 1710 (class 1255 OID 29758)
+-- Name: reverse(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION reverse(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_reverse';
+
+
+ALTER FUNCTION public.reverse(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1711 (class 1255 OID 29759)
+-- Name: rotate(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION rotate(geometry, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT st_rotateZ($1, $2)$_$;
+
+
+ALTER FUNCTION public.rotate(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1712 (class 1255 OID 29760)
+-- Name: rotatex(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION rotatex(geometry, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT st_affine($1, 1, 0, 0, 0, cos($2), -sin($2), 0, sin($2), cos($2), 0, 0, 0)$_$;
+
+
+ALTER FUNCTION public.rotatex(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1713 (class 1255 OID 29761)
+-- Name: rotatey(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION rotatey(geometry, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT st_affine($1,  cos($2), 0, sin($2),  0, 1, 0,  -sin($2), 0, cos($2), 0,  0, 0)$_$;
+
+
+ALTER FUNCTION public.rotatey(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1714 (class 1255 OID 29762)
+-- Name: rotatez(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION rotatez(geometry, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT st_affine($1,  cos($2), -sin($2), 0,  sin($2), cos($2), 0,  0, 0, 1,  0, 0, 0)$_$;
+
+
+ALTER FUNCTION public.rotatez(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1715 (class 1255 OID 29763)
+-- Name: scale(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION scale(geometry, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT st_scale($1, $2, $3, 1)$_$;
+
+
+ALTER FUNCTION public.scale(geometry, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1716 (class 1255 OID 29764)
+-- Name: scale(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION scale(geometry, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT st_affine($1,  $2, 0, 0,  0, $3, 0,  0, 0, $4,  0, 0, 0)$_$;
+
+
+ALTER FUNCTION public.scale(geometry, double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1717 (class 1255 OID 29765)
+-- Name: se_envelopesintersect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION se_envelopesintersect(geometry, geometry) RETURNS boolean
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$ 
+	SELECT $1 && $2
+	$_$;
+
+
+ALTER FUNCTION public.se_envelopesintersect(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1718 (class 1255 OID 29766)
+-- Name: se_is3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION se_is3d(geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_hasz';
+
+
+ALTER FUNCTION public.se_is3d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1719 (class 1255 OID 29767)
+-- Name: se_ismeasured(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION se_ismeasured(geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_hasm';
+
+
+ALTER FUNCTION public.se_ismeasured(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1720 (class 1255 OID 29768)
+-- Name: se_locatealong(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION se_locatealong(geometry, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$ SELECT SE_LocateBetween($1, $2, $2) $_$;
+
+
+ALTER FUNCTION public.se_locatealong(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1721 (class 1255 OID 29769)
+-- Name: se_locatebetween(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION se_locatebetween(geometry, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_locate_between_m';
+
+
+ALTER FUNCTION public.se_locatebetween(geometry, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1722 (class 1255 OID 29770)
+-- Name: se_m(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION se_m(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_m_point';
+
+
+ALTER FUNCTION public.se_m(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1723 (class 1255 OID 29771)
+-- Name: se_z(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION se_z(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_z_point';
+
+
+ALTER FUNCTION public.se_z(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1724 (class 1255 OID 29772)
+-- Name: segmentize(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION segmentize(geometry, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_segmentize2d';
+
+
+ALTER FUNCTION public.segmentize(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1725 (class 1255 OID 29773)
+-- Name: setpoint(geometry, integer, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION setpoint(geometry, integer, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_setpoint_linestring';
+
+
+ALTER FUNCTION public.setpoint(geometry, integer, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1726 (class 1255 OID 29774)
+-- Name: setsrid(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION setsrid(geometry, integer) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_set_srid';
+
+
+ALTER FUNCTION public.setsrid(geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1727 (class 1255 OID 29775)
+-- Name: shift_longitude(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION shift_longitude(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_longitude_shift';
+
+
+ALTER FUNCTION public.shift_longitude(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1728 (class 1255 OID 29776)
+-- Name: simplify(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION simplify(geometry, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_simplify2d';
+
+
+ALTER FUNCTION public.simplify(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1729 (class 1255 OID 29777)
+-- Name: snaptogrid(geometry, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION snaptogrid(geometry, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_SnapToGrid($1, 0, 0, $2, $2)$_$;
+
+
+ALTER FUNCTION public.snaptogrid(geometry, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1730 (class 1255 OID 29778)
+-- Name: snaptogrid(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION snaptogrid(geometry, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_SnapToGrid($1, 0, 0, $2, $3)$_$;
+
+
+ALTER FUNCTION public.snaptogrid(geometry, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1731 (class 1255 OID 29779)
+-- Name: snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION snaptogrid(geometry, double precision, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_snaptogrid';
+
+
+ALTER FUNCTION public.snaptogrid(geometry, double precision, double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1732 (class 1255 OID 29780)
+-- Name: snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_snaptogrid_pointoff';
+
+
+ALTER FUNCTION public.snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1733 (class 1255 OID 29781)
+-- Name: srid(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION srid(geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_get_srid';
+
+
+ALTER FUNCTION public.srid(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1734 (class 1255 OID 29782)
+-- Name: st_asbinary(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_asbinary(text) RETURNS bytea
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$ SELECT ST_AsBinary($1::geometry);$_$;
+
+
+ALTER FUNCTION public.st_asbinary(text) OWNER TO postgres;
+
+--
+-- TOC entry 1735 (class 1255 OID 29783)
+-- Name: st_astext(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_astext(bytea) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$ SELECT ST_AsText($1::geometry);$_$;
+
+
+ALTER FUNCTION public.st_astext(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1736 (class 1255 OID 29784)
+-- Name: st_box(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_box(geometry) RETURNS box
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_to_BOX';
+
+
+ALTER FUNCTION public.st_box(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1737 (class 1255 OID 29785)
+-- Name: st_box(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_box(box3d) RETURNS box
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_to_BOX';
+
+
+ALTER FUNCTION public.st_box(box3d) OWNER TO postgres;
+
+--
+-- TOC entry 1738 (class 1255 OID 29786)
+-- Name: st_box2d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_box2d(geometry) RETURNS box2d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_to_BOX2D';
+
+
+ALTER FUNCTION public.st_box2d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1739 (class 1255 OID 29787)
+-- Name: st_box2d(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_box2d(box3d) RETURNS box2d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_to_BOX2D';
+
+
+ALTER FUNCTION public.st_box2d(box3d) OWNER TO postgres;
+
+--
+-- TOC entry 1740 (class 1255 OID 29788)
+-- Name: st_box3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_box3d(geometry) RETURNS box3d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_to_BOX3D';
+
+
+ALTER FUNCTION public.st_box3d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1741 (class 1255 OID 29789)
+-- Name: st_box3d(box2d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_box3d(box2d) RETURNS box3d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX2D_to_BOX3D';
+
+
+ALTER FUNCTION public.st_box3d(box2d) OWNER TO postgres;
+
+--
+-- TOC entry 1742 (class 1255 OID 29790)
+-- Name: st_box3d_in(cstring); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_box3d_in(cstring) RETURNS box3d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_in';
+
+
+ALTER FUNCTION public.st_box3d_in(cstring) OWNER TO postgres;
+
+--
+-- TOC entry 1743 (class 1255 OID 29791)
+-- Name: st_box3d_out(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_box3d_out(box3d) RETURNS cstring
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_out';
+
+
+ALTER FUNCTION public.st_box3d_out(box3d) OWNER TO postgres;
+
+--
+-- TOC entry 1744 (class 1255 OID 29792)
+-- Name: st_bytea(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_bytea(geometry) RETURNS bytea
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_to_bytea';
+
+
+ALTER FUNCTION public.st_bytea(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1745 (class 1255 OID 29793)
+-- Name: st_geometry(box2d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_geometry(box2d) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX2D_to_LWGEOM';
+
+
+ALTER FUNCTION public.st_geometry(box2d) OWNER TO postgres;
+
+--
+-- TOC entry 1746 (class 1255 OID 29794)
+-- Name: st_geometry(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_geometry(box3d) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_to_LWGEOM';
+
+
+ALTER FUNCTION public.st_geometry(box3d) OWNER TO postgres;
+
+--
+-- TOC entry 1747 (class 1255 OID 29795)
+-- Name: st_geometry(text); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_geometry(text) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'parse_WKT_lwgeom';
+
+
+ALTER FUNCTION public.st_geometry(text) OWNER TO postgres;
+
+--
+-- TOC entry 1748 (class 1255 OID 29796)
+-- Name: st_geometry(bytea); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_geometry(bytea) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_from_bytea';
+
+
+ALTER FUNCTION public.st_geometry(bytea) OWNER TO postgres;
+
+--
+-- TOC entry 1749 (class 1255 OID 29797)
+-- Name: st_geometry_cmp(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_geometry_cmp(geometry, geometry) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'lwgeom_cmp';
+
+
+ALTER FUNCTION public.st_geometry_cmp(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1750 (class 1255 OID 29798)
+-- Name: st_geometry_eq(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_geometry_eq(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'lwgeom_eq';
+
+
+ALTER FUNCTION public.st_geometry_eq(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1751 (class 1255 OID 29799)
+-- Name: st_geometry_ge(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_geometry_ge(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'lwgeom_ge';
+
+
+ALTER FUNCTION public.st_geometry_ge(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1752 (class 1255 OID 29800)
+-- Name: st_geometry_gt(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_geometry_gt(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'lwgeom_gt';
+
+
+ALTER FUNCTION public.st_geometry_gt(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1753 (class 1255 OID 29801)
+-- Name: st_geometry_le(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_geometry_le(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'lwgeom_le';
+
+
+ALTER FUNCTION public.st_geometry_le(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1754 (class 1255 OID 29802)
+-- Name: st_geometry_lt(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_geometry_lt(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'lwgeom_lt';
+
+
+ALTER FUNCTION public.st_geometry_lt(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1755 (class 1255 OID 29803)
+-- Name: st_length3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_length3d(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_length_linestring';
+
+
+ALTER FUNCTION public.st_length3d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1756 (class 1255 OID 29804)
+-- Name: st_length_spheroid3d(geometry, spheroid); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_length_spheroid3d(geometry, spheroid) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'LWGEOM_length_ellipsoid_linestring';
+
+
+ALTER FUNCTION public.st_length_spheroid3d(geometry, spheroid) OWNER TO postgres;
+
+--
+-- TOC entry 1757 (class 1255 OID 29805)
+-- Name: st_makebox3d(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_makebox3d(geometry, geometry) RETURNS box3d
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_construct';
+
+
+ALTER FUNCTION public.st_makebox3d(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1758 (class 1255 OID 29806)
+-- Name: st_makeline_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_makeline_garray(geometry[]) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_makeline_garray';
+
+
+ALTER FUNCTION public.st_makeline_garray(geometry[]) OWNER TO postgres;
+
+--
+-- TOC entry 1759 (class 1255 OID 29807)
+-- Name: st_perimeter3d(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_perimeter3d(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_perimeter_poly';
+
+
+ALTER FUNCTION public.st_perimeter3d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1760 (class 1255 OID 29808)
+-- Name: st_polygonize_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_polygonize_garray(geometry[]) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-2.1', 'polygonize_garray';
+
+
+ALTER FUNCTION public.st_polygonize_garray(geometry[]) OWNER TO postgres;
+
+--
+-- TOC entry 1761 (class 1255 OID 29809)
+-- Name: st_text(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_text(geometry) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_to_text';
+
+
+ALTER FUNCTION public.st_text(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1762 (class 1255 OID 29810)
+-- Name: st_unite_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION st_unite_garray(geometry[]) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'pgis_union_geometry_array';
+
+
+ALTER FUNCTION public.st_unite_garray(geometry[]) OWNER TO postgres;
+
+--
+-- TOC entry 1763 (class 1255 OID 29811)
+-- Name: startpoint(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION startpoint(geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_startpoint_linestring';
+
+
+ALTER FUNCTION public.startpoint(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1764 (class 1255 OID 29812)
+-- Name: summary(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION summary(geometry) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_summary';
+
+
+ALTER FUNCTION public.summary(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1765 (class 1255 OID 29813)
+-- Name: symdifference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION symdifference(geometry, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'symdifference';
+
+
+ALTER FUNCTION public.symdifference(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1766 (class 1255 OID 29814)
+-- Name: symmetricdifference(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION symmetricdifference(geometry, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'symdifference';
+
+
+ALTER FUNCTION public.symmetricdifference(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1767 (class 1255 OID 29815)
+-- Name: touches(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION touches(geometry, geometry) RETURNS boolean
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'touches';
+
+
+ALTER FUNCTION public.touches(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1768 (class 1255 OID 29816)
+-- Name: transform(geometry, integer); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION transform(geometry, integer) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'transform';
+
+
+ALTER FUNCTION public.transform(geometry, integer) OWNER TO postgres;
+
+--
+-- TOC entry 1769 (class 1255 OID 29817)
+-- Name: translate(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION translate(geometry, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT st_translate($1, $2, $3, 0)$_$;
+
+
+ALTER FUNCTION public.translate(geometry, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1770 (class 1255 OID 29818)
+-- Name: translate(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION translate(geometry, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT st_affine($1, 1, 0, 0, 0, 1, 0, 0, 0, 1, $2, $3, $4)$_$;
+
+
+ALTER FUNCTION public.translate(geometry, double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1771 (class 1255 OID 29819)
+-- Name: transscale(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION transscale(geometry, double precision, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT st_affine($1,  $4, 0, 0,  0, $5, 0,
+		0, 0, 1,  $2 * $4, $3 * $5, 0)$_$;
+
+
+ALTER FUNCTION public.transscale(geometry, double precision, double precision, double precision, double precision) OWNER TO postgres;
+
+--
+-- TOC entry 1772 (class 1255 OID 29820)
+-- Name: unite_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION unite_garray(geometry[]) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'pgis_union_geometry_array';
+
+
+ALTER FUNCTION public.unite_garray(geometry[]) OWNER TO postgres;
+
+--
+-- TOC entry 1773 (class 1255 OID 29821)
+-- Name: within(geometry, geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION within(geometry, geometry) RETURNS boolean
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_Within($1, $2)$_$;
+
+
+ALTER FUNCTION public.within(geometry, geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1774 (class 1255 OID 29822)
+-- Name: x(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION x(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_x_point';
+
+
+ALTER FUNCTION public.x(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1775 (class 1255 OID 29823)
+-- Name: xmax(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION xmax(box3d) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_xmax';
+
+
+ALTER FUNCTION public.xmax(box3d) OWNER TO postgres;
+
+--
+-- TOC entry 1776 (class 1255 OID 29824)
+-- Name: xmin(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION xmin(box3d) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_xmin';
+
+
+ALTER FUNCTION public.xmin(box3d) OWNER TO postgres;
+
+--
+-- TOC entry 1777 (class 1255 OID 29825)
+-- Name: y(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION y(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_y_point';
+
+
+ALTER FUNCTION public.y(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1778 (class 1255 OID 29826)
+-- Name: ymax(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION ymax(box3d) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_ymax';
+
+
+ALTER FUNCTION public.ymax(box3d) OWNER TO postgres;
+
+--
+-- TOC entry 1779 (class 1255 OID 29827)
+-- Name: ymin(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION ymin(box3d) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_ymin';
+
+
+ALTER FUNCTION public.ymin(box3d) OWNER TO postgres;
+
+--
+-- TOC entry 1780 (class 1255 OID 29828)
+-- Name: z(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION z(geometry) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_z_point';
+
+
+ALTER FUNCTION public.z(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1781 (class 1255 OID 29829)
+-- Name: zmax(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION zmax(box3d) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_zmax';
+
+
+ALTER FUNCTION public.zmax(box3d) OWNER TO postgres;
+
+--
+-- TOC entry 1782 (class 1255 OID 29830)
+-- Name: zmflag(geometry); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION zmflag(geometry) RETURNS smallint
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'LWGEOM_zmflag';
+
+
+ALTER FUNCTION public.zmflag(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 1783 (class 1255 OID 29831)
+-- Name: zmin(box3d); Type: FUNCTION; Schema: public; Owner: postgres
+--
+
+CREATE FUNCTION zmin(box3d) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-2.1', 'BOX3D_zmin';
+
+
+ALTER FUNCTION public.zmin(box3d) OWNER TO postgres;
+
+--
+-- TOC entry 2462 (class 1255 OID 29832)
+-- Name: accum(geometry); Type: AGGREGATE; Schema: public; Owner: postgres
+--
+
+CREATE AGGREGATE accum(geometry) (
+    SFUNC = pgis_geometry_accum_transfn,
+    STYPE = pgis_abs,
+    FINALFUNC = pgis_geometry_accum_finalfn
+);
+
+
+ALTER AGGREGATE public.accum(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 2463 (class 1255 OID 29833)
+-- Name: extent(geometry); Type: AGGREGATE; Schema: public; Owner: postgres
+--
+
+CREATE AGGREGATE extent(geometry) (
+    SFUNC = public.st_combine_bbox,
+    STYPE = box3d,
+    FINALFUNC = public.box2d
+);
+
+
+ALTER AGGREGATE public.extent(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 2464 (class 1255 OID 29834)
+-- Name: extent3d(geometry); Type: AGGREGATE; Schema: public; Owner: postgres
+--
+
+CREATE AGGREGATE extent3d(geometry) (
+    SFUNC = public.combine_bbox,
+    STYPE = box3d
+);
+
+
+ALTER AGGREGATE public.extent3d(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 2465 (class 1255 OID 29835)
+-- Name: makeline(geometry); Type: AGGREGATE; Schema: public; Owner: postgres
+--
+
+CREATE AGGREGATE makeline(geometry) (
+    SFUNC = pgis_geometry_accum_transfn,
+    STYPE = pgis_abs,
+    FINALFUNC = pgis_geometry_makeline_finalfn
+);
+
+
+ALTER AGGREGATE public.makeline(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 2466 (class 1255 OID 29836)
+-- Name: memcollect(geometry); Type: AGGREGATE; Schema: public; Owner: postgres
+--
+
+CREATE AGGREGATE memcollect(geometry) (
+    SFUNC = public.st_collect,
+    STYPE = geometry
+);
+
+
+ALTER AGGREGATE public.memcollect(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 2467 (class 1255 OID 29837)
+-- Name: memgeomunion(geometry); Type: AGGREGATE; Schema: public; Owner: postgres
+--
+
+CREATE AGGREGATE memgeomunion(geometry) (
+    SFUNC = geomunion,
+    STYPE = geometry
+);
+
+
+ALTER AGGREGATE public.memgeomunion(geometry) OWNER TO postgres;
+
+--
+-- TOC entry 2468 (class 1255 OID 29838)
+-- Name: st_extent3d(geometry); Type: AGGREGATE; Schema: public; Owner: postgres
+--
+
+CREATE AGGREGATE st_extent3d(geometry) (
+    SFUNC = public.st_combine_bbox,
+    STYPE = box3d
+);
+
+
+ALTER AGGREGATE public.st_extent3d(geometry) OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 243 (class 1259 OID 49152)
+-- Name: acciones; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE acciones (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.acciones OWNER TO postgres;
+
+--
+-- TOC entry 244 (class 1259 OID 49155)
+-- Name: acciones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE acciones_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.acciones_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4164 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: acciones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE acciones_id_seq OWNED BY acciones.id;
+
+
+--
+-- TOC entry 245 (class 1259 OID 49157)
+-- Name: actividad; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE actividad (
+    id integer NOT NULL,
+    nombre character varying(100) NOT NULL,
+    id_estado integer DEFAULT 1
+);
+
+
+ALTER TABLE public.actividad OWNER TO postgres;
+
+--
+-- TOC entry 246 (class 1259 OID 49161)
+-- Name: actividad_estado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE actividad_estado (
+    id integer NOT NULL,
+    nombre character varying(100)
+);
+
+
+ALTER TABLE public.actividad_estado OWNER TO postgres;
+
+--
+-- TOC entry 247 (class 1259 OID 49164)
+-- Name: actividad_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE actividad_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.actividad_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4165 (class 0 OID 0)
+-- Dependencies: 247
+-- Name: actividad_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE actividad_id_seq OWNED BY actividad.id;
+
+
+--
+-- TOC entry 248 (class 1259 OID 49166)
+-- Name: modulos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE modulos (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL,
+    slug character varying,
+    id_modulo_padre integer
+);
+
+
+ALTER TABLE public.modulos OWNER TO postgres;
+
+--
+-- TOC entry 249 (class 1259 OID 49172)
+-- Name: modulos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE modulos_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.modulos_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4166 (class 0 OID 0)
+-- Dependencies: 249
+-- Name: modulos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE modulos_id_seq OWNED BY modulos.id;
+
+
+--
+-- TOC entry 250 (class 1259 OID 49174)
+-- Name: movimiento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE movimiento (
+    id integer NOT NULL,
+    origen character varying(100) NOT NULL,
+    destino character varying(100) NOT NULL,
+    id_tipo_movimiento integer NOT NULL,
+    observaciones text,
+    fecha date NOT NULL,
+    id_responsable integer NOT NULL,
+    cantidad_peces integer NOT NULL
+);
+
+
+ALTER TABLE public.movimiento OWNER TO postgres;
+
+--
+-- TOC entry 251 (class 1259 OID 49180)
+-- Name: movimiento_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE movimiento_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.movimiento_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4167 (class 0 OID 0)
+-- Dependencies: 251
+-- Name: movimiento_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE movimiento_id_seq OWNED BY movimiento.id;
+
+
+--
+-- TOC entry 252 (class 1259 OID 49182)
+-- Name: permisos; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE permisos (
+    id integer NOT NULL,
+    id_roles integer NOT NULL,
+    id_modulos integer NOT NULL,
+    id_acciones integer NOT NULL
+);
+
+
+ALTER TABLE public.permisos OWNER TO postgres;
+
+--
+-- TOC entry 253 (class 1259 OID 49185)
+-- Name: permisos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE permisos_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.permisos_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4168 (class 0 OID 0)
+-- Dependencies: 253
+-- Name: permisos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE permisos_id_seq OWNED BY permisos.id;
+
+
+--
+-- TOC entry 254 (class 1259 OID 49187)
+-- Name: rol_estado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE rol_estado (
+    id_estado integer NOT NULL,
+    nombre character varying
+);
+
+
+ALTER TABLE public.rol_estado OWNER TO postgres;
+
+--
+-- TOC entry 255 (class 1259 OID 49193)
+-- Name: rol_estado_id_estado_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE rol_estado_id_estado_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.rol_estado_id_estado_seq OWNER TO postgres;
+
+--
+-- TOC entry 4169 (class 0 OID 0)
+-- Dependencies: 255
+-- Name: rol_estado_id_estado_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE rol_estado_id_estado_seq OWNED BY rol_estado.id_estado;
+
+
+--
+-- TOC entry 256 (class 1259 OID 49195)
+-- Name: roles; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE roles (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL,
+    id_estado integer
+);
+
+
+ALTER TABLE public.roles OWNER TO postgres;
+
+--
+-- TOC entry 257 (class 1259 OID 49198)
+-- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE roles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.roles_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4170 (class 0 OID 0)
+-- Dependencies: 257
+-- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE roles_id_seq OWNED BY roles.id;
+
+
+--
+-- TOC entry 258 (class 1259 OID 49200)
+-- Name: seguimiento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE seguimiento (
+    id integer NOT NULL,
+    id_zoo integer NOT NULL,
+    id_tanque integer NOT NULL,
+    id_responsable integer NOT NULL,
+    fecha date NOT NULL
+);
+
+
+ALTER TABLE public.seguimiento OWNER TO postgres;
+
+--
+-- TOC entry 259 (class 1259 OID 49203)
+-- Name: seguimiento_detalle; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE seguimiento_detalle (
+    id integer NOT NULL,
+    id_seguimiento integer NOT NULL,
+    id_actividad integer NOT NULL,
+    ph numeric(5,2) NOT NULL,
+    temperatura numeric(5,2) NOT NULL,
+    num_alevines integer NOT NULL,
+    num_muertes integer NOT NULL,
+    num_machos integer NOT NULL,
+    num_hembras integer NOT NULL,
+    cloro numeric(5,2) NOT NULL,
+    observaciones text,
+    total integer NOT NULL,
+    estado_id integer
+);
+
+
+ALTER TABLE public.seguimiento_detalle OWNER TO postgres;
+
+--
+-- TOC entry 260 (class 1259 OID 49209)
+-- Name: seguimiento_detalle_estado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE seguimiento_detalle_estado (
+    id integer NOT NULL,
+    nombre character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.seguimiento_detalle_estado OWNER TO postgres;
+
+--
+-- TOC entry 261 (class 1259 OID 49212)
+-- Name: seguimiento_detalle_estado_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE seguimiento_detalle_estado_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seguimiento_detalle_estado_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4171 (class 0 OID 0)
+-- Dependencies: 261
+-- Name: seguimiento_detalle_estado_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seguimiento_detalle_estado_id_seq OWNED BY seguimiento_detalle_estado.id;
+
+
+--
+-- TOC entry 262 (class 1259 OID 49214)
+-- Name: seguimiento_detalle_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE seguimiento_detalle_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seguimiento_detalle_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4172 (class 0 OID 0)
+-- Dependencies: 262
+-- Name: seguimiento_detalle_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seguimiento_detalle_id_seq OWNED BY seguimiento_detalle.id;
+
+
+--
+-- TOC entry 263 (class 1259 OID 49216)
+-- Name: seguimiento_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE seguimiento_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.seguimiento_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4173 (class 0 OID 0)
+-- Dependencies: 263
+-- Name: seguimiento_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE seguimiento_id_seq OWNED BY seguimiento.id;
+
+
+--
+-- TOC entry 264 (class 1259 OID 49218)
+-- Name: tanque_estado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tanque_estado (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.tanque_estado OWNER TO postgres;
+
+--
+-- TOC entry 265 (class 1259 OID 49221)
+-- Name: tanque_estado_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE tanque_estado_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tanque_estado_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4174 (class 0 OID 0)
+-- Dependencies: 265
+-- Name: tanque_estado_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE tanque_estado_id_seq OWNED BY tanque_estado.id;
+
+
+--
+-- TOC entry 266 (class 1259 OID 49223)
+-- Name: tanques; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tanques (
+    id integer NOT NULL,
+    nombre character varying(100) NOT NULL,
+    medidas character varying(100) NOT NULL,
+    id_tipo_tanque integer NOT NULL,
+    cantidad_peces integer NOT NULL,
+    id_zoocriadero integer,
+    id_estado integer
+);
+
+
+ALTER TABLE public.tanques OWNER TO postgres;
+
+--
+-- TOC entry 267 (class 1259 OID 49226)
+-- Name: tanques_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE tanques_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tanques_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4175 (class 0 OID 0)
+-- Dependencies: 267
+-- Name: tanques_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE tanques_id_seq OWNED BY tanques.id;
+
+
+--
+-- TOC entry 268 (class 1259 OID 49228)
+-- Name: tipo_movimiento; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tipo_movimiento (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.tipo_movimiento OWNER TO postgres;
+
+--
+-- TOC entry 269 (class 1259 OID 49231)
+-- Name: tipo_movimiento_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE tipo_movimiento_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tipo_movimiento_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4176 (class 0 OID 0)
+-- Dependencies: 269
+-- Name: tipo_movimiento_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE tipo_movimiento_id_seq OWNED BY tipo_movimiento.id;
+
+
+--
+-- TOC entry 270 (class 1259 OID 49233)
+-- Name: tipo_tanque; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tipo_tanque (
+    id integer NOT NULL,
+    nombre character varying(50) NOT NULL,
+    id_estado integer DEFAULT 1
+);
+
+
+ALTER TABLE public.tipo_tanque OWNER TO postgres;
+
+--
+-- TOC entry 271 (class 1259 OID 49237)
+-- Name: tipo_tanque_estado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE tipo_tanque_estado (
+    id integer NOT NULL,
+    nombre character varying(100)
+);
+
+
+ALTER TABLE public.tipo_tanque_estado OWNER TO postgres;
+
+--
+-- TOC entry 272 (class 1259 OID 49240)
+-- Name: tipo_tanque_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE tipo_tanque_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tipo_tanque_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4177 (class 0 OID 0)
+-- Dependencies: 272
+-- Name: tipo_tanque_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE tipo_tanque_id_seq OWNED BY tipo_tanque.id;
+
+
+--
+-- TOC entry 273 (class 1259 OID 49242)
+-- Name: usuario_estado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE usuario_estado (
+    id_estado integer NOT NULL,
+    nombre character varying
+);
+
+
+ALTER TABLE public.usuario_estado OWNER TO postgres;
+
+--
+-- TOC entry 274 (class 1259 OID 49248)
+-- Name: usuario_estado_id_estado_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE usuario_estado_id_estado_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.usuario_estado_id_estado_seq OWNER TO postgres;
+
+--
+-- TOC entry 4178 (class 0 OID 0)
+-- Dependencies: 274
+-- Name: usuario_estado_id_estado_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE usuario_estado_id_estado_seq OWNED BY usuario_estado.id_estado;
+
+
+--
+-- TOC entry 275 (class 1259 OID 49250)
+-- Name: usuarios; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE usuarios (
+    id integer NOT NULL,
+    nombre character varying(100) NOT NULL,
+    apellido character varying(100) NOT NULL,
+    documento character varying(50) NOT NULL,
+    correo character varying(100) NOT NULL,
+    telefono character varying(20) NOT NULL,
+    contrasena character varying(200) NOT NULL,
+    id_rol integer,
+    id_estado integer
+);
+
+
+ALTER TABLE public.usuarios OWNER TO postgres;
+
+--
+-- TOC entry 276 (class 1259 OID 49256)
+-- Name: usuarios_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE usuarios_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.usuarios_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4179 (class 0 OID 0)
+-- Dependencies: 276
+-- Name: usuarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE usuarios_id_seq OWNED BY usuarios.id;
+
+
+--
+-- TOC entry 277 (class 1259 OID 49258)
+-- Name: zoocriadero; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE zoocriadero (
+    id_zoocriadero integer NOT NULL,
+    responsable integer NOT NULL,
+    direccion character varying(150) NOT NULL,
+    coordenadas character varying(100) NOT NULL,
+    telefono character varying(20) NOT NULL,
+    comuna character varying(50) NOT NULL,
+    barrio character varying(50) NOT NULL,
+    nombre character varying(100) NOT NULL,
+    geom geometry(Point,4326),
+    id_estado integer,
+    correo character varying
+);
+
+
+ALTER TABLE public.zoocriadero OWNER TO postgres;
+
+--
+-- TOC entry 278 (class 1259 OID 49264)
+-- Name: zoocriadero_estado; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE zoocriadero_estado (
+    id_estado integer NOT NULL,
+    nombre character varying
+);
+
+
+ALTER TABLE public.zoocriadero_estado OWNER TO postgres;
+
+--
+-- TOC entry 279 (class 1259 OID 49270)
+-- Name: zoocriadero_estado_id_estado_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE zoocriadero_estado_id_estado_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.zoocriadero_estado_id_estado_seq OWNER TO postgres;
+
+--
+-- TOC entry 4180 (class 0 OID 0)
+-- Dependencies: 279
+-- Name: zoocriadero_estado_id_estado_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE zoocriadero_estado_id_estado_seq OWNED BY zoocriadero_estado.id_estado;
+
+
+--
+-- TOC entry 280 (class 1259 OID 49272)
+-- Name: zoocriadero_id_zoocriadero_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE zoocriadero_id_zoocriadero_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.zoocriadero_id_zoocriadero_seq OWNER TO postgres;
+
+--
+-- TOC entry 4181 (class 0 OID 0)
+-- Dependencies: 280
+-- Name: zoocriadero_id_zoocriadero_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE zoocriadero_id_zoocriadero_seq OWNED BY zoocriadero.id_zoocriadero;
+
+
+--
+-- TOC entry 3918 (class 2604 OID 49274)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY acciones ALTER COLUMN id SET DEFAULT nextval('acciones_id_seq'::regclass);
+
+
+--
+-- TOC entry 3920 (class 2604 OID 49275)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY actividad ALTER COLUMN id SET DEFAULT nextval('actividad_id_seq'::regclass);
+
+
+--
+-- TOC entry 3921 (class 2604 OID 49276)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY modulos ALTER COLUMN id SET DEFAULT nextval('modulos_id_seq'::regclass);
+
+
+--
+-- TOC entry 3922 (class 2604 OID 49277)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY movimiento ALTER COLUMN id SET DEFAULT nextval('movimiento_id_seq'::regclass);
+
+
+--
+-- TOC entry 3923 (class 2604 OID 49278)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY permisos ALTER COLUMN id SET DEFAULT nextval('permisos_id_seq'::regclass);
+
+
+--
+-- TOC entry 3924 (class 2604 OID 49279)
+-- Name: id_estado; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY rol_estado ALTER COLUMN id_estado SET DEFAULT nextval('rol_estado_id_estado_seq'::regclass);
+
+
+--
+-- TOC entry 3925 (class 2604 OID 49280)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY roles ALTER COLUMN id SET DEFAULT nextval('roles_id_seq'::regclass);
+
+
+--
+-- TOC entry 3926 (class 2604 OID 49281)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento ALTER COLUMN id SET DEFAULT nextval('seguimiento_id_seq'::regclass);
+
+
+--
+-- TOC entry 3927 (class 2604 OID 49282)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento_detalle ALTER COLUMN id SET DEFAULT nextval('seguimiento_detalle_id_seq'::regclass);
+
+
+--
+-- TOC entry 3928 (class 2604 OID 49283)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento_detalle_estado ALTER COLUMN id SET DEFAULT nextval('seguimiento_detalle_estado_id_seq'::regclass);
+
+
+--
+-- TOC entry 3929 (class 2604 OID 49284)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tanque_estado ALTER COLUMN id SET DEFAULT nextval('tanque_estado_id_seq'::regclass);
+
+
+--
+-- TOC entry 3930 (class 2604 OID 49285)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tanques ALTER COLUMN id SET DEFAULT nextval('tanques_id_seq'::regclass);
+
+
+--
+-- TOC entry 3931 (class 2604 OID 49286)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tipo_movimiento ALTER COLUMN id SET DEFAULT nextval('tipo_movimiento_id_seq'::regclass);
+
+
+--
+-- TOC entry 3933 (class 2604 OID 49287)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tipo_tanque ALTER COLUMN id SET DEFAULT nextval('tipo_tanque_id_seq'::regclass);
+
+
+--
+-- TOC entry 3934 (class 2604 OID 49288)
+-- Name: id_estado; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY usuario_estado ALTER COLUMN id_estado SET DEFAULT nextval('usuario_estado_id_estado_seq'::regclass);
+
+
+--
+-- TOC entry 3935 (class 2604 OID 49289)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY usuarios ALTER COLUMN id SET DEFAULT nextval('usuarios_id_seq'::regclass);
+
+
+--
+-- TOC entry 3936 (class 2604 OID 49290)
+-- Name: id_zoocriadero; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY zoocriadero ALTER COLUMN id_zoocriadero SET DEFAULT nextval('zoocriadero_id_zoocriadero_seq'::regclass);
+
+
+--
+-- TOC entry 3937 (class 2604 OID 49291)
+-- Name: id_estado; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY zoocriadero_estado ALTER COLUMN id_estado SET DEFAULT nextval('zoocriadero_estado_id_estado_seq'::regclass);
+
+
+--
+-- TOC entry 4113 (class 0 OID 49152)
+-- Dependencies: 243
+-- Data for Name: acciones; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY acciones (id, nombre) FROM stdin;
+2	Consultar
+1	Registrar
+3	Actualizar
+4	Eliminar
+\.
+
+
+--
+-- TOC entry 4182 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: acciones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('acciones_id_seq', 4, true);
+
+
+--
+-- TOC entry 4115 (class 0 OID 49157)
+-- Dependencies: 245
+-- Data for Name: actividad; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY actividad (id, nombre, id_estado) FROM stdin;
+2	Aspirado	1
+3	Ajuste nivel del agua	1
+4	No se requirio ninguna acción	1
+1	Lavado	1
+5	Mirar pecesss	2
+\.
+
+
+--
+-- TOC entry 4116 (class 0 OID 49161)
+-- Dependencies: 246
+-- Data for Name: actividad_estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY actividad_estado (id, nombre) FROM stdin;
+1	Activo
+2	Inactivo
+\.
+
+
+--
+-- TOC entry 4183 (class 0 OID 0)
+-- Dependencies: 247
+-- Name: actividad_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('actividad_id_seq', 4, true);
+
+
+--
+-- TOC entry 4118 (class 0 OID 49166)
+-- Dependencies: 248
+-- Data for Name: modulos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY modulos (id, nombre, slug, id_modulo_padre) FROM stdin;
+1	Visualización de Mapa	mapa	\N
+2	Gestión de Zoocriadero	zoocriaderos	\N
+3	Gestión de Tanques	tanques	\N
+4	Tipo de Tanque	tipo_tanques	\N
+5	Tipo de Actividad	tipo_actividad	\N
+6	Gestión de Seguimiento	seguimiento	\N
+7	Usuarios y Roles	seguridad	\N
+8	Reportes y Estadísticas	reportes	\N
+9	Configuración	configuracion	\N
+10	Gestión Usuarios	usuarios	7
+11	Gestión Roles	roles	7
+12	Peces nacidos y muertos	reporte_nacidos	8
+13	Reporte de seguimientos	reporte_seguimientos	8
+14	Reportes por zoocriadero	reporte_zoocriaderos	8
+15	Manuales	manuales	9
+16	Acerca de nosotros	acerca_de	9
+\.
+
+
+--
+-- TOC entry 4184 (class 0 OID 0)
+-- Dependencies: 249
+-- Name: modulos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('modulos_id_seq', 1, false);
+
+
+--
+-- TOC entry 4120 (class 0 OID 49174)
+-- Dependencies: 250
+-- Data for Name: movimiento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY movimiento (id, origen, destino, id_tipo_movimiento, observaciones, fecha, id_responsable, cantidad_peces) FROM stdin;
+\.
+
+
+--
+-- TOC entry 4185 (class 0 OID 0)
+-- Dependencies: 251
+-- Name: movimiento_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('movimiento_id_seq', 1, false);
+
+
+--
+-- TOC entry 4122 (class 0 OID 49182)
+-- Dependencies: 252
+-- Data for Name: permisos; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY permisos (id, id_roles, id_modulos, id_acciones) FROM stdin;
+1	1	1	1
+2	1	1	2
+3	1	1	3
+4	1	1	4
+5	1	2	1
+6	1	2	2
+7	1	2	3
+8	1	2	4
+9	1	3	1
+10	1	3	2
+11	1	3	3
+12	1	3	4
+13	1	4	1
+14	1	4	2
+15	1	4	3
+16	1	4	4
+17	1	5	1
+18	1	5	2
+19	1	5	3
+20	1	5	4
+21	1	6	1
+22	1	6	2
+23	1	6	3
+24	1	6	4
+25	1	7	1
+26	1	7	2
+27	1	7	3
+28	1	7	4
+29	1	8	1
+30	1	8	2
+31	1	8	3
+32	1	8	4
+33	1	9	1
+34	1	9	2
+35	1	9	3
+36	1	9	4
+57	3	1	1
+58	3	1	2
+59	3	1	3
+60	3	3	1
+61	3	3	2
+62	3	3	3
+63	3	4	1
+64	3	4	2
+65	3	4	3
+66	3	4	4
+67	3	5	1
+68	3	5	2
+69	3	5	3
+70	3	5	4
+71	3	6	1
+72	3	6	2
+73	3	6	3
+74	3	6	4
+75	3	8	1
+76	3	8	2
+77	3	8	3
+78	3	9	1
+79	3	9	2
+80	3	9	3
+81	2	1	1
+82	2	1	2
+83	2	1	3
+84	2	1	4
+85	2	2	1
+86	2	2	2
+87	2	2	3
+88	2	2	4
+89	2	3	1
+90	2	3	2
+91	2	3	3
+92	2	3	4
+93	2	5	1
+94	2	5	2
+95	2	5	3
+96	2	5	4
+97	2	8	1
+98	2	8	2
+99	2	8	3
+100	2	8	4
+101	2	9	1
+102	2	9	2
+103	2	9	3
+104	2	9	4
+105	4	2	1
+106	4	2	2
+107	4	2	3
+108	4	2	4
+\.
+
+
+--
+-- TOC entry 4186 (class 0 OID 0)
+-- Dependencies: 253
+-- Name: permisos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('permisos_id_seq', 1, false);
+
+
+--
+-- TOC entry 4124 (class 0 OID 49187)
+-- Dependencies: 254
+-- Data for Name: rol_estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY rol_estado (id_estado, nombre) FROM stdin;
+1	Activo
+2	Inactivo
+\.
+
+
+--
+-- TOC entry 4187 (class 0 OID 0)
+-- Dependencies: 255
+-- Name: rol_estado_id_estado_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('rol_estado_id_estado_seq', 1, false);
+
+
+--
+-- TOC entry 4126 (class 0 OID 49195)
+-- Dependencies: 256
+-- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY roles (id, nombre, id_estado) FROM stdin;
+1	Administrador	1
+3	Auxiliar	1
+2	Coordinador	1
+4	prueba	1
+\.
+
+
+--
+-- TOC entry 4188 (class 0 OID 0)
+-- Dependencies: 257
+-- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('roles_id_seq', 1, false);
+
+
+--
+-- TOC entry 4128 (class 0 OID 49200)
+-- Dependencies: 258
+-- Data for Name: seguimiento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY seguimiento (id, id_zoo, id_tanque, id_responsable, fecha) FROM stdin;
+1	2	1	1	2025-12-08
+2	2	1	1	2025-12-09
+3	2	1	1	2025-12-09
+4	2	1	1	2025-12-10
+\.
+
+
+--
+-- TOC entry 4129 (class 0 OID 49203)
+-- Dependencies: 259
+-- Data for Name: seguimiento_detalle; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY seguimiento_detalle (id, id_seguimiento, id_actividad, ph, temperatura, num_alevines, num_muertes, num_machos, num_hembras, cloro, observaciones, total, estado_id) FROM stdin;
+2	4	2	8.50	98.20	5	5	20	10	0.50	nop	60	1
+1	3	3	7.50	25.00	3	4	20	9	0.50	ninguna	58	1
+\.
+
+
+--
+-- TOC entry 4130 (class 0 OID 49209)
+-- Dependencies: 260
+-- Data for Name: seguimiento_detalle_estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY seguimiento_detalle_estado (id, nombre) FROM stdin;
+1	activo
+2	inactivo
+\.
+
+
+--
+-- TOC entry 4189 (class 0 OID 0)
+-- Dependencies: 261
+-- Name: seguimiento_detalle_estado_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('seguimiento_detalle_estado_id_seq', 2, true);
+
+
+--
+-- TOC entry 4190 (class 0 OID 0)
+-- Dependencies: 262
+-- Name: seguimiento_detalle_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('seguimiento_detalle_id_seq', 1, false);
+
+
+--
+-- TOC entry 4191 (class 0 OID 0)
+-- Dependencies: 263
+-- Name: seguimiento_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('seguimiento_id_seq', 1, true);
+
+
+--
+-- TOC entry 3852 (class 0 OID 27937)
+-- Dependencies: 172
+-- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
+\.
+
+
+--
+-- TOC entry 4134 (class 0 OID 49218)
+-- Dependencies: 264
+-- Data for Name: tanque_estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tanque_estado (id, nombre) FROM stdin;
+1	Activo
+2	Inactivo
+\.
+
+
+--
+-- TOC entry 4192 (class 0 OID 0)
+-- Dependencies: 265
+-- Name: tanque_estado_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tanque_estado_id_seq', 4, true);
+
+
+--
+-- TOC entry 4136 (class 0 OID 49223)
+-- Dependencies: 266
+-- Data for Name: tanques; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tanques (id, nombre, medidas, id_tipo_tanque, cantidad_peces, id_zoocriadero, id_estado) FROM stdin;
+1	Tanque A	1.2m x 0.8m x 1.0m	1	30	2	1
+\.
+
+
+--
+-- TOC entry 4193 (class 0 OID 0)
+-- Dependencies: 267
+-- Name: tanques_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tanques_id_seq', 1, true);
+
+
+--
+-- TOC entry 4138 (class 0 OID 49228)
+-- Dependencies: 268
+-- Data for Name: tipo_movimiento; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tipo_movimiento (id, nombre) FROM stdin;
+\.
+
+
+--
+-- TOC entry 4194 (class 0 OID 0)
+-- Dependencies: 269
+-- Name: tipo_movimiento_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tipo_movimiento_id_seq', 1, false);
+
+
+--
+-- TOC entry 4140 (class 0 OID 49233)
+-- Dependencies: 270
+-- Data for Name: tipo_tanque; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tipo_tanque (id, nombre, id_estado) FROM stdin;
+2	Reproducción	1
+3	Alevines	1
+4	Reserva	1
+1	Siembra	1
+\.
+
+
+--
+-- TOC entry 4141 (class 0 OID 49237)
+-- Dependencies: 271
+-- Data for Name: tipo_tanque_estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY tipo_tanque_estado (id, nombre) FROM stdin;
+1	Activo
+2	Inactivo
+\.
+
+
+--
+-- TOC entry 4195 (class 0 OID 0)
+-- Dependencies: 272
+-- Name: tipo_tanque_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('tipo_tanque_id_seq', 4, true);
+
+
+--
+-- TOC entry 4143 (class 0 OID 49242)
+-- Dependencies: 273
+-- Data for Name: usuario_estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY usuario_estado (id_estado, nombre) FROM stdin;
+1	Activo
+2	Inactivo
+\.
+
+
+--
+-- TOC entry 4196 (class 0 OID 0)
+-- Dependencies: 274
+-- Name: usuario_estado_id_estado_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('usuario_estado_id_estado_seq', 1, false);
+
+
+--
+-- TOC entry 4145 (class 0 OID 49250)
+-- Dependencies: 275
+-- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY usuarios (id, nombre, apellido, documento, correo, telefono, contrasena, id_rol, id_estado) FROM stdin;
+2	Angelica 	Vargas	1107848947	ang@gmail.com	3145722525	e10adc3949ba59abbe56e057f20f883e	4	1
+4	Juan	Pérez	123456789	juan.perez@example.com	3101234567	Juan123456789	3	1
+5	María	Gómez	987654321	maria.gomez@example.com	3112345678	María987654321	3	2
+6	Carlos	Rodríguez	456789123	carlos.rodriguez@example.com	3123456789	Carlos456789123	3	1
+7	Ana	Martínez	321654987	ana.martinez@example.com	3134567890	Ana321654987	3	2
+8	Luis	Hernández	654987321	luis.hernandez@example.com	3145678901	Luis654987321	3	1
+9	Sofía	Ramírez	789123456	sofia.ramirez@example.com	3156789012	Sofía789123456	3	2
+10	Jorge	Torres	147258369	jorge.torres@example.com	3167890123	Jorge147258369	3	1
+11	Valentina	Cruz	963852741	valentina.cruz@example.com	3178901234	Valentina963852741	3	2
+12	Andrés	Moreno	258369147	andres.moreno@example.com	3189012345	Andrés258369147	3	1
+1	Melany	Agredo	123456789	melany45@gmail.com	3115558899	81dc9bdb52d04dc20036dbd8313ed055	1	1
+13	Isabella	Vargas	369147258	isabella.vargas@example.com	3190123456	Isabella369147258	4	2
+3	Maicol	Copete Cardona	1108254016	maicol@gmail.com	3247265984	54ab6633875c7a2b1d4e0c7a9c81404e	1	1
+\.
+
+
+--
+-- TOC entry 4197 (class 0 OID 0)
+-- Dependencies: 276
+-- Name: usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('usuarios_id_seq', 13, true);
+
+
+--
+-- TOC entry 4147 (class 0 OID 49258)
+-- Dependencies: 277
+-- Data for Name: zoocriadero; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY zoocriadero (id_zoocriadero, responsable, direccion, coordenadas, telefono, comuna, barrio, nombre, geom, id_estado, correo) FROM stdin;
+10	1	Calle 78 #90-12	3.47012,-76.51234	3109876543	Comuna 7	Alfonso Bonilla Aragón	Zoocriadero Animales del Valle	0101000020E6100000B01BB62DCA2053C06D904946CEC20B40	1	contacto7@zoocriadero.com
+11	2	Carrera 56 #23-45	3.46543,-76.52345	3132109876	Comuna 8	Alfonso López P. 1a. Etapa	Zoocriadero Amigos de la Naturaleza	0101000020E6100000D6C56D34802153C0459E245D33B90B40	1	contacto8@zoocriadero.com
+12	1	Avenida 34 #12-56	3.47812,-76.53678	3145678901	Comuna 9	Alférez Real	Zoocriadero Selva Viva	0101000020E61000006649809A5A2253C017821C9430D30B40	1	contacto9@zoocriadero.com
+13	2	Calle 23 #45-67	3.48123,-76.52901	3156789012	Comuna 10	Alirio Mora Beltrán	Zoocriadero Mundo Animal	0101000020E61000007250C24CDB2153C028D53E1D8FD90B40	2	contacto10@zoocriadero.com
+9	2	Avenida 12 #45-67	3.48901,-76.53456	3123456789	Comuna 6	Alfonso Barberena A.	Zoocriadero Fauna Feliz	0101000020E6100000FC6F253B362253C0EF552B137EE90B40	2	contacto6@zoocriadero.com
+3	1	calle 123 #2312	3.45123,-76.53210	3114567890	Comuna 19	Alfonso López P. 3a. Etapa	Zoocriadero prueba	0101000020E6100000850A8CCCA43B3041A69AA727CB9A2A41	2	prueba@gmail.com
+4	1	Calle 12 #34-56	3.45123,-76.53210	3204567890	Comuna 1	20 de Julio	Zoocriadero Los Pajaritos	0101000020E6100000F7FCFE74D23130411686338B78952A41	1	contacto1@zoocriadero.com
+5	2	Carrera 45 #67-89	3.46234,-76.52123	3112345678	Comuna 2	3 de Julio	Zoocriadero El Bosque	0101000020E6100000FDBD02B7674830419AE6F28E098A2A41	1	contacto2@zoocriadero.com
+6	1	Avenida 5 #23-12	3.47890,-76.54012	3009876543	Comuna 3	Aguablanca	Zoocriadero Naturaleza Viva	0101000020E610000010918400E2453041D50424F5D48D2A41	1	contacto3@zoocriadero.com
+7	2	Calle 76 #12-34	3.46789,-76.51123	3156789012	Comuna 4	Aguacatal	Zoocriadero El Paraíso	0101000020E6100000267A1E53342930412030CFDDD68B2A41	1	contacto4@zoocriadero.com
+8	1	Carrera 34 #56-78	3.45678,-76.52234	3201234567	Comuna 5	Alameda	Zoocriadero Verde Vida	0101000020E6100000981775878F35304171F27208DF7B2A41	1	contacto5@zoocriadero.com
+2	1	Calle 12 # 5-30	3.4512,-76.5321	3114567890	Comuna 10	José Manuel Marroquín Primera Etapa	Zoo La Esperanza	0101000020E61000000DD84E146C2B304157578A0E97792A41	1	responsable1@gmail.com
+\.
+
+
+--
+-- TOC entry 4148 (class 0 OID 49264)
+-- Dependencies: 278
+-- Data for Name: zoocriadero_estado; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY zoocriadero_estado (id_estado, nombre) FROM stdin;
+1	Activo
+2	Inactivo
+\.
+
+
+--
+-- TOC entry 4198 (class 0 OID 0)
+-- Dependencies: 279
+-- Name: zoocriadero_estado_id_estado_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('zoocriadero_estado_id_estado_seq', 1, false);
+
+
+--
+-- TOC entry 4199 (class 0 OID 0)
+-- Dependencies: 280
+-- Name: zoocriadero_id_zoocriadero_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('zoocriadero_id_zoocriadero_seq', 13, true);
+
+
+SET search_path = tiger, pg_catalog;
+
+--
+-- TOC entry 3846 (class 0 OID 28961)
+-- Dependencies: 185
+-- Data for Name: geocode_settings; Type: TABLE DATA; Schema: tiger; Owner: postgres
+--
+
+COPY geocode_settings (name, setting, unit, category, short_desc) FROM stdin;
+debug_geocode_address	false	boolean	debug	outputs debug information in notice log such as queries when geocode_addresss is called if true
+debug_geocode_intersection	false	boolean	debug	outputs debug information in notice log such as queries when geocode_intersection is called if true
+debug_normalize_address	false	boolean	debug	outputs debug information in notice log such as queries and intermediate expressions when normalize_address is called if true
+debug_reverse_geocode	false	boolean	debug	if true, outputs debug information in notice log such as queries and intermediate expressions when reverse_geocode
+reverse_geocode_numbered_roads	0	integer	rating	For state and county highways, 0 - no preference in name, 1 - prefer the numbered highway name, 2 - prefer local state/county name
+use_pagc_address_parser	false	boolean	normalize	If set to true, will try to use the pagc_address normalizer instead of tiger built one
+\.
+
+
+--
+-- TOC entry 3847 (class 0 OID 29308)
+-- Dependencies: 228
+-- Data for Name: pagc_gaz; Type: TABLE DATA; Schema: tiger; Owner: postgres
+--
+
+COPY pagc_gaz (id, seq, word, stdword, token, is_custom) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3848 (class 0 OID 29320)
+-- Dependencies: 230
+-- Data for Name: pagc_lex; Type: TABLE DATA; Schema: tiger; Owner: postgres
+--
+
+COPY pagc_lex (id, seq, word, stdword, token, is_custom) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3849 (class 0 OID 29332)
+-- Dependencies: 232
+-- Data for Name: pagc_rules; Type: TABLE DATA; Schema: tiger; Owner: postgres
+--
+
+COPY pagc_rules (id, rule, is_custom) FROM stdin;
+\.
+
+
+SET search_path = topology, pg_catalog;
+
+--
+-- TOC entry 3851 (class 0 OID 29446)
+-- Dependencies: 239
+-- Data for Name: layer; Type: TABLE DATA; Schema: topology; Owner: postgres
+--
+
+COPY layer (topology_id, layer_id, schema_name, table_name, feature_column, feature_type, level, child_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 3850 (class 0 OID 29433)
+-- Dependencies: 238
+-- Data for Name: topology; Type: TABLE DATA; Schema: topology; Owner: postgres
+--
+
+COPY topology (id, name, srid, "precision", hasz) FROM stdin;
+\.
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 3939 (class 2606 OID 49293)
+-- Name: acciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY acciones
+    ADD CONSTRAINT acciones_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3943 (class 2606 OID 49295)
+-- Name: actividad_estado_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY actividad_estado
+    ADD CONSTRAINT actividad_estado_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3941 (class 2606 OID 49297)
+-- Name: actividad_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY actividad
+    ADD CONSTRAINT actividad_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3945 (class 2606 OID 49299)
+-- Name: modulos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY modulos
+    ADD CONSTRAINT modulos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3947 (class 2606 OID 49301)
+-- Name: movimiento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY movimiento
+    ADD CONSTRAINT movimiento_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3949 (class 2606 OID 49303)
+-- Name: permisos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY permisos
+    ADD CONSTRAINT permisos_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3971 (class 2606 OID 49305)
+-- Name: primarykey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY usuario_estado
+    ADD CONSTRAINT primarykey PRIMARY KEY (id_estado);
+
+
+--
+-- TOC entry 3951 (class 2606 OID 49307)
+-- Name: rol_estado_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY rol_estado
+    ADD CONSTRAINT rol_estado_pkey PRIMARY KEY (id_estado);
+
+
+--
+-- TOC entry 3953 (class 2606 OID 49309)
+-- Name: roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY roles
+    ADD CONSTRAINT roles_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3959 (class 2606 OID 49311)
+-- Name: seguimiento_detalle_estado_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY seguimiento_detalle_estado
+    ADD CONSTRAINT seguimiento_detalle_estado_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3957 (class 2606 OID 49313)
+-- Name: seguimiento_detalle_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY seguimiento_detalle
+    ADD CONSTRAINT seguimiento_detalle_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3955 (class 2606 OID 49315)
+-- Name: seguimiento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY seguimiento
+    ADD CONSTRAINT seguimiento_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3961 (class 2606 OID 49317)
+-- Name: tanque_estado_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tanque_estado
+    ADD CONSTRAINT tanque_estado_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3963 (class 2606 OID 49319)
+-- Name: tanques_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tanques
+    ADD CONSTRAINT tanques_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3965 (class 2606 OID 49321)
+-- Name: tipo_movimiento_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tipo_movimiento
+    ADD CONSTRAINT tipo_movimiento_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3969 (class 2606 OID 49323)
+-- Name: tipo_tanque_estado_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tipo_tanque_estado
+    ADD CONSTRAINT tipo_tanque_estado_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3967 (class 2606 OID 49325)
+-- Name: tipo_tanque_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY tipo_tanque
+    ADD CONSTRAINT tipo_tanque_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3974 (class 2606 OID 49327)
+-- Name: usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY usuarios
+    ADD CONSTRAINT usuarios_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3979 (class 2606 OID 49329)
+-- Name: zoocriadero_estado_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY zoocriadero_estado
+    ADD CONSTRAINT zoocriadero_estado_pkey PRIMARY KEY (id_estado);
+
+
+--
+-- TOC entry 3977 (class 2606 OID 49331)
+-- Name: zoocriadero_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY zoocriadero
+    ADD CONSTRAINT zoocriadero_pkey PRIMARY KEY (id_zoocriadero);
+
+
+--
+-- TOC entry 3975 (class 1259 OID 49332)
+-- Name: fki_estado; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_estado ON zoocriadero USING btree (id_estado);
+
+
+--
+-- TOC entry 3972 (class 1259 OID 49333)
+-- Name: fki_rol; Type: INDEX; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE INDEX fki_rol ON usuarios USING btree (id_rol);
+
+
+--
+-- TOC entry 3998 (class 2606 OID 49334)
+-- Name: estado; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY usuarios
+    ADD CONSTRAINT estado FOREIGN KEY (id_estado) REFERENCES usuario_estado(id_estado);
+
+
+--
+-- TOC entry 3986 (class 2606 OID 49339)
+-- Name: estado; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY roles
+    ADD CONSTRAINT estado FOREIGN KEY (id_estado) REFERENCES rol_estado(id_estado);
+
+
+--
+-- TOC entry 3980 (class 2606 OID 49344)
+-- Name: fk_actividad_estado; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY actividad
+    ADD CONSTRAINT fk_actividad_estado FOREIGN KEY (id_estado) REFERENCES actividad_estado(id);
+
+
+--
+-- TOC entry 3999 (class 2606 OID 49349)
+-- Name: fk_estado; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY zoocriadero
+    ADD CONSTRAINT fk_estado FOREIGN KEY (id_estado) REFERENCES zoocriadero_estado(id_estado);
+
+
+--
+-- TOC entry 3992 (class 2606 OID 49354)
+-- Name: fk_estado_seguimiento; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento_detalle
+    ADD CONSTRAINT fk_estado_seguimiento FOREIGN KEY (estado_id) REFERENCES seguimiento_detalle_estado(id);
+
+
+--
+-- TOC entry 3995 (class 2606 OID 49359)
+-- Name: fk_tanque_estado; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tanques
+    ADD CONSTRAINT fk_tanque_estado FOREIGN KEY (id_estado) REFERENCES tanque_estado(id);
+
+
+--
+-- TOC entry 3994 (class 2606 OID 49364)
+-- Name: fk_tanque_zoocriadero; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tanques
+    ADD CONSTRAINT fk_tanque_zoocriadero FOREIGN KEY (id_zoocriadero) REFERENCES zoocriadero(id_zoocriadero) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3996 (class 2606 OID 49369)
+-- Name: fk_tipo_tanque_estado; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tipo_tanque
+    ADD CONSTRAINT fk_tipo_tanque_estado FOREIGN KEY (id_estado) REFERENCES tipo_tanque_estado(id);
+
+
+--
+-- TOC entry 3982 (class 2606 OID 49374)
+-- Name: movimiento_id_responsable_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY movimiento
+    ADD CONSTRAINT movimiento_id_responsable_fkey FOREIGN KEY (id_responsable) REFERENCES usuarios(id);
+
+
+--
+-- TOC entry 3981 (class 2606 OID 49379)
+-- Name: movimiento_id_tipo_movimiento_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY movimiento
+    ADD CONSTRAINT movimiento_id_tipo_movimiento_fkey FOREIGN KEY (id_tipo_movimiento) REFERENCES tipo_movimiento(id);
+
+
+--
+-- TOC entry 3985 (class 2606 OID 49384)
+-- Name: permisos_id_acciones_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY permisos
+    ADD CONSTRAINT permisos_id_acciones_fkey FOREIGN KEY (id_acciones) REFERENCES acciones(id);
+
+
+--
+-- TOC entry 3984 (class 2606 OID 49389)
+-- Name: permisos_id_modulos_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY permisos
+    ADD CONSTRAINT permisos_id_modulos_fkey FOREIGN KEY (id_modulos) REFERENCES modulos(id);
+
+
+--
+-- TOC entry 3983 (class 2606 OID 49394)
+-- Name: permisos_id_roles_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY permisos
+    ADD CONSTRAINT permisos_id_roles_fkey FOREIGN KEY (id_roles) REFERENCES roles(id) ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3997 (class 2606 OID 49399)
+-- Name: rol; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY usuarios
+    ADD CONSTRAINT rol FOREIGN KEY (id_rol) REFERENCES roles(id);
+
+
+--
+-- TOC entry 3991 (class 2606 OID 49404)
+-- Name: seguimiento_detalle_id_actividad_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento_detalle
+    ADD CONSTRAINT seguimiento_detalle_id_actividad_fkey FOREIGN KEY (id_actividad) REFERENCES actividad(id);
+
+
+--
+-- TOC entry 3990 (class 2606 OID 49409)
+-- Name: seguimiento_detalle_id_seguimiento_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento_detalle
+    ADD CONSTRAINT seguimiento_detalle_id_seguimiento_fkey FOREIGN KEY (id_seguimiento) REFERENCES seguimiento(id);
+
+
+--
+-- TOC entry 3989 (class 2606 OID 49414)
+-- Name: seguimiento_id_responsable_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento
+    ADD CONSTRAINT seguimiento_id_responsable_fkey FOREIGN KEY (id_responsable) REFERENCES usuarios(id);
+
+
+--
+-- TOC entry 3988 (class 2606 OID 49419)
+-- Name: seguimiento_id_tanque_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento
+    ADD CONSTRAINT seguimiento_id_tanque_fkey FOREIGN KEY (id_tanque) REFERENCES tanques(id);
+
+
+--
+-- TOC entry 3987 (class 2606 OID 49424)
+-- Name: seguimiento_id_zoo_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY seguimiento
+    ADD CONSTRAINT seguimiento_id_zoo_fkey FOREIGN KEY (id_zoo) REFERENCES zoocriadero(id_zoocriadero);
+
+
+--
+-- TOC entry 3993 (class 2606 OID 49429)
+-- Name: tanques_id_tipo_tanque_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY tanques
+    ADD CONSTRAINT tanques_id_tipo_tanque_fkey FOREIGN KEY (id_tipo_tanque) REFERENCES tipo_tanque(id);
+
+
+--
+-- TOC entry 4157 (class 0 OID 0)
+-- Dependencies: 9
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2025-12-15 02:36:12
+
+--
+-- PostgreSQL database dump complete
+--
+
