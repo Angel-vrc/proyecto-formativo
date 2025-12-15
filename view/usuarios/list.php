@@ -90,7 +90,7 @@
                                                             echo "<a href='".getUrl("Usuarios","Usuario","getDelete",array("id"=>$usuario['id']))."' class='btn btn-danger'>Eliminar</a>";
                                                         }
                                                     } elseif ($usuario['id_estado'] == 2) {
-                                                        if (tienePermiso('usuarios', 'Activar')) {
+                                                        if (tienePermiso('usuarios', 'Eliminar')) {
                                                             echo "<a href='".getUrl("Usuarios","Usuario","updateStatus",array("id"=>$usuario['id']))."' class='btn btn-success'>Activar</a>";
                                                         }
                                                     }                          

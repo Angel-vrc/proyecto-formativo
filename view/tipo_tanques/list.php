@@ -17,6 +17,19 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <!-- Filtros de búsqueda -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="filtro" name="buscar" placeholder="Buscar por nombre..." data-url="<?php echo getUrl("Tipo_tanques","Tipotanque","filtro", false, "ajax"); ?>">
+                            </div>
+                        </div>
+                        <div class="col-md-3 offset-md-5 mt-2">
+                            <button class="btn btn-secondary" onclick="resetFilters()">
+                                <i class="fas fa-redo mx-1"></i> Limpiar filtros
+                            </button>
+                        </div>
+                    </div>
                     <!-- Tabla de resultados -->
                     <div class="table-responsive">
                         <table id="tableZoocriaderos" class="display table table-striped table-hover">
@@ -43,7 +56,7 @@
                                                             echo "<a href='".getUrl("Tipo_tanques", "Tipotanque","getDelete",array("id"=>$tipo['id']))."' class='btn btn-danger'>Eliminar</a>";
                                                         }
                                                     } elseif ($tipo['estado'] == 2) {
-                                                        if (tienePermiso('tipo_tanques', 'Activar')) {
+                                                        if (tienePermiso('tipo_tanques', 'Eliminar')) {
                                                             echo "<a href='".getUrl("Tipo_tanques", "Tipotanque","updateStatus",array("id"=>$tipo['id']))."' class='btn btn-success'>Activar</a>";
                                                         }
                                                     }
@@ -76,3 +89,8 @@
         </div>
     </div>
 </div>
+<script>
+    function resetFilters() {
+        document.getElementById('filtro').value = '';
+    }
+</script>

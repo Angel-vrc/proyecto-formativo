@@ -25,11 +25,17 @@
                 <div class="card-header">
                     <div class="" style="display:flex; justify-content: space-between;">
                         <h4 class="card-title">Listado de Roles</h4>
+<<<<<<< HEAD
                         <?php if (tienePermiso('roles', 'Registrar')): ?>
                         <a href="<?php echo getUrl("Roles","Rol","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
                             <i class="fa fa-plus mx-2"></i> Nuevo Rol
                         </a>
                         <?php endif; ?>
+=======
+                        <a href="<?php echo getUrl("Roles","Rol","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
+                            <i class="fa fa-plus mx-2"></i> Nuevo Rol
+                        </a>
+>>>>>>> 2428391635581db5217d5f31225b04defed0c745
                     </div>
                 </div>
                 <div class="card-body">
@@ -78,7 +84,7 @@
                                                             echo "<a href='".getUrl("Roles","Rol","getDelete",array("id"=>$rol['id']))."' class='btn btn-danger'>Eliminar</a>";
                                                         }
                                                     } elseif ($rol['id_estado'] == 2) {
-                                                        if (tienePermiso('roles', 'Activar')) {
+                                                        if (tienePermiso('roles', 'Eliminar')) {
                                                             echo "<a href='".getUrl("Roles","Rol","updateStatus",array("id"=>$rol['id']))."' class='btn btn-success'>Activar</a>";
                                                         }
                                                     }                          

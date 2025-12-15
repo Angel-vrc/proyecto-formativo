@@ -37,24 +37,24 @@
                 <div class="card-body">
 
                     <!-- FILTROS -->
-<div class="row mb-3">
-    <div class="col-md-6">
-        <div class="form-group">
-            <input type="text"
-                   class="form-control"
-                   id="filtro"
-                   name="buscar"
-                   placeholder="Buscar por tanque, actividad o fecha"
-                   data-url="<?php echo getUrl("Seguimiento","Seguimiento","filtro", false, "ajax"); ?>">
-        </div>
-    </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <input type="text"
+                                class="form-control"
+                                id="filtro"
+                                name="buscar"
+                                placeholder="Buscar por tanque, actividad o fecha"
+                                data-url="<?php echo getUrl("Seguimiento","Seguimiento","filtro", false, "ajax"); ?>">
+                        </div>
+                    </div>
 
-    <div class="col-md-3 mt-2">
-        <button class="btn btn-secondary" onclick="resetFilters()">
-            <i class="fas fa-redo mx-1"></i> Limpiar filtro
-        </button>
-    </div>
-</div>
+                    <div class="col-md-3 mt-2">
+                        <button class="btn btn-secondary" onclick="resetFilters()">
+                            <i class="fas fa-redo mx-1"></i> Limpiar filtro
+                        </button>
+                    </div>
+                </div>
 
                     
                     <!-- TABLA -->
@@ -100,7 +100,7 @@
                                                         echo "<a href='".getUrl("Seguimiento","Seguimiento","getDelete",array("id"=>$seg['id']))."' class='btn btn-danger mx-2'>Eliminar</a>";
                                                     }
                                                 } elseif ($seg['estado_id'] == 2) {
-                                                    if (tienePermiso('seguimiento', 'Activar')) {
+                                                    if (tienePermiso('seguimiento', 'Eliminar')) {
                                                         echo "<a href='".getUrl("Seguimiento","Seguimiento","updateStatus",array("id"=>$seg['id']))."' class='btn btn-success mx-2'>Activar</a>";
                                                     }
                                                 }

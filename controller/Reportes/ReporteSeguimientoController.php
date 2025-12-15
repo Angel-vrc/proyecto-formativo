@@ -63,8 +63,8 @@ r<?php
             }
 
             if (!empty($idZoocriadero)) {
-    $where_estadisticas .= " AND s.id_zoo = $idZoocriadero";
-}
+                $where_estadisticas .= " AND s.id_zoo = $idZoocriadero";
+            }
 
 
             $sql_estadisticas = "SELECT 
@@ -83,7 +83,7 @@ r<?php
             $estadisticas = $obj->select($sql_estadisticas);
 
             $sqlZoo = "SELECT id_zoocriadero, nombre FROM zoocriadero ORDER BY nombre";
-$zoocriaderos = $obj->select($sqlZoo);
+            $zoocriaderos = $obj->select($sqlZoo);
 
 
             include_once '../view/Reportes/listSeguimientos.php';
@@ -208,5 +208,4 @@ $zoocriaderos = $obj->select($sqlZoo);
     }
 
 }
-
 

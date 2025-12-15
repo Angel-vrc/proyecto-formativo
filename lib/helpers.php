@@ -304,11 +304,11 @@
             // Actualizar
             'getUpdate' => 'Actualizar',
             'postUpdate' => 'Actualizar',
-            'updateStatus' => 'Activar',
             // Eliminar
             'getDelete' => 'Eliminar',
             'postDelete' => 'Eliminar',
             'delete' => 'Eliminar',
+            'updateStatus' => 'Eliminar',
             'eliminar' => 'Eliminar'
         );
 
