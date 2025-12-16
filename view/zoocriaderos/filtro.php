@@ -9,10 +9,12 @@
             echo "<td>";
                 if (tienePermiso('zoocriaderos', 'Consultar')) {
                     echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
+                        data-id='".$zoo['id_zoocriadero']."'
                         data-nombre='".$zoo['nombre']."'
                         data-comuna='".$zoo['comuna']."'
                         data-barrio='".$zoo['barrio']."'
                         data-direccion='".$zoo['direccion']."'
+                        data-coordenadas='".$zoo['coordenadas']."'
                         data-responsable='".$zoo['nombre_responsable']."'
                         data-telefono='".$zoo['telefono']."'
                         data-correo='".$zoo['correo']."'
