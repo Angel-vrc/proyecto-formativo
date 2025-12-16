@@ -43,12 +43,28 @@
                                     <a class="col-6 col-md-4 p-0" href="<?php echo getUrl("Seguimiento","Seguimiento","getCreate"); ?>">
                                         <div class="quick-actions-item">
                                             <div class="avatar-item bg-danger rounded-circle">
-                                                <i class="fa fa-plus"></i>
+                                                <i class="fa fa-tasks"></i>
                                             </div>
                                             <span class="text">Nuevo Seguimiento</span>
                                         </div>
                                     </a>
-                                    <a class="col-6 col-md-4 p-0" href="#">
+                                    <a class="col-6 col-md-4 p-0" href="<?php echo getUrl("Usuarios","Usuario","getCreate"); ?>">
+                                        <div class="quick-actions-item">
+                                            <div class="avatar-item bg-primary rounded-circle">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                            <span class="text">Nuevo Usuario</span>
+                                        </div>
+                                    </a>
+                                    <a class="col-6 col-md-4 p-0" href="<?php echo getUrl("Tanques","Tanque","getCreate"); ?>">
+                                        <div class="quick-actions-item">
+                                            <div class="avatar-item bg-secondary rounded-circle">
+                                                <i class="fas fa-swimming-pool"></i>
+                                            </div>
+                                            <span class="text">Nuevo Tanque</span>
+                                        </div>
+                                    </a>
+                                    <a class="col-6 col-md-4 p-0" href="<?php echo getUrl("Mapa","Mapa","visualizarZoo"); ?>">
                                         <div class="quick-actions-item">
                                             <div class="avatar-item bg-warning rounded-circle">
                                                 <i class="fas fa-map"></i>
@@ -64,14 +80,14 @@
                                             <span class="text">Reportes</span>
                                         </div>
                                     </a>
-                                    <a class="col-6 col-md-4 p-0" href="#">
+                                    <a class="col-6 col-md-4 p-0" href="<?php echo getUrl("Configuracion","Configuracion","listManuales"); ?>">
                                         <div class="quick-actions-item">
                                             <div class="avatar-item bg-success rounded-circle">
                                                 <i class="fas fa-cog"></i>
                                             </div>
                                             <span class="text">Configuracion</span>
                                         </div>
-                                    </a>
+                                    </a>                                
                                 </div>
                             </div>
                         </div>

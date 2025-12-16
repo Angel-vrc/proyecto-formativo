@@ -28,7 +28,7 @@
                     <div class="" style="display:flex; justify-content: space-between;">
                         <h4 class="card-title">Listado de Zoocriaderos</h4>
                         <?php if (tienePermiso('zoocriaderos', 'Registrar')): ?>
-                        <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
+                        <a href="<?php echo getUrl("Mapa","Mapa","visualizarZoogit") ?>" class="btn btn-primary btn-round mx-4 text-right" >
                             <i class="fa fa-plus mx-2"></i> Nuevo Zoocriadero
                         </a>
                         <?php endif; ?>
