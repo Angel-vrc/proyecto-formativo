@@ -84,12 +84,10 @@ function cargarPermisosRol(idRol) {
 
 $('#buscar').on('keyup', function () { cargarTabla(); });
 $('#comuna').on('change', function () { cargarTabla(); });
-$('#estado').on('change', function () { cargarTabla(); });
 
 function cargarTabla() {
     var buscar = $('#filtro').val();
     var comuna = $('#comuna').val();
-    var estado = $('#estado').val();
 
     $.ajax({
         url: 'ajax.php',
@@ -99,11 +97,31 @@ function cargarTabla() {
             controlador: 'Zoocriadero',
             funcion: 'filtro',
             buscar: buscar,
-            comuna: comuna,
-            estado: estado
+            comuna: comuna
         },
         success: function (html) {
             $('tbody').html(html);
         }
     });
 }
+
+$('#comuna2').on('change', function () { cargarTabla2(); });
+
+function cargarTabla2() {
+    var comuna2 = $('#comuna2').val();
+
+    $.ajax({
+        url: 'ajax.php',
+        type: 'GET',
+        data: {
+            modulo: 'Reportes',
+            controlador: 'ReporteZoocriadero',
+            funcion: 'filtro',
+            comuna: comuna2
+        },
+        success: function (html) {
+            $('tbody').html(html);
+        }
+    });
+}
+

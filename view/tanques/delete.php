@@ -10,26 +10,30 @@
                 $tipo_tanque = isset($tanque_data['tipo_tanque_nombre']) ? $tanque_data['tipo_tanque_nombre'] : 'N/A';
                 $medidas = isset($tanque_data['medidas']) ? $tanque_data['medidas'] : 'N/A';
                 $cantidad_peces = isset($tanque_data['cantidad_peces']) ? $tanque_data['cantidad_peces'] : 'N/A';
-                $estado_nombre = isset($tanque_data['estado_nombre']) ? $tanque_data['estado_nombre'] : 'N/A';
+                $zoocriadero = isset($tanque_data['zoocriadero']) ? $tanque_data['zoocriadero'] : 'N/A';
+                $estado_nombre = isset($tanque_data['estado']) ? $tanque_data['estado'] : 'N/A';
         ?>
             <div class="alert alert-warning">
                 ¿Seguro que desea inactivar el tanque <strong><?php echo $nombre; ?></strong>?
             </div>
             <ul class="list-group mb-4">
                 <li class="list-group-item">
-                    <strong>Nombre:</strong> <?php echo $nombre; ?>
+                    <strong>Nombre: </strong> <?php echo $nombre; ?>
                 </li>
                 <li class="list-group-item">
-                    <strong>Tipo de Tanque:</strong> <?php echo $tipo_tanque; ?>
+                    <strong>Tipo de Tanque: </strong> <?php echo $tipo_tanque; ?>
                 </li>
                 <li class="list-group-item">
-                    <strong>Medidas:</strong> <?php echo $medidas; ?>
+                    <strong>Medidas: </strong> <?php echo $medidas; ?>
                 </li>
                 <li class="list-group-item">
-                    <strong>Cantidad de Peces:</strong> <?php echo $cantidad_peces; ?>
+                    <strong>Cantidad de Peces: </strong> <?php echo $cantidad_peces; ?>
                 </li>
                 <li class="list-group-item">
-                    <strong>Estado actual:</strong> <?php echo $estado_nombre; ?>
+                    <strong>Zoocriadero: </strong> <?php echo $zoocriadero; ?>
+                </li>
+                <li class="list-group-item">
+                    <strong>Estado actual: </strong> <?php echo $estado_nombre; ?>
                 </li>
             </ul>
             <form action="<?php echo getUrl("Tanques","Tanque","postDelete"); ?>" method="post">

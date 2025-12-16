@@ -45,8 +45,8 @@
             $obj = new ZoocriaderoModel();
 
             //Falta hacer el echo en su respectivo input en el formulario
-            // $longitud = $_GET['longitud'];
-            // $latitud = $_GET['latitud'];
+            $longitud = $_GET['longitud'];
+            $latitud = $_GET['latitud'];
 
             $sql = "SELECT id, nombre, apellido FROM usuarios";
 
@@ -68,9 +68,12 @@
             $responsable = $_POST['responsable'];
             $telefono = $_POST['telefono'];
             $correo = $_POST['correo'];
-            $punto = "ST_SetSRID(ST_GeomFromText('POINT(-74.5075 4.31428571429)'), 4326)"; 
+            $latitud = $_POST['latitud'];
+            $longitud = $_POST['longitud'];
+            $coordenadas = $latitud . "," . $longitud;
+            $punto = "ST_SetSRID(ST_GeomFromText('POINT(". $longitud . " " . $latitud . " )'), 4326)";
             
-            $sql = "INSERT INTO zoocriadero VALUES ($id_zoocriadero, '$responsable', '$direccion', '', '$telefono', '$comuna', '$barrio', '$nombre', $punto, 1, '$correo')";
+            $sql = "INSERT INTO zoocriadero VALUES ($id_zoocriadero, '$responsable', '$direccion', '$coordenadas', '$telefono', '$comuna', '$barrio', '$nombre', $punto, 1, '$correo')";
 
             echo $sql;
 
@@ -252,6 +255,4 @@
         }
         
     }
-
-
 ?>

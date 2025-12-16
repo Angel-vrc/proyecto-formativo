@@ -1,6 +1,6 @@
 <div class="page-inner">
 
-    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","list") ?>" class="btn btn-primary btn-round" >
+    <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","lista") ?>" class="btn btn-primary btn-round" >
         <i class="fa fa-chevron-left mx-2"></i>Regresar
     </a>
     <div class="page-header mt-3">
@@ -99,11 +99,18 @@
                                             placeholder="ejemplo@dominio.com" required
                                             maxlength="100" value="<?php echo $zoo['correo']?>">
                                     </div>
+
+                                    <div class="form-group">
+                                    <label for="nombre">Coordenadas *</label>
+                                    <input type="text" class="form-control" id="coordenadas" name="coordenadas" 
+                                           placeholder="Ej: 4.4512,-79.5321" required readonly
+                                           maxlength="150" value="<?php echo $zoo['coordenadas'] ?>">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="card-action">
-                            <input type="submit" value="Registrar" class="btn btn-success">
+                            <input type="submit" value="Actualizar" class="btn btn-success">
                             <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","list") ?>" class="btn btn-danger">
                                 Cancelar
                             </a>

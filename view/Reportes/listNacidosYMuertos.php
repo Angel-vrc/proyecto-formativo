@@ -9,7 +9,7 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="card-title">Reporte de Nacidos y Muertos</div>
-                        <a href="export_excel.php?modulo=Reportes&controlador=ReporteNacidosYMuertos&funcion=exportarExcel" 
+                        <a href="#" onclick="exportarNacidosYMuertosExcel(); return false;" 
                            class="btn btn-success btn-sm">
                             <i class="fas fa-file-excel"></i> Exportar a Excel
                         </a>
@@ -39,30 +39,46 @@
                              aria-labelledby="pills-lista-tab">
 
                             <!-- Filtros -->
-                            <div class="row mb-3">
-    <div class="col-md-3">
-        <input type="date"
-               class="form-control"
-               id="filtro_fecha_desde"
-               data-url="<?php echo getUrl('Reportes','ReporteNacidosYMuertos','filtro', false, 'ajax'); ?>">
-        <small class="text-muted">Fecha desde</small>
-    </div>
+                            <form method="GET" action="index.php">
+                                <input type="hidden" name="modulo" value="Reportes">
+                                <input type="hidden" name="controlador" value="ReporteNacidosYMuertos">
+                                <input type="hidden" name="funcion" value="listNacidosYMuertos">
 
-    <div class="col-md-3">
-        <input type="date"
-               class="form-control"
-               id="filtro_fecha_hasta"
-               data-url="<?php echo getUrl('Reportes','ReporteNacidosYMuertos','filtro', false, 'ajax'); ?>">
-        <small class="text-muted">Fecha hasta</small>
-    </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="fecha_desde">Fecha Desde</label>
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="fecha_desde"
+                                                   name="fecha_desde"
+                                                   value="<?php echo isset($_GET['fecha_desde']) ? htmlspecialchars($_GET['fecha_desde']) : ''; ?>">
+                                        </div>
+                                    </div>
 
-    <div class="col-md-3 mt-4">
-        <a href="<?php echo getUrl('Reportes','ReporteNacidosYMuertos','listNacidosYMuertos') ?>"
-           class="btn btn-secondary">
-            <i class="fas fa-redo"></i> Limpiar
-        </a>
-    </div>
-</div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="fecha_hasta">Fecha Hasta</label>
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="fecha_hasta"
+                                                   name="fecha_hasta"
+                                                   value="<?php echo isset($_GET['fecha_hasta']) ? htmlspecialchars($_GET['fecha_hasta']) : ''; ?>">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 mt-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-filter"></i> Filtrar
+                                        </button>
+
+                                        <a href="<?php echo getUrl('Reportes','ReporteNacidosYMuertos','listNacidosYMuertos'); ?>"
+                                           class="btn btn-secondary">
+                                            <i class="fas fa-redo"></i> Limpiar
+                                        </a>
+                                    </div>
+                                </div>
+                            </form>
 
 
                             <!-- Tabla de nacidos y muertos -->
@@ -213,9 +229,27 @@
 
     // Exportar Excel
     function exportarGrafico() {
-        window.location.href = 'export_excel.php?modulo=Reportes&controlador=ReporteNacidosYMuertos&funcion=exportarExcel';
+        exportarNacidosYMuertosExcel();
+    }
+
+    // Función para exportar a Excel con filtros
+    function exportarNacidosYMuertosExcel() {
+        var url = 'export_excel.php?modulo=Reportes&controlador=ReporteNacidosYMuertos&funcion=exportarExcel';
+        
+        // Obtener valores de los campos o de la URL actual
+        var urlParams = new URLSearchParams(window.location.search);
+        var fechaDesde = document.getElementById('fecha_desde') ? document.getElementById('fecha_desde').value : (urlParams.get('fecha_desde') || '');
+        var fechaHasta = document.getElementById('fecha_hasta') ? document.getElementById('fecha_hasta').value : (urlParams.get('fecha_hasta') || '');
+        
+        if (fechaDesde) {
+            url += '&fecha_desde=' + encodeURIComponent(fechaDesde);
+        }
+        if (fechaHasta) {
+            url += '&fecha_hasta=' + encodeURIComponent(fechaHasta);
+        }
+        
+        window.location.href = url;
     }
 
 
 </script>
-

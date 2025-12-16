@@ -9,7 +9,7 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="card-title">Reporte de Seguimientos</div>
-                        <a href="export_excel.php?modulo=Reportes&controlador=ReporteSeguimiento&funcion=exportarExcel" 
+                        <a href="#" onclick="exportarSeguimientosExcel(); return false;" 
                            class="btn btn-success btn-sm">
                             <i class="fas fa-file-excel"></i> Exportar a Excel
                         </a>
@@ -39,51 +39,71 @@
                              aria-labelledby="pills-lista-tab">
 
                             <!-- Filtros -->
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Filtros</h5>
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="filtro_fecha_desde">Fecha Desde</label>
-                                                <input type="date" class="form-control" id="filtro_fecha_desde"
-                                                       name="filtro_fecha_desde" disabled>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="filtro_fecha_hasta">Fecha Hasta</label>
-                                                <input type="date" class="form-control" id="filtro_fecha_hasta"
-                                                       name="filtro_fecha_hasta" disabled>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="filtro_zoocriadero">Zoocriadero</label>
-                                                <select class="form-control" id="filtro_zoocriadero"
-                                                        name="filtro_zoocriadero" disabled>
-                                                    <option value="">Todos</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label for="filtro_tanque">Tanque</label>
-                                                <select class="form-control" id="filtro_tanque" name="filtro_tanque" disabled>
-                                                    <option value="">Todos</option>
-                                                </select>
-                                            </div>
+                           <form method="GET" action="index.php">
+                                <input type="hidden" name="modulo" value="Reportes">
+                                <input type="hidden" name="controlador" value="ReporteSeguimiento">
+                                <input type="hidden" name="funcion" value="listSeguimientos">
+
+                                <div class="row mb-3">
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="fecha_desde">Fecha Desde</label>
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="fecha_desde"
+                                                   name="fecha_desde"
+                                                   value="<?php echo isset($_GET['fecha_desde']) ? htmlspecialchars($_GET['fecha_desde']) : ''; ?>">
                                         </div>
                                     </div>
 
-                                    <button type="button" class="btn btn-primary" disabled>
-                                        <i class="fas fa-filter"></i> Aplicar Filtros
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" disabled>
-                                        <i class="fas fa-redo"></i> Limpiar
-                                    </button>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="fecha_hasta">Fecha Hasta</label>
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="fecha_hasta"
+                                                   name="fecha_hasta"
+                                                   value="<?php echo isset($_GET['fecha_hasta']) ? htmlspecialchars($_GET['fecha_hasta']) : ''; ?>">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="id_zoocriadero">Zoocriadero</label>
+                                            <select class="form-control"
+                                                    name="id_zoocriadero"
+                                                    id="id_zoocriadero">
+                                                <option value="">-- Todos --</option>
+                                                <?php
+                                                if (isset($zoocriaderos) && pg_num_rows($zoocriaderos) > 0) {
+                                                    while ($zoo = pg_fetch_assoc($zoocriaderos)) {
+                                                        $selected = (isset($_GET['id_zoocriadero']) && $_GET['id_zoocriadero'] == $zoo['id_zoocriadero'])
+                                                            ? 'selected'
+                                                            : '';
+                                                        echo "<option value='{$zoo['id_zoocriadero']}' $selected>
+                                                                {$zoo['nombre']}
+                                                              </option>";
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 mt-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-filter"></i> Filtrar
+                                        </button>
+
+                                        <a href="<?php echo getUrl('Reportes','ReporteSeguimiento','listSeguimientos'); ?>"
+                                           class="btn btn-secondary">
+                                            <i class="fas fa-redo"></i> Limpiar
+                                        </a>
+                                    </div>
+
                                 </div>
-                            </div>
+                            </form>
 
                             <!-- Tabla de seguimientos -->
                             <div class="table-responsive">
@@ -293,6 +313,33 @@
 
     // Exportar Excel
     function exportarGrafico() {
-        window.location.href = 'export_excel.php?modulo=Reportes&controlador=ReporteSeguimiento&funcion=exportarExcel';
+        exportarSeguimientosExcel();
+    }
+
+    // Función para exportar a Excel con filtros
+    function exportarSeguimientosExcel() {
+        var url = 'export_excel.php?modulo=Reportes&controlador=ReporteSeguimiento&funcion=exportarExcel';
+        
+        // Obtener valores de los campos o de la URL actual
+        var urlParams = new URLSearchParams(window.location.search);
+        var fechaDesde = document.getElementById('fecha_desde') ? document.getElementById('fecha_desde').value : (urlParams.get('fecha_desde') || '');
+        var fechaHasta = document.getElementById('fecha_hasta') ? document.getElementById('fecha_hasta').value : (urlParams.get('fecha_hasta') || '');
+        var idZoocriadero = document.getElementById('id_zoocriadero') ? document.getElementById('id_zoocriadero').value : (urlParams.get('id_zoocriadero') || '');
+        var idTanque = document.getElementById('id_tanque') ? document.getElementById('id_tanque').value : (urlParams.get('id_tanque') || '');
+        
+        if (fechaDesde) {
+            url += '&fecha_desde=' + encodeURIComponent(fechaDesde);
+        }
+        if (fechaHasta) {
+            url += '&fecha_hasta=' + encodeURIComponent(fechaHasta);
+        }
+        if (idZoocriadero) {
+            url += '&id_zoocriadero=' + encodeURIComponent(idZoocriadero);
+        }
+        if (idTanque) {
+            url += '&id_tanque=' + encodeURIComponent(idTanque);
+        }
+        
+        window.location.href = url;
     }
 </script>

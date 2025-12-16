@@ -1,0 +1,142 @@
+/* =====================================================
+   MAPSERVER LEGACY CSS (AISLADO Y SEGURO)
+   Autor: Refactor ChatGPT
+   Objetivo: No romper Bootstrap / UI moderna
+   ===================================================== */
+
+/* ===== CONTENEDOR RAÍZ ===== */
+.mscross {
+  background-color: #EBEBEB;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* ===== TABLAS Y ESTRUCTURA ===== */
+.mscross .maintable {
+  border: 1px solid #7ea3bf;
+}
+
+.mscross td {
+  vertical-align: top;
+}
+
+/* ===== ENLACES ===== */
+.mscross a {
+  text-decoration: none;
+  color: #115aa4;
+}
+
+.mscross a:hover {
+  background-color: #ffffcc;
+}
+
+/* ===== TEXTO ===== */
+.mscross .text_block {
+  color: #303030;
+  font-size: 13px;
+  text-align: justify;
+  padding: 0 10px 10px 10px;
+}
+
+.mscross .text_block h1 {
+  color: #115aa4;
+  font-size: 15px;
+  border-bottom: 1px dashed #7ea3bf;
+}
+
+.mscross .text_block h2 {
+  font-size: 10pt;
+  color: #854242;
+  padding: 5px 0 5px 6px;
+}
+
+.mscross .text_block b {
+  color: #115aa4;
+}
+
+/* ===== MENÚS ===== */
+.mscross .topmenu,
+.mscross .topmenu_set {
+  background-color: #ebf6fa;
+  font-size: 13px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.mscross .topmenu a,
+.mscross .topmenu_set a {
+  display: list-item;
+  line-height: 35px;
+}
+
+.mscross .leftmenu a {
+  background-color: #ebf6fa;
+  font-size: 8pt;
+  line-height: 31px;
+  border-left: 1px dashed #7ea3bf;
+  border-right: 1px dashed #7ea3bf;
+}
+
+.mscross .leftmenu a:hover,
+.mscross .leftmenu a#set {
+  background-color: #bfd9f4;
+}
+
+/* ===== MAPA ===== */
+.mscross .map {
+  padding: 2px;
+  margin: 2px;
+}
+
+/* ===== LEYENDA ===== */
+.mscross .legend {
+  border: 1px solid #7ea3bf;
+  height: 40px;
+  background: #f9f9f9;
+  overflow: hidden;
+}
+
+.mscross .legend td {
+  color: #000;
+  vertical-align: middle;
+}
+
+/* ===== MSCROSS REPORT ===== */
+.mscross .mscross_report_title {
+  color: #000;
+}
+
+.mscross .mscross_report_attr_name {
+  color: #000;
+}
+
+.mscross .mscross_report_attr_value {
+  color: #115aa4;
+  font-weight: bold;
+}
+
+.mscross .mscross_reference_zoombox {
+  color: #115aa4;
+  background: #000;
+  font-weight: bold;
+  border: 1px solid #000;
+}
+
+/* ===== OCULTAR SOLO ELEMENTOS INTERNOS DEL MAPSERVER ===== */
+.mscross span,
+.mscross #map a {
+  display: none;
+}
+
+/* ===== ANCLAS ESPECÍFICAS ===== */
+.mscross a#francobollo {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 80px;
+  z-index: 100;
+}
+
+/* =====================================================
+   FIN MAPSERVER LEGACY
+   ===================================================== */

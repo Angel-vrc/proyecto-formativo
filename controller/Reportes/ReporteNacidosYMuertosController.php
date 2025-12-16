@@ -5,24 +5,32 @@
     class ReporteNacidosYMuertosController{
 
         public function listNacidosYMuertos(){
+
             $obj = new ReporteNacidosYMuertosModel();
 
+
+            $fechaDesde = isset($_GET['fecha_desde']) ? $_GET['fecha_desde'] : null;
+            $fechaHasta = isset($_GET['fecha_hasta']) ? $_GET['fecha_hasta'] : null;
+
+            $where = "WHERE (sd.num_alevines > 0 OR sd.num_muertes > 0)";
+
+
+            if (!empty($fechaDesde)) {
+                $where .= " AND s.fecha >= '$fechaDesde'";
+            }
+
+            if (!empty($fechaHasta)) {
+                $where .= " AND s.fecha <= '$fechaHasta'";
+            }
+
             $sql = "SELECT sd.*, 
-                           a.nombre as nombre_actividad,
-                           t.nombre as nombre_tanque,
-                           tt.nombre as nombre_tipo_tanque,
-                           s.fecha as fecha_seguimiento,
-                           z.nombre as nombre_zoocriadero,
-                           COALESCE(sd.num_alevines, 0) as nacidos,
-                           COALESCE(sd.num_muertes, 0) as muertos
+                        s.fecha as fecha_seguimiento,
+                        COALESCE(sd.num_alevines, 0) as nacidos,
+                        COALESCE(sd.num_muertes, 0) as muertos
                     FROM seguimiento_detalle sd
-                    LEFT JOIN actividad a ON sd.id_actividad = a.id
                     LEFT JOIN seguimiento s ON sd.id_seguimiento = s.id
-                    LEFT JOIN tanques t ON s.id_tanque = t.id
-                    LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id
-                    LEFT JOIN zoocriadero z ON s.id_zoo = z.id_zoocriadero
-                    WHERE (sd.num_alevines > 0 OR sd.num_muertes > 0)
-                    ORDER BY s.fecha DESC, sd.id DESC";
+                    $where
+                    ORDER BY s.fecha ASC, sd.id ASC";
 
             $nacidosYMuertos = $obj->select($sql);
 
@@ -33,9 +41,9 @@
                                     SUM(COALESCE(sd.num_muertes, 0)) as total_muertos
                                 FROM seguimiento_detalle sd
                                 LEFT JOIN seguimiento s ON sd.id_seguimiento = s.id
-                                WHERE (sd.num_alevines > 0 OR sd.num_muertes > 0)
-                                AND s.fecha IS NOT NULL
-                                GROUP BY TO_CHAR(s.fecha, 'YYYY-MM'), TO_CHAR(s.fecha, 'Month YYYY')
+                                $where
+                                GROUP BY TO_CHAR(s.fecha, 'YYYY-MM'),
+                                        TO_CHAR(s.fecha, 'Month YYYY')
                                 ORDER BY TO_CHAR(s.fecha, 'YYYY-MM') ASC";
 
             $estadisticas = $obj->select($sql_estadisticas);
@@ -44,29 +52,36 @@
         }
 
 
+
         public function exportarExcel() {
-            if (ob_get_length()) {
+            // Limpiar cualquier output anterior
+            while (ob_get_level()) {
                 ob_end_clean();
             }
 
             $obj = new ReporteNacidosYMuertosModel();
 
+            $fechaDesde = isset($_GET['fecha_desde']) ? $_GET['fecha_desde'] : null;
+            $fechaHasta = isset($_GET['fecha_hasta']) ? $_GET['fecha_hasta'] : null;
+
+            $where = "WHERE (sd.num_alevines > 0 OR sd.num_muertes > 0)";
+
+            if (!empty($fechaDesde)) {
+                $where .= " AND s.fecha >= '$fechaDesde'";
+            }
+
+            if (!empty($fechaHasta)) {
+                $where .= " AND s.fecha <= '$fechaHasta'";
+            }
+
             $sql = "SELECT sd.*, 
-                           a.nombre as nombre_actividad,
-                           t.nombre as nombre_tanque,
-                           tt.nombre as nombre_tipo_tanque,
                            s.fecha as fecha_seguimiento,
-                           z.nombre as nombre_zoocriadero,
                            COALESCE(sd.num_alevines, 0) as nacidos,
                            COALESCE(sd.num_muertes, 0) as muertos
                     FROM seguimiento_detalle sd
-                    LEFT JOIN actividad a ON sd.id_actividad = a.id
                     LEFT JOIN seguimiento s ON sd.id_seguimiento = s.id
-                    LEFT JOIN tanques t ON s.id_tanque = t.id
-                    LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id
-                    LEFT JOIN zoocriadero z ON s.id_zoo = z.id_zoocriadero
-                    WHERE (sd.num_alevines > 0 OR sd.num_muertes > 0)
-                    ORDER BY s.fecha DESC, sd.id DESC";
+                    $where
+                    ORDER BY s.fecha ASC, sd.id ASC";
 
             $nacidosYMuertos = $obj->select($sql);
 
@@ -75,6 +90,9 @@
             header("Pragma: no-cache");
             header("Expires: 0");
 
+            // BOM para UTF-8
+            echo "\xEF\xBB\xBF";
+            
             echo "<table border='1'>";
             echo "<tr>
                     <th>Fecha</th>
@@ -101,6 +119,3 @@
             exit; 
         }
     }
-
-?>
-

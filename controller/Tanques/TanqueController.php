@@ -10,9 +10,9 @@
             // Calcular parámetros de paginación (10 registros por página)
             $paginacion = calcularPaginacion(10);
 
-            // Consulta SQL base (sin LIMIT)
-            $sqlBase = "SELECT t.id,t.nombre,t.medidas,t.cantidad_peces,t.id_estado AS estado,tt.nombre AS tipo_tanque
+            $sqlBase = "SELECT t.id,t.nombre,t.medidas,t.cantidad_peces,t.id_estado AS estado,tt.nombre AS tipo_tanque,z.nombre AS zoocriadero
                         FROM tanques t INNER JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id  
+                        JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
                         ORDER BY t.id ASC";
 
             // Obtener total de registros
@@ -45,6 +45,8 @@
             // Traer tipos de tanque
             $sql = "SELECT id, nombre FROM tipo_tanque ORDER BY nombre ASC";
             $tipos = $obj->select($sql);
+            $sqlzoo="SELECT id_zoocriadero, nombre FROM zoocriadero ORDER BY nombre ASC";
+            $zoocriaderos = $obj->select($sqlzoo);
 
             include_once '../view/tanques/create.php';
         }
@@ -57,19 +59,25 @@
             $medidas = $_POST['medidas'];
             $id_tipo_tanque = $_POST['id_tipo_tanque'];
             $cantidad = $_POST['cantidad'];
+            $id_zoocriadero = $_POST['id_zoocriadero'];
             
-            $sql = "INSERT INTO tanques (id, nombre, medidas, id_tipo_tanque, cantidad_peces,id_estado)
-            VALUES ($id, '$nombre', '$medidas', $id_tipo_tanque, $cantidad,1)";
+            $sql = "INSERT INTO tanques (id, nombre, medidas, id_tipo_tanque, cantidad_peces,id_zoocriadero,id_estado)
+            VALUES ($id, '$nombre', '$medidas', $id_tipo_tanque, $cantidad,$id_zoocriadero,1)";
 
             $resultado = $obj->insert($sql);
 
-            if(!$resultado){
-                echo "Error en la insercion de datos";
-            }else{
+            if($resultado){
+                $_SESSION['success'] = "Tanque creado correctamente";
                 redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al crear el tanque";
+                redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
             }
         }
-        public function getDelete(){
+//        falta la tabla de estado
+         public function getDelete(){
             $obj = new TanquesModel();
             $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -78,11 +86,17 @@
                 return;
             }
 
-            $sql = "SELECT t.*, tt.nombre AS tipo_tanque_nombre, 
-                           CASE WHEN t.id_estado = 1 THEN 'Activo' WHEN t.id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
-                    FROM tanques t 
-                    LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id 
-                    WHERE t.id = $id";
+            // $sql = "SELECT t.*, tt.nombre AS tipo_tanque_nombre, 
+            //                CASE WHEN t.id_estado = 1 THEN 'Activo' WHEN t.id_estado = 2 THEN 'Inactivo' ELSE 'Desconocido' END AS estado_nombre
+            //         FROM tanques t 
+            //         LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id 
+            //         WHERE t.id = $id";
+
+            $sql = "SELECT t.id,t.nombre,t.medidas,t.cantidad_peces,tt.nombre AS tipo_tanque_nombre, ts.nombre AS estado, z.nombre AS zoocriadero
+            FROM tanques t INNER JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id  
+            JOIN tanque_estado ts ON t.id_estado = ts.id
+            JOIN zoocriadero z ON t.id_zoocriadero = z.id_zoocriadero
+            WHERE t.id = $id;";
 
             $tanque = $obj->select($sql);
 
@@ -97,7 +111,7 @@
         public function postDelete(){
             $obj = new TanquesModel();
             $id = intval($_POST['id']);
-
+            
             if($id <= 0){
                 redirect(getUrl("Tanques","Tanque","lista"));
                 return;
@@ -105,27 +119,37 @@
 
             $sql = "UPDATE tanques SET id_estado = 2 WHERE id = $id";
 
-            $resultado = $obj->update($sql);            
+            $resultado = $obj->update($sql);
 
             if($resultado){
+                $_SESSION['success'] = "tanque deshabilitado correctamente";
                 redirect(getUrl("Tanques","Tanque","lista"));
                 exit();
             }else{
+                $_SESSION['error'] = "Error al deshabilitar el tanque";
                 redirect(getUrl("Tanques","Tanque","lista"));
                 exit();
             }
         }
-
+        
         //para el activar
         public function updateStatus(){
             $obj = new TanquesModel();
             $id = intval($_GET['id']);
 
-            if($id > 0){
-                $obj->update("UPDATE tanques SET id_estado = 1 WHERE id = $id");
-            }
+            $sql = "UPDATE tanques SET id_estado=1 WHERE id=$id";
 
-            redirect(getUrl("Tanques","Tanque","lista"));
+            $resultado = $obj->update($sql);
+
+            if($resultado){
+                $_SESSION['success'] = "Tanque habilitado correctamente";
+                redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al habilitar el tanque";
+                redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
+            }
         }
 
         public function getUpdate(){
@@ -147,6 +171,8 @@
 
             $sqlTipos = "SELECT id, nombre FROM tipo_tanque ORDER BY nombre ASC";
             $tipos = $obj->select($sqlTipos);
+            $sqlzoo = "SELECT id_zoocriadero, nombre FROM zoocriadero ORDER BY nombre ASC";
+            $zoocriaderos = $obj->select($sqlzoo);
 
             include_once '../view/tanques/update.php';
         }
@@ -159,16 +185,62 @@
             $medidas = $_POST['medidas'];
             $id_tipo_tanque = $_POST['id_tipo_tanque'];
             $cantidad = $_POST['cantidad'];
+            $id_zoocriadero = $_POST['id_zoocriadero'];
 
-            $sql = "UPDATE tanques SET nombre = '$nombre',medidas = '$medidas',id_tipo_tanque = $id_tipo_tanque,cantidad_peces = $cantidad WHERE id = $id";
+            $sql = "UPDATE tanques SET nombre = '$nombre',medidas = '$medidas',id_tipo_tanque = $id_tipo_tanque,cantidad_peces = $cantidad,id_zoocriadero = $id_zoocriadero WHERE id = $id";
 
             $resultado = $obj->update($sql);
 
-            if(!$resultado){
-                echo "Error al actualizar el tanque";
-            } else {
+            if($resultado){
+                $_SESSION['success'] = "tanque actualizado correctamente";
                 redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
+            }else{
+                $_SESSION['error'] = "Error al actualizar el tanque";
+                redirect(getUrl("Tanques","Tanque","lista"));
+                exit();
             }
+        }
+
+        public function filtro() {
+            $obj = new TanquesModel();
+            $connect = $obj->getConnect();
+
+            // Obtener filtro
+            $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
+
+            $where = array();
+
+            // Filtro por nombre de tanque o tipo de tanque
+            if ($buscar !== '') {
+                $buscar_escaped = pg_escape_string($connect, $buscar);
+                $where[] = "(
+                    t.nombre ILIKE '%$buscar_escaped%' 
+                    OR tt.nombre ILIKE '%$buscar_escaped%'
+                )";
+            }
+
+            // SQL base
+            $sql = "SELECT 
+                        t.id,
+                        t.nombre,
+                        t.medidas,
+                        t.cantidad_peces,
+                        t.id_estado AS estado,
+                        tt.nombre AS tipo_tanque
+                    FROM tanques t
+                    INNER JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id";
+
+            // Agregar WHERE dinámico
+            if (count($where) > 0) {
+                $sql .= " WHERE " . implode(" AND ", $where);
+            }
+
+            $sql .= " ORDER BY t.id ASC";
+
+            $tanques = $obj->select($sql);
+
+            include_once '../view/tanques/filtro.php';
         }
     }
 ?>

@@ -48,29 +48,6 @@ function mostrarAlerta(mensaje, tipo = 'danger') {
         <span>${mensaje}</span>
     `;
     
-    // Agregar animación de entrada
-    alertDiv.style.opacity = '0';
-    alertDiv.style.transform = 'translateY(-10px)';
-    
-    alertContainer.appendChild(alertDiv);
-    
-    // Animar entrada
-    setTimeout(() => {
-        alertDiv.style.transition = 'all 0.3s ease';
-        alertDiv.style.opacity = '1';
-        alertDiv.style.transform = 'translateY(0)';
-    }, 10);
-    
-    // Auto-ocultar después de 5 segundos
-    setTimeout(() => {
-        alertDiv.style.opacity = '0';
-        alertDiv.style.transform = 'translateY(-10px)';
-        setTimeout(() => {
-            if (alertDiv.parentNode) {
-                alertDiv.parentNode.removeChild(alertDiv);
-            }
-        }, 300);
-    }, 5000);
     
     // Scroll suave hacia la alerta
     alertDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

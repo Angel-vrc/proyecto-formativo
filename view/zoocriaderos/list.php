@@ -27,9 +27,11 @@
                 <div class="card-header">
                     <div class="" style="display:flex; justify-content: space-between;">
                         <h4 class="card-title">Listado de Zoocriaderos</h4>
+                        <?php if (tienePermiso('zoocriaderos', 'Registrar')): ?>
                         <a href="<?php echo getUrl("Zoocriaderos","Zoocriadero","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
                             <i class="fa fa-plus mx-2"></i> Nuevo Zoocriadero
                         </a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="card-body">
@@ -94,25 +96,33 @@
                                                 echo "<td>".$zoo['barrio']."</td>";
                                                 echo "<td>".$zoo['nombre_responsable']." ".$zoo['apellido_responsable']."</td>";
                                                 echo "<td>";
-                                                    echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
-                                                        data-nombre='".$zoo['nombre']."'
-                                                        data-comuna='".$zoo['comuna']."'
-                                                        data-barrio='".$zoo['barrio']."'
-                                                        data-direccion='".$zoo['direccion']."'
-                                                        data-responsable='".$zoo['nombre_responsable']."'
-                                                        data-telefono='".$zoo['telefono']."'
-                                                        data-correo='".$zoo['correo']."'
-                                                        data-estado='".$zoo['nombre_estado']."'>
-                                                        Ver Detalles
-                                                    </button>";
+                                                    if (tienePermiso('zoocriaderos', 'Consultar')) {
+                                                        echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
+                                                            data-nombre='".$zoo['nombre']."'
+                                                            data-comuna='".$zoo['comuna']."'
+                                                            data-barrio='".$zoo['barrio']."'
+                                                            data-direccion='".$zoo['direccion']."'
+                                                            data-coordenadas='".$zoo['coordenadas']."'
+                                                            data-responsable='".$zoo['nombre_responsable']."'
+                                                            data-telefono='".$zoo['telefono']."'
+                                                            data-correo='".$zoo['correo']."'
+                                                            data-estado='".$zoo['nombre_estado']."'>
+                                                            Ver Detalles
+                                                        </button>";
+                                                    }
 
-                                                    echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getUpdate", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    if (tienePermiso('zoocriaderos', 'Actualizar')) {
+                                                        echo "<a href='".getUrl("Zoocriaderos", "Zoocriadero", "getUpdate", array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    }
 
                                                     if ($zoo['id_estado'] == 1) {
-                                                        echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","getDelete",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-danger'>Eliminar</a>";
-
+                                                        if (tienePermiso('zoocriaderos', 'Eliminar')) {
+                                                            echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","getDelete",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-danger'>Eliminar</a>";
+                                                        }
                                                     } elseif ($zoo['id_estado'] == 2) {
-                                                        echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","updateStatus",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-success'>Activar</a>";
+                                                        if (tienePermiso('zoocriaderos', 'Eliminar')) {
+                                                            echo "<a href='".getUrl("Zoocriaderos","Zoocriadero","updateStatus",array("id"=>$zoo['id_zoocriadero']))."' class='btn btn-success'>Activar</a>";
+                                                        }
                                                     }                          
                                                 echo "</td>";
                                             echo "</tr>";
@@ -164,6 +174,7 @@
                     <div class="col-md-6"><strong>Comuna: </strong> <p id="detalle-comuna"></p></div>
                     <div class="col-md-6"><strong>Barrio: </strong> <p id="detalle-barrio"></p></div>
                     <div class="col-md-6"><strong>Direccion: </strong> <p id="detalle-direccion"></p></div>
+                    <div class="col-md-6"><strong>Coordenadas: </strong> <p id="detalle-coordenadas"></p></div>
                     <div class="col-md-6"><strong>Responsable: </strong> <p id="detalle-responsable"></p></div>
                     <div class="col-md-6"><strong>Telefono: </strong> <p id="detalle-telefono"></p></div>
                     <div class="col-md-6"><strong>Correo: </strong> <p id="detalle-correo"></p></div>
@@ -198,6 +209,7 @@ function abrirModalDetalles(btn) {
     var nombre = $(btn).data('nombre') || '0';
     var responsable = $(btn).data('responsable') || '0';
     var direccion = $(btn).data('direccion') || '0';
+    var coordenadas = $(btn).data('coordenadas') || '0';
     var comuna = $(btn).data('comuna') || '0';
     var barrio = $(btn).data('barrio') || '0';
     var responsable = $(btn).data('responsable') || '0';
@@ -211,6 +223,7 @@ function abrirModalDetalles(btn) {
     $('#detalle-comuna').text(comuna);
     $('#detalle-barrio').text(barrio);
     $('#detalle-direccion').text(direccion);
+    $('#detalle-coordenadas').text(coordenadas);
     $('#detalle-responsable').text(responsable);
     $('#detalle-telefono').text(telefono);
     $('#detalle-correo').text(correo);

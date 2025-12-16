@@ -32,6 +32,17 @@
                                            placeholder="fondo 320 cm, altura 100 cm y ancho 100 cm" required
                                            maxlength="200">
                                 </div>
+                                <div class="form-group">
+                                    <label for="tipo">Zoocriadero *</label>
+                                    <select class="form-control select2" id="zoocriadero" name="id_zoocriadero" required>
+                                        <option value="">Seleccione Zoocriadero</option>
+                                        <?php
+                                            while($zoo = pg_fetch_assoc($zoocriaderos)){
+                                                echo "<option value='{$zoo['id_zoocriadero']}'>{$zoo['nombre']}</option>";
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="col-md-6">

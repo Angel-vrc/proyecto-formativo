@@ -78,7 +78,7 @@
                         </div>
                     </div>
                     <div class="card-action">
-                        <input type="submit" value="Registrar" class="btn btn-success">
+                        <input type="submit" value="Actualizar" class="btn btn-success">
                         <a href="<?php echo getUrl("Usuarios","Usuario","lista") ?>" class="btn btn-danger">
                             Cancelar
                         </a>

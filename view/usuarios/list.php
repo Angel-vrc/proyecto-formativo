@@ -5,6 +5,14 @@
         <h4 class="page-title">Gestión de Usuarios</h4>
     </div>
 
+    <?php if(isset($_SESSION['pass'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> <?php echo ($_SESSION['pass']); unset($_SESSION['pass']); ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            </button>
+        </div>
+    <?php endif; ?>
+
     <?php if(isset($_SESSION['success'])): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fas fa-check-circle"></i> <?php echo ($_SESSION['success']); unset($_SESSION['success']); ?>
@@ -27,9 +35,11 @@
                 <div class="card-header">
                     <div class="" style="display:flex; justify-content: space-between;">
                         <h4 class="card-title">Listado de Usuarios</h4>
+                        <?php if (tienePermiso('usuarios', 'Registrar')): ?>
                         <a href="<?php echo getUrl("Usuarios","Usuario","getCreate") ?>" class="btn btn-primary btn-round mx-4 text-right" >
                             <i class="fa fa-plus mx-2"></i> Nuevo Usuario
                         </a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="card-body">
@@ -66,24 +76,31 @@
                                                 echo "<td>".$usuario['telefono']."</td>";
                                                 echo "<td>".$usuario['rol_nombre']."</td>";
                                                 echo "<td>";
-                                                    echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
-                                                        data-nombre='".$usuario['nombre']."'
-                                                        data-apellido='".$usuario['apellido']."'
-                                                        data-documento='".$usuario['documento']."'
-                                                        data-telefono='".$usuario['telefono']."'
-                                                        data-correo='".$usuario['correo']."'
-                                                        data-rol='".$usuario['rol_nombre']."'
-                                                        data-estado ='".$usuario['estado_nombre']."'>
-                                                        Ver Detalles
-                                                    </button>";
+                                                    if (tienePermiso('usuarios', 'Consultar')) {
+                                                        echo "<button type='button' class='btn btn-info mx-2' onclick='abrirModalDetalles(this)'
+                                                            data-nombre='".$usuario['nombre']."'
+                                                            data-apellido='".$usuario['apellido']."'
+                                                            data-documento='".$usuario['documento']."'
+                                                            data-telefono='".$usuario['telefono']."'
+                                                            data-correo='".$usuario['correo']."'
+                                                            data-rol='".$usuario['rol_nombre']."'
+                                                            data-estado ='".$usuario['estado_nombre']."'>
+                                                            Ver Detalles
+                                                        </button>";
+                                                    }
 
-                                                    echo "<a href='".getUrl("Usuarios", "Usuario", "getUpdate", array("id"=>$usuario['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    if (tienePermiso('usuarios', 'Actualizar')) {
+                                                        echo "<a href='".getUrl("Usuarios", "Usuario", "getUpdate", array("id"=>$usuario['id']))."' class='btn btn-primary mx-2'>Editar</a>";
+                                                    }
 
                                                     if ($usuario['id_estado'] == 1) {
-                                                        echo "<a href='".getUrl("Usuarios","Usuario","getDelete",array("id"=>$usuario['id']))."' class='btn btn-danger'>Eliminar</a>";
-
+                                                        if (tienePermiso('usuarios', 'Eliminar')) {
+                                                            echo "<a href='".getUrl("Usuarios","Usuario","getDelete",array("id"=>$usuario['id']))."' class='btn btn-danger'>Eliminar</a>";
+                                                        }
                                                     } elseif ($usuario['id_estado'] == 2) {
-                                                        echo "<a href='".getUrl("Usuarios","Usuario","updateStatus",array("id"=>$usuario['id']))."' class='btn btn-success'>Activar</a>";
+                                                        if (tienePermiso('usuarios', 'Eliminar')) {
+                                                            echo "<a href='".getUrl("Usuarios","Usuario","updateStatus",array("id"=>$usuario['id']))."' class='btn btn-success'>Activar</a>";
+                                                        }
                                                     }                          
                                                 echo "</td>";
                                             echo "</tr>";

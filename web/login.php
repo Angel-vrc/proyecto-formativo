@@ -3,7 +3,7 @@ include_once '../lib/helpers.php';
 session_start();
 
 if(isset($_SESSION['auth']) && $_SESSION['auth'] == "ok"){
-    header("Location: index.php");
+    redirect('index.php');
     exit();
 }
 
