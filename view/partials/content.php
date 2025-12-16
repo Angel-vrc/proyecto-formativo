@@ -111,11 +111,6 @@
                     </div>
 
                     <div class="field-group">
-                        <div class="field-legend">Correo del responsable</div>
-                        <div class="field-value" id="correoZoo"></div>
-                    </div>
-
-                    <div class="field-group">
                         <div class="field-legend">Nombre del responsable</div>
                         <div class="field-value" id="responsableZoo"></div>
                     </div>
@@ -136,13 +131,6 @@
                     </div>
                 </div>
 
-                <div class="modal-footer d-flex justify-content-between">
-                    <a href="#" id="btnListaZoos" class="btn-zoos" role="button">
-                        Ver lista de<br>zoocriaderos
-                    </a>
-
-                    <button type="button" class="btn-close-modal" data-bs-dismiss="modal" aria-label="Cerrar">Cerrar</button>
-                </div>
             </div>
         </div>
     </div>
@@ -268,16 +256,16 @@
             let nombreZ = zoo.nombre;
             document.getElementById("nombreZoo").textContent = nombreZ;
             
-            /*let barrio = zoo.barrio;
+            let barrio = zoo.barrio;
             document.getElementById("barrioZoo").textContent = barrio;
 
             let comuna = zoo.comuna;
-            document.getElementById("comunaZoo").textContent = comuna;
+            document.getElementById("comunasZoo").textContent = comuna;
 
             let direccion = zoo.direccion;
             document.getElementById("direccionZoo").textContent = direccion;
 
-            let responsable = zoo.nombre_responsable + " \n" + zoo.apellido_responsable;
+            let responsable = zoo.nombre_responsable + " " + zoo.apellido_responsable;
             document.getElementById("responsableZoo").textContent = responsable;
 
             let correo = zoo.correo;
@@ -287,48 +275,52 @@
             document.getElementById("telefonoZoo").textContent = telefono;
 
             let estado = zoo.nombre_estado;
-            document.getElementById("estadoZoo").textContent = estado;*/
+            document.getElementById("estadoZoo").textContent = estado;
 
-            let coordText = "";
-            if (zoo.coordenadas) {
-                coordText = zoo.coordenadas;
-            }
+            let coordText = zoo.coordenadas;
             document.getElementById("coordenadasZoo").textContent = coordText;
         }
 
         function queryII(event, map, y, x, xx, yy) {
             if (!seleccionado) return;
-
-            <?php 
-                $urlBase = getUrl("Mapa", "Mapa", "consultarZoocriadero"); 
-            ?>
-        
+                
             let url = "../controller/Mapa/consultarPunto.php?x=" + xx + "&y=" + yy;
-            consulta2 = objetoAjax();
+            let consulta2 = objetoAjax();
             consulta2.open("GET", url, true);
-
+                
             consulta2.onreadystatechange = function () {
-                if (consulta2.readyState == 4 && consulta2.status === 200) {
-                    console.log(consulta2.responseText);
-                    let zoo = consulta2.responseText;
-                    //setModalFields(zoo);
-
-                    alert("Zoocriadero: " + zoo);
-
-                    /*var idForTitle = zoo.id_zoocriadero;
-                    var titleEl = document.querySelector('#infoPunto .modal-title');
-                    titleEl.textContent = "Información de zoocriadero" + (idForTitle ? " — zoocriadero #" + idForTitle : "");
-
-                    let modalEl = document.getElementById("infoPunto");
-                    let modal = new bootstrap.Modal(modalEl, {
+                if (consulta2.readyState === 4 && consulta2.status === 200) {
+                
+                    if (!consulta2.responseText) {
+                        console.warn("Respuesta vacía del servidor");
+                        return;
+                    }
+                
+                    let zoo;
+                    try {
+                        zoo = JSON.parse(consulta2.responseText);
+                    } catch (e) {
+                        console.error("La respuesta no es JSON válido:", consulta2.responseText);
+                        return;
+                    }
+                
+                    setModalFields(zoo);
+                
+                    const titleEl = document.querySelector('#infoPunto .modal-title');
+                    titleEl.textContent =
+                        "Información de zoocriadero — zoocriadero #" + zoo.id_zoocriadero;
+                
+                    const modalEl = document.getElementById("infoPunto");
+                    const modal = new bootstrap.Modal(modalEl, {
                         backdrop: false,
                         keyboard: false,
                         focus: false
                     });
-
-                    modal.show();*/
+                
+                    modal.show();
                 }
-            }
+            };
+        
             consulta2.send(null);
         }
 
