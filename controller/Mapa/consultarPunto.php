@@ -31,9 +31,14 @@ while ($resultado = pg_fetch_array($queryConsult)) {
         $array1 = ($query1 !== false) ? pg_fetch_assoc($query1) : false;
         if ($query1 && $array1) {
             echo json_encode(array(
-                "codigo" => $array1['id_zoo'],
+                "id_zoocriadero" => $array1['id_zoocriadero'],
                 "nombre" => $array1['nombre'],
-                "geom" => $array1['geom']
+                "barrio" => $array1['barrio'],
+                "comuna" => $array1['comuna'],
+                "direccion" => $array1['direccion'],
+                "nombre_responsable" => $array1['nombre_responsable'],
+                "correo" => $array1['correo'],
+                "telefono" => $array1['telefono'],
             ));  
             echo "Nombre: " . htmlspecialchars($array1['nombre']) . "<br>";
             echo "";
