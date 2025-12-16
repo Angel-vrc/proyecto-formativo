@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="assets/css/arregloTablas.css">
+
 <div class="page-inner">
     <div class="page-header">
         <h4 class="page-title">Gestión de Tanques</h4>
@@ -53,7 +55,7 @@
                     
                     <!-- Tabla de resultados -->
                     <div class="table-responsive">
-                        <table id="tableZoocriaderos" class="display table table-striped table-hover">
+                        <table id="tableTanques" class="display table table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -61,6 +63,7 @@
                                     <th>Tipo de Tanque</th>
                                     <th>Cantidad de peces</th>
                                     <th>Medidas del Tanque</th>
+                                    <th>Zoocriadero</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -74,6 +77,7 @@
                                                 echo "<td>".$tanque['tipo_tanque']."</td>";
                                                 echo "<td>".$tanque['cantidad_peces']."</td>";
                                                 echo "<td>".$tanque['medidas']."</td>";
+                                                echo "<td>".$tanque['zoocriadero']."</td>";
                                                 echo "<td>";
                                                     if (tienePermiso('tanques', 'Actualizar')) {
                                                         echo "<a href='".getUrl("Tanques", "Tanque", "getUpdate", array("id"=>$tanque['id']))."' class='btn btn-primary mx-2'>Editar</a>";
