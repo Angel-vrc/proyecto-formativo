@@ -41,15 +41,16 @@
 
                                 <div class="form-group">
                                     <label>zoocriadero *</label>
-                                    <select class="form-control" name="id_zoocriadero" required></select>
+                                    <select class="form-control" name="id_zoocriadero" required>
                                         <option value="">Seleccione un Zoocriadero</option>
-                                        <?php while($zoo = pg_fetch_assoc($zoocriadero)){ ?>
-                                            <option value="<?php echo $zoo['id'] ?>"
-                                                <?php if($zoo['id'] == $tanque['id_zoocriadero']) echo "selected"; ?>>
+                                        <?php while($zoo = pg_fetch_assoc($zoocriaderos)){ ?>
+                                            <option value="<?php echo $zoo['id_zoocriadero'] ?>"
+                                                <?php if($zoo['id_zoocriadero'] == $tanque['id_zoocriadero']) echo "selected"; ?>>
                                                 <?php echo $zoo['nombre'] ?>
                                             </option>
                                         <?php } ?>
                                     </select>
+                                    
                                 </div>
                             </div>
 

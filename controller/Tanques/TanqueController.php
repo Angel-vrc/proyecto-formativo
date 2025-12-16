@@ -171,7 +171,7 @@
 
             $sqlTipos = "SELECT id, nombre FROM tipo_tanque ORDER BY nombre ASC";
             $tipos = $obj->select($sqlTipos);
-            $sqlzoo = "SELECT id, nombre FROM zoocriadero ORDER BY nombre ASC";
+            $sqlzoo = "SELECT id_zoocriadero, nombre FROM zoocriadero ORDER BY nombre ASC";
             $zoocriaderos = $obj->select($sqlzoo);
 
             include_once '../view/tanques/update.php';

@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="assets/css/arregloTablas.css">
 
 <div class="page-inner">
-    <div class="page-header">
+    <div class="page-header  d-flex flex-column align-items-start">
         <h4 class="page-title">Acerca de Nosotros</h4>
         <p class="text-muted">Equipo de desarrollo del sistema GeoControl</p>
     </div>
