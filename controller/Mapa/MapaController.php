@@ -6,6 +6,7 @@ class MapaController {
         include_once "../view/partials/content.php";
     }
 
+
 }
 
 ?>

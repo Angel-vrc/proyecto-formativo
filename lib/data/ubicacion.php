@@ -384,8 +384,7 @@
         'Finca',
         'Hacienda',
         'Parcela',
-        'Kilómetro',
-        'Km.'
+        'Kilómetro'
     );
 
     /**

@@ -181,7 +181,7 @@
                             Sistema de gestión y control geográfico para el monitoreo y seguimiento de información sobre los Zoocriaderos
                         </p>
                         <div class="mt-4">
-                            <a href="#" class="btn btn-outline-primary btn-lg" style="border-radius: 10px;">
+                            <a href="<?php echo getUrl("Configuracion","Configuracion","listManuales"); ?>" class="btn btn-outline-primary btn-lg" style="border-radius: 10px;">
                                 <i class="fas fa-book me-2"></i>Ver Documentación
                             </a>
                         </div>
