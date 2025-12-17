@@ -4,13 +4,6 @@
 
     class ZoocriaderoController{
 
-        /**
-         * Construye una dirección estandarizada a partir de sus componentes
-         * @param string $tipoVia Tipo de vía (Calle, Avenida, etc.)
-         * @param string $numeroVia Número o identificador de la vía
-         * @param string $complemento Complemento opcional (casa, apartamento, etc.)
-         * @return string Dirección completa estandarizada
-         */
         private function construirDireccion($tipoVia, $numeroVia, $complemento = '') {
             $direccion = '';
             
@@ -29,7 +22,7 @@
             } else if (!empty($complemento)) {
                 $direccion = trim($complemento);
             }
-            
+
             return trim($direccion);
         }
 
@@ -124,7 +117,7 @@
                 exit();
             }else{
                 $_SESSION['error'] = "Error al crear el zoocriadero";
-                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
+                redirect(getUrl("Mapa","Mapa","visualizarZoo"));
                 exit();
             }
         }
@@ -223,26 +216,24 @@
             $id_zoocriadero = intval($_POST['id']);
             $nombre = pg_escape_string($connect, $_POST['nombre']);
             
-            // Construir dirección estandarizada
-            $tipoVia = isset($_POST['tipo_via']) ? pg_escape_string($connect, $_POST['tipo_via']) : '';
-            $numeroVia = isset($_POST['numero_via']) ? pg_escape_string($connect, $_POST['numero_via']) : '';
-            $complemento = isset($_POST['complemento_direccion']) ? pg_escape_string($connect, $_POST['complemento_direccion']) : '';
+            // Construir dirección estandarizada SIEMPRE desde los campos individuales
+            $tipoVia = isset($_POST['tipo_via']) ? trim($_POST['tipo_via']) : '';
+            $numeroVia = isset($_POST['numero_via']) ? trim($_POST['numero_via']) : '';
+            $complemento = isset($_POST['complemento_direccion']) ? trim($_POST['complemento_direccion']) : '';
             
-            // Si la dirección ya viene construida del formulario, usarla; si no, construirla
-            $direccionPost = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
-            if (!empty($direccionPost)) {
-                $direccion = pg_escape_string($connect, $direccionPost);
-            } else {
-                $direccion = pg_escape_string($connect, $this->construirDireccion($tipoVia, $numeroVia, $complemento));
-            }
-            
+            // Construir la dirección desde los campos individuales
+            $direccion = $this->construirDireccion($tipoVia, $numeroVia, $complemento);
+            $direccion = pg_escape_string($connect, $direccion);
+
+            $coordenadas = pg_escape_string($connect, $_POST['coordenadas']);
             $comuna = pg_escape_string($connect, $_POST['comuna']);
             $barrio = pg_escape_string($connect, $_POST['barrio']);
             $responsable = intval($_POST['responsable']);
             $telefono = pg_escape_string($connect, $_POST['telefono']);
             $correo = pg_escape_string($connect, $_POST['correo']);
 
-            $sql = "UPDATE zoocriadero SET nombre='$nombre', direccion='$direccion', comuna='$comuna', barrio='$barrio', responsable=$responsable, telefono='$telefono', correo='$correo' WHERE id_zoocriadero=$id_zoocriadero";
+            $sql = "UPDATE zoocriadero SET responsable=$responsable, direccion='$direccion', coordenadas='$coordenadas',  telefono='$telefono', comuna='$comuna', barrio='$barrio', nombre='$nombre', correo='$correo' WHERE id_zoocriadero=$id_zoocriadero";
+
 
             $resultado = $obj->update($sql);
 

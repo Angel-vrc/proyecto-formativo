@@ -387,40 +387,28 @@
         'Kilómetro'
     );
 
-    /**
-     * Función para parsear una dirección existente y extraer sus componentes
-     * @param string $direccion Dirección completa a parsear
-     * @return array Array con 'tipo_via', 'numero_via' y 'complemento'
-     */
+    
     function parsearDireccion($direccion) {
+        global $tiposDirecciones;
+        
         $resultado = array(
             'tipo_via' => '',
             'numero_via' => '',
             'complemento' => ''
         );
         
+        if (!isset($tiposDirecciones) || !is_array($tiposDirecciones)) {
+            $tiposDirecciones = array();
+        }
+
         if (empty($direccion)) {
             return $resultado;
-        }
+        }    
         
-        $direccion = trim($direccion);
-        global $tiposDirecciones;
         
-        // Buscar tipo de vía al inicio
-        foreach ($tiposDirecciones as $tipo) {
-            $tipoLower = strtolower($tipo);
-            $direccionLower = strtolower($direccion);
-            
-            // Verificar si la dirección comienza con el tipo de vía
-            if (stripos($direccion, $tipo . ' ') === 0 || stripos($direccion, $tipo . '.') === 0) {
-                $resultado['tipo_via'] = $tipo;
-                // Remover el tipo de vía de la dirección
-                $direccion = trim(substr($direccion, strlen($tipo)));
-                // Remover punto o espacio adicional
-                $direccion = ltrim($direccion, '. ');
-                break;
-            }
-        }
+        $separador = explode(' ', trim($direccion));
+        $resultado['tipo_via'] = $separador[0];
+        $direccion = trim(str_replace($separador[0], '', $direccion));
         
         // Buscar complemento (generalmente después de #, Apto, Casa, etc.)
         $patronesComplemento = array(
@@ -451,10 +439,10 @@
             }
         }
         
-        $resultado['complemento'] = $complementoEncontrado;
-        
         // Lo que queda es el número de vía
         $resultado['numero_via'] = trim($direccion);
+
+        $resultado['complemento'] = $complementoEncontrado;
         
         return $resultado;
     }

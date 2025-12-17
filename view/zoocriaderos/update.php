@@ -44,10 +44,11 @@
                                         <select class="form-control select2" id="tipo_via" name="tipo_via" required>
                                             <option value="">Seleccione el tipo de vía</option>
                                             <?php foreach ($tiposDirecciones as $tipo): ?>
-                                                <option value="<?php echo $tipo; ?>" 
-                                                    <?php echo ($tipo == $direccionParseada['tipo_via']) ? 'selected' : ''; ?>>
-                                                    <?php echo $tipo; ?>
+                                                <option value="<?php echo htmlspecialchars($tipo); ?>" 
+                                                    <?php echo (trim($tipo) === trim($direccionParseada['tipo_via'])) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($tipo); ?>
                                                 </option>
+                                                
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -74,7 +75,7 @@
                                     </div>
                                     
                                     <!-- Dirección completa (oculta, se genera automáticamente) -->
-                                    <input type="hidden" id="direccion" name="direccion" value="<?php echo htmlspecialchars($zoo['direccion']); ?>">
+                                    <input type="hidden" id="direccion" name="direccion" value="">
                                     
                                     <!-- Comuna -->
                                     <div class="form-group">
@@ -190,20 +191,31 @@ function construirDireccion() {
 
 // Event listeners para actualizar dirección automáticamente
 $(document).ready(function() {
+    // Construir dirección inicial cuando se carga la página
+    construirDireccion();
+    
+    // Actualizar dirección cuando cambian los campos
     $('#tipo_via, #numero_via, #complemento_direccion').on('change keyup blur', function() {
         construirDireccion();
     });
     
-    // Construir dirección inicial si hay valores
-    construirDireccion();
-    
     // Validar antes de enviar el formulario
     $('#formZoocriadero').on('submit', function(e) {
+        // Asegurar que la dirección se construya antes de enviar
         construirDireccion();
         var direccion = $('#direccion').val();
-        if (!direccion || direccion.trim() === '') {
+        var tipoVia = $('#tipo_via').val();
+        var numeroVia = $('#numero_via').val();
+        
+        if (!tipoVia || !numeroVia) {
             e.preventDefault();
             alert('Por favor complete los campos de dirección (Tipo de Vía y Número de Vía son obligatorios)');
+            return false;
+        }
+        
+        if (!direccion || direccion.trim() === '') {
+            e.preventDefault();
+            alert('Error al construir la dirección. Por favor verifique los campos.');
             return false;
         }
     });
