@@ -191,7 +191,7 @@
             $id = $_SESSION['usuario_id'];
 
             $buscar = $_GET['buscar'];
-            $sql = "SELECT u.*, r.nombre rol_nombre, e.nombre estado_nombre FROM usuarios u, roles r, usuario_estado e WHERE u.id_rol = r.id AND u.id_estado = e.id_estado AND u.id<>$id AND (u.nombre ILIKE '%$buscar%' OR u.apellido ILIKE '%$buscar%') ORDER BY u.id ASC";
+            $sql = "SELECT u.*, r.nombre rol_nombre, e.nombre estado_nombre FROM usuarios u, roles r, usuario_estado e WHERE u.id_rol = r.id AND u.id_estado = e.id_estado AND u.id<>$id AND (u.nombre ILIKE '%$buscar%' OR u.apellido ILIKE '%$buscar%' OR e.nombre LIKE '%$buscar%') ORDER BY u.id ASC";
 
             $usuarios = $obj->select($sql);
 
