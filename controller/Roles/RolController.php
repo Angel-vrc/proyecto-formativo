@@ -266,6 +266,22 @@
             include_once '../view/roles/filtro.php';
         }
 
+        public function validarRol() {
+
+            header('Content-Type: application/json');
+
+            $obj = new RolModel();
+            $nombre = trim($_GET['nombre']);
+
+            $sql = "SELECT id FROM roles WHERE LOWER(nombre) = LOWER('$nombre')";
+            $res = $obj->select($sql);
+
+            echo json_encode(array(
+                'disponible' => ($res && pg_num_rows($res) === 0)
+            ));
+            exit;
+        }
+
     }
 
 ?>
