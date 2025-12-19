@@ -42,7 +42,7 @@
                     <h4 class="text-section">Gestión del Sistema</h4>
                 </li>
 
-                <li class="nav-item">    
+                <li class="nav-item <?php echo isActiveModule('Mapa'); ?>">    
                     <a href="<?php echo getUrl("Mapa","Mapa","visualizarZoo"); ?>">
                         <i class="fas fa-map"></i>
                         <p>Visualización de Mapa</p>
