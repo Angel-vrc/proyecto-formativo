@@ -147,7 +147,35 @@ function validarRol(){
         success: function (response) {
             if (!response.disponible) {
                 alert('Este rol ya existe');
-                $('#nombre').val('').focus();
+                $('#nombreRol').val('').focus();
+            }
+        }
+    });
+}
+
+$('#nombreZoocriadero').on('blur', function () { validarZoocriadero(); });
+
+function validarZoocriadero(){
+    var nombre = $('#nombreZoocriadero').val().trim();
+
+    console.log(nombre);
+
+    if (nombre === '') return;
+
+    $.ajax({
+        url: 'ajax.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            modulo: 'Zoocriaderos',
+            controlador: 'Zoocriadero',
+            funcion: 'validarZoocriadero',
+            nombre: nombre
+        },
+        success: function (response) {
+            if (!response.disponible) {
+                alert('Este zoocriadero ya existe');
+                $('#nombreZoocriadero').val('').focus();
             }
         }
     });

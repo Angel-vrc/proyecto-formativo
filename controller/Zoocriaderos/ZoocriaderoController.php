@@ -336,6 +336,22 @@
             echo json_encode(array('success' => true, 'tanques' => $tanques_array));
             exit();
         }
+
+        public function validarZoocriadero() {
+
+            header('Content-Type: application/json');
+
+            $obj = new ZoocriaderoModel();
+            $nombre = trim($_GET['nombre']);
+
+            $sql = "SELECT id_zoocriadero FROM zoocriadero WHERE LOWER(nombre) = LOWER('$nombre')";
+            $res = $obj->select($sql);
+
+            echo json_encode(array(
+                'disponible' => ($res && pg_num_rows($res) === 0)
+            ));
+            exit;
+        }
         
     }
 ?>

@@ -28,7 +28,7 @@
                                 <!-- Nombre -->
                                 <div class="form-group">
                                     <label for="nombre">Nombre del Zoocriadero *</label>
-                                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                                    <input type="text" class="form-control" id="nombreZoocriadero" name="nombre" 
                                            placeholder="Ej: Zoocriadero Las Acacias" required
                                            maxlength="150">
                                 </div>
