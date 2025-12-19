@@ -125,10 +125,10 @@ function cargarTabla2() {
     });
 }
 
-$('#nombre').on('blur', function () { validarRol(); });
+$('#nombreRol').on('blur', function () { validarRol(); });
 
 function validarRol(){
-    var nombre = $('#nombre').val().trim();
+    var nombre = $('#nombreRol').val().trim();
 
     console.log(nombre);
 
