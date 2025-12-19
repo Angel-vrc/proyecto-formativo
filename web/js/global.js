@@ -125,3 +125,31 @@ function cargarTabla2() {
     });
 }
 
+$('#nombreRol').on('blur', function () { validarRol(); });
+
+function validarRol(){
+    var nombre = $('#nombreRol').val().trim();
+
+    console.log(nombre);
+
+    if (nombre === '') return;
+
+    $.ajax({
+        url: 'ajax.php',
+        type: 'GET',
+        dataType: 'json',
+        data: {
+            modulo: 'Roles',
+            controlador: 'Rol',
+            funcion: 'validarRol',
+            nombre: nombre
+        },
+        success: function (response) {
+            if (!response.disponible) {
+                alert('Este rol ya existe');
+                $('#nombre').val('').focus();
+            }
+        }
+    });
+}
+

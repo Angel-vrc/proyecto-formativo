@@ -23,7 +23,7 @@
                                 <!-- Nombre -->
                                 <div class="form-group">
                                     <label for="nombre">Nombre del Rol *</label>
-                                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                                    <input type="text" class="form-control" id="nombreRol" name="nombre" 
                                            placeholder="Ej: Juan" required
                                            maxlength="150">
                                 </div>

@@ -345,4 +345,106 @@
         'Yira Castro'
     );
 
+    $tiposDirecciones = array(
+        'Calle',
+        'Avenida',
+        'Av.',
+        'Carrera',
+        'Carretera',
+        'Camino',
+        'Diagonal',
+        'Transversal',
+        'Boulevard',
+        'Pasaje',
+        'Paseo',
+        'Autopista',
+        'Circunvalación',
+        'Ruta',
+        'Vía',
+        'Sendero',
+        'Vereda',
+        'Callejón',
+        'Plaza',
+        'Plazoleta',
+        'Urbanización',
+        'Barrio',
+        'Conjunto',
+        'Residencial',
+        'Sector',
+        'Manzana',
+        'Lote',
+        'Edificio',
+        'Torre',
+        'Bloque',
+        'Apartamento',
+        'Apto.',
+        'Casa',
+        'Local',
+        'Oficina',
+        'Finca',
+        'Hacienda',
+        'Parcela',
+        'Kilómetro'
+    );
+
+    
+    function parsearDireccion($direccion) {
+        global $tiposDirecciones;
+        
+        $resultado = array(
+            'tipo_via' => '',
+            'numero_via' => '',
+            'complemento' => ''
+        );
+        
+        if (!isset($tiposDirecciones) || !is_array($tiposDirecciones)) {
+            $tiposDirecciones = array();
+        }
+
+        if (empty($direccion)) {
+            return $resultado;
+        }    
+        
+        
+        $separador = explode(' ', trim($direccion));
+        $resultado['tipo_via'] = $separador[0];
+        $direccion = trim(str_replace($separador[0], '', $direccion));
+        
+        // Buscar complemento (generalmente después de #, Apto, Casa, etc.)
+        $patronesComplemento = array(
+            '/#\s*[0-9A-Za-z\-\s]+/i',  // #45-67, # 45-67
+            '/Apto\.?\s*[0-9A-Za-z\-\s]+/i',  // Apto 201, Apto. 201
+            '/Casa\s*[0-9A-Za-z\-\s]+/i',  // Casa 5
+            '/Local\s*[0-9A-Za-z\-\s]+/i',  // Local 10
+            '/Edificio\s*[0-9A-Za-z\-\s]+/i',  // Edificio A
+        );
+        
+        $complementoEncontrado = '';
+        foreach ($patronesComplemento as $patron) {
+            if (preg_match($patron, $direccion, $matches)) {
+                $complementoEncontrado = trim($matches[0]);
+                // Remover el complemento de la dirección
+                $direccion = trim(str_replace($complementoEncontrado, '', $direccion));
+                break;
+            }
+        }
+        
+        // Si no se encontró con patrones, buscar después de espacios múltiples o caracteres especiales
+        if (empty($complementoEncontrado)) {
+            // Buscar patrones como "123 #45-67" o "123 Apto 201"
+            if (preg_match('/^([^#]+?)\s+(#|Apto|Casa|Local|Edificio).+$/i', $direccion, $matches)) {
+                $numeroVia = trim($matches[1]);
+                $complementoEncontrado = trim(substr($direccion, strlen($numeroVia)));
+                $direccion = $numeroVia;
+            }
+        }
+        
+        // Lo que queda es el número de vía
+        $resultado['numero_via'] = trim($direccion);
+
+        $resultado['complemento'] = $complementoEncontrado;
+        
+        return $resultado;
+    }
+
 ?>

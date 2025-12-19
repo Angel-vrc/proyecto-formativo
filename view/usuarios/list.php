@@ -47,7 +47,8 @@
                     <div class="row mb-3">                        
                         <div class="col-md-3">
                             <div class="form-group">
-                                <input type="text" class="form-control" id="filtro" name="buscar" placeholder="Buscar por nombre..." data-url="<?php echo getUrl("Usuarios","Usuario","filtro", false, "ajax"); ?>">
+                                <input type="text" class="form-control" id="filtro" name="buscar" placeholder="Buscar por nombre o estado" data-url="<?php echo getUrl("Usuarios","Usuario","filtro", false, "ajax"); ?>">
+                                <small class="text-muted">Estados: Activo o Inactivo</small>
                             </div>
                         </div>
                     </div>

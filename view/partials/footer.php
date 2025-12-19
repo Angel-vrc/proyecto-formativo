@@ -51,7 +51,7 @@
                     </h5>
                     <ul class="list-unstyled" style="font-size: 14px;">
                         <li class="mb-2">
-                            <a href="<?php echo getUrl("Configuracion","Configuracion","manuales"); ?>" style="color: rgba(255,255,255,0.9); text-decoration: none; transition: color 0.3s;">
+                            <a href="<?php echo getUrl("Configuracion","Configuracion","listManuales"); ?>" style="color: rgba(255,255,255,0.9); text-decoration: none; transition: color 0.3s;">
                                 <i class="fas fa-question-circle me-2"></i>Ayuda
                             </a>
                         </li>

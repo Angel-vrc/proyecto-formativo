@@ -4,6 +4,27 @@
 
     class ZoocriaderoController{
 
+        private function construirDireccion($tipoVia, $numeroVia, $complemento = '') {
+            $direccion = '';
+            
+            // Construir dirección: Tipo de Vía + Número de Vía
+            if (!empty($tipoVia) && !empty($numeroVia)) {
+                $direccion = trim($tipoVia) . ' ' . trim($numeroVia);
+            } else if (!empty($tipoVia)) {
+                $direccion = trim($tipoVia);
+            } else if (!empty($numeroVia)) {
+                $direccion = trim($numeroVia);
+            }
+            
+            // Agregar complemento si existe
+            if (!empty($complemento) && !empty($direccion)) {
+                $direccion .= ' ' . trim($complemento);
+            } else if (!empty($complemento)) {
+                $direccion = trim($complemento);
+            }
+
+            return trim($direccion);
+        }
 
         public function lista(){
             $obj = new ZoocriaderoModel();
@@ -58,24 +79,35 @@
 
         public function postCreate(){
             $obj = new ZoocriaderoModel();
-
+            $connect = $obj->getConnect();
 
             $id_zoocriadero = $obj->autoincrement("zoocriadero", "id_zoocriadero");
-            $nombre = $_POST['nombre'];
-            $direccion = $_POST['direccion'];
-            $comuna = $_POST['comuna'];
-            $barrio = $_POST['barrio'];
-            $responsable = $_POST['responsable'];
-            $telefono = $_POST['telefono'];
-            $correo = $_POST['correo'];
-            $latitud = $_POST['latitud'];
-            $longitud = $_POST['longitud'];
+            $nombre = pg_escape_string($connect, $_POST['nombre']);
+            
+            // Construir dirección estandarizada
+            $tipoVia = isset($_POST['tipo_via']) ? pg_escape_string($connect, $_POST['tipo_via']) : '';
+            $numeroVia = isset($_POST['numero_via']) ? pg_escape_string($connect, $_POST['numero_via']) : '';
+            $complemento = isset($_POST['complemento_direccion']) ? pg_escape_string($connect, $_POST['complemento_direccion']) : '';
+            
+            // Si la dirección ya viene construida del formulario, usarla; si no, construirla
+            $direccionPost = isset($_POST['direccion']) ? trim($_POST['direccion']) : '';
+            if (!empty($direccionPost)) {
+                $direccion = pg_escape_string($connect, $direccionPost);
+            } else {
+                $direccion = pg_escape_string($connect, $this->construirDireccion($tipoVia, $numeroVia, $complemento));
+            }
+            
+            $comuna = pg_escape_string($connect, $_POST['comuna']);
+            $barrio = pg_escape_string($connect, $_POST['barrio']);
+            $responsable = intval($_POST['responsable']);
+            $telefono = pg_escape_string($connect, $_POST['telefono']);
+            $correo = pg_escape_string($connect, $_POST['correo']);
+            $latitud = floatval($_POST['latitud']);
+            $longitud = floatval($_POST['longitud']);
             $coordenadas = $latitud . "," . $longitud;
             $punto = "ST_SetSRID(ST_GeomFromText('POINT(". $longitud . " " . $latitud . " )'), 4326)";
             
-            $sql = "INSERT INTO zoocriadero VALUES ($id_zoocriadero, '$responsable', '$direccion', '$coordenadas', '$telefono', '$comuna', '$barrio', '$nombre', $punto, 1, '$correo')";
-
-            echo $sql;
+            $sql = "INSERT INTO zoocriadero VALUES ($id_zoocriadero, $responsable, '$direccion', '$coordenadas', '$telefono', '$comuna', '$barrio', '$nombre', $punto, 1, '$correo')";
 
             $resultado = $obj->insert($sql);
 
@@ -85,7 +117,7 @@
                 exit();
             }else{
                 $_SESSION['error'] = "Error al crear el zoocriadero";
-                redirect(getUrl("Zoocriaderos","Zoocriadero","lista"));
+                redirect(getUrl("Mapa","Mapa","visualizarZoo"));
                 exit();
             }
         }
@@ -179,17 +211,29 @@
 
         public function postUpdate(){
             $obj = new ZoocriaderoModel();
+            $connect = $obj->getConnect();
 
-            $id_zoocriadero = $_POST['id'];
-            $nombre = $_POST['nombre'];
-            $direccion = $_POST['direccion'];
-            $comuna = $_POST['comuna'];
-            $barrio = $_POST['barrio'];
-            $responsable = $_POST['responsable'];
-            $telefono = $_POST['telefono'];
-            $correo = $_POST['correo'];
+            $id_zoocriadero = intval($_POST['id']);
+            $nombre = pg_escape_string($connect, $_POST['nombre']);
+            
+            // Construir dirección estandarizada SIEMPRE desde los campos individuales
+            $tipoVia = isset($_POST['tipo_via']) ? trim($_POST['tipo_via']) : '';
+            $numeroVia = isset($_POST['numero_via']) ? trim($_POST['numero_via']) : '';
+            $complemento = isset($_POST['complemento_direccion']) ? trim($_POST['complemento_direccion']) : '';
+            
+            // Construir la dirección desde los campos individuales
+            $direccion = $this->construirDireccion($tipoVia, $numeroVia, $complemento);
+            $direccion = pg_escape_string($connect, $direccion);
 
-            $sql = "UPDATE zoocriadero SET nombre='$nombre', direccion='$direccion', comuna='$comuna', barrio='$barrio', responsable='$responsable', telefono='$telefono', correo='$correo' WHERE id_zoocriadero=$id_zoocriadero";
+            $coordenadas = pg_escape_string($connect, $_POST['coordenadas']);
+            $comuna = pg_escape_string($connect, $_POST['comuna']);
+            $barrio = pg_escape_string($connect, $_POST['barrio']);
+            $responsable = intval($_POST['responsable']);
+            $telefono = pg_escape_string($connect, $_POST['telefono']);
+            $correo = pg_escape_string($connect, $_POST['correo']);
+
+            $sql = "UPDATE zoocriadero SET responsable=$responsable, direccion='$direccion', coordenadas='$coordenadas',  telefono='$telefono', comuna='$comuna', barrio='$barrio', nombre='$nombre', correo='$correo' WHERE id_zoocriadero=$id_zoocriadero";
+
 
             $resultado = $obj->update($sql);
 
@@ -252,6 +296,45 @@
             $zoocriaderos = $obj->select($sql);
 
             include_once '../view/zoocriaderos/filtro.php';
+        }
+
+        public function getTanquesByZoocriadero(){
+            header('Content-Type: application/json');
+            
+            $obj = new ZoocriaderoModel();
+            $id_zoocriadero = isset($_GET['id_zoocriadero']) ? intval($_GET['id_zoocriadero']) : 0;
+            
+            if($id_zoocriadero <= 0){
+                echo json_encode(array('success' => false, 'message' => 'ID de zoocriadero inválido'));
+                exit();
+            }
+            
+            $sql_tanques = "SELECT t.id, t.nombre, t.cantidad_peces, t.medidas, t.id_tipo_tanque, tt.nombre as tipo_tanque, te.nombre as estado
+                            FROM tanques t
+                            LEFT JOIN tipo_tanque tt ON t.id_tipo_tanque = tt.id
+                            LEFT JOIN tanque_estado te ON t.id_estado = te.id
+                            WHERE t.id_zoocriadero = $id_zoocriadero
+                            ORDER BY t.nombre";
+            
+            $tanques = $obj->select($sql_tanques);
+            
+            $tanques_array = array();
+            
+            if($tanques && pg_num_rows($tanques) > 0){
+                while($tanque = pg_fetch_assoc($tanques)){
+                    $tanques_array[] = array(
+                        'id' => $tanque['id'],
+                        'nombre' => $tanque['nombre'],
+                        'tipo_tanque' => $tanque['tipo_tanque'] ? $tanque['tipo_tanque'] : 'N/A',
+                        'cantidad_peces' => $tanque['cantidad_peces'],
+                        'medidas' => $tanque['medidas'] ? $tanque['medidas'] : 'N/A',
+                        'estado' => $tanque['estado'] ? $tanque['estado'] : 'N/A'
+                    );
+                }
+            }
+            
+            echo json_encode(array('success' => true, 'tanques' => $tanques_array));
+            exit();
         }
         
     }
