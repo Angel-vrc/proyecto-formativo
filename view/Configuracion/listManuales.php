@@ -4,7 +4,6 @@
     <div class="page-header">
         <h4 class="page-title">Listado de Manuales</h4>
     </div>
-    <!-- Lista de pdfs Manuales -->
     <div class="row">
         <div class="col-md-12">
             <div class="card">
@@ -24,8 +23,7 @@
                             </thead>
                             <tbody>
                                 <?php
-                                $manuales = glob(__DIR__ . '/../../assets/manuales/pdf/*.pdf'); // lee todos los PDFs
-
+                                $manuales = glob(__DIR__ . '/../assets/manuales/pdf/*.pdf');
                                 if ($manuales && count($manuales) > 0) {
                                     $i = 1;
                                     foreach ($manuales as $manual) {
@@ -34,14 +32,14 @@
                                         echo "<td>$i</td>";
                                         echo "<td>$nombre</td>";
                                         echo "<td>
-                                                <buttom class='btn btn-info mx-1' onclick=\"verManual(' . $nombre; .')\">Ver</buttom>
-                                                <a href='../../download.php?file=$nombre' class='btn btn-success mx-1'>Descargar</a>
+                                                <buttom class='btn btn-info mx-1' onclick=\"verManual('$nombre')\">Ver</buttom>
+                                                <a href='../web/assets/manuales/download.php?file=" . urlencode($nombre) ."' class='btn btn-success mx-1'>Descargar</a>
+
                                               </td>";
                                         echo "</tr>";
                                         $i++;
                                     }
                                 } else {
-                                    // No hay manuales
                                     echo "<tr><td colspan='3' class='text-center'>No se encontraron manuales</td></tr>";
                                 }
                                 ?>
@@ -73,7 +71,7 @@
                 </thead>
                 <tbody>
                     <?php
-                    $videos = glob(__DIR__ . '/../../assets/manuals/videos/*.mp4');
+                    $videos = glob(__DIR__ . '/../assets/manuales/videos/*.mp4');
 
                     if ($videos && count($videos) > 0) {
                         $i = 1;
@@ -84,7 +82,7 @@
                             echo "<td>$nombreVideo</td>";
                             echo "<td>
                                     <button class='btn btn-info mx-1' onclick=\"verVideo('$nombreVideo')\">Ver</button>
-                                    <a href='../../assets/manuals/videos/$nombreVideo' download class='btn btn-success mx-1'>Descargar</a>
+                                    <a href='../web/assets/manuales/download.php?file=" . urlencode($nombreVideo) ."' class='btn btn-success mx-1'>Descargar</a>
                                   </td>";
                             echo "</tr>";
                             $i++;
@@ -163,7 +161,7 @@
 
 <script>
     function verManual(nombreArchivo) {
-        const ruta = "../../assets/manuales/pdf/" + nombreArchivo;
+        const ruta = "../web/assets/manuales/pdf/" + nombreArchivo;
         document.getElementById('iframePdf').src = ruta;
         $('#modalPdf').modal('show');
     }
@@ -174,7 +172,7 @@
     }
 
     function verVideo(nombreVideo) {
-        const ruta = "../../assets/manuals/videos/" + nombreVideo;
+        const ruta = "../web/assets/manuales/videos/" + nombreVideo;
         const video = document.getElementById('videoPlayer');
         video.src = ruta;
         video.load();
